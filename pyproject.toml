@@ -62,6 +62,14 @@ doc = ["mkdocs", "mkdocs-material", "markdown-include", "mkdocstrings"]
 dev = ["pre-commit"]
 
 [build-system]
+requires = ["setuptools>=64", "setuptools-scm>=8"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["penta"]
+
+
+[build-system]
 requires = ["setuptools>=61", "wheel"]
 build-backend = "setuptools.build_meta"
 
