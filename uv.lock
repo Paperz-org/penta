@@ -608,6 +608,7 @@ source = { editable = "." }
 dependencies = [
     { name = "django" },
     { name = "pydantic" },
+    { name = "ruff" },
 ]
 
 [package.optional-dependencies]
@@ -647,6 +648,7 @@ requires-dist = [
     { name = "pytest-asyncio", marker = "extra == 'test'" },
     { name = "pytest-cov", marker = "extra == 'test'" },
     { name = "pytest-django", marker = "extra == 'test'" },
+    { name = "ruff", specifier = ">=0.5.7" },
     { name = "ruff", marker = "extra == 'test'", specifier = "==0.5.7" },
 ]
 provides-extras = ["test", "doc", "dev"]

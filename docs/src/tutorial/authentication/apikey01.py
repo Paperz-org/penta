@@ -1,5 +1,6 @@
-from penta.security import APIKeyQuery
 from someapp.models import Client
+
+from penta.security import APIKeyQuery
 
 
 class ApiKey(APIKeyQuery):

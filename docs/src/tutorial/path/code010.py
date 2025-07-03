@@ -1,5 +1,6 @@
 import datetime
-from penta import Schema, Path
+
+from penta import Path, Schema
 
 
 class PathDate(Schema):

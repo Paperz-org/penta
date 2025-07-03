@@ -47,7 +47,6 @@ ExcHandler = Callable[[HttpRequest, Exc[_E]], HttpResponse]
 
 
 class Penta:
-
     _registry: List[str] = []
 
     def __init__(
@@ -551,7 +550,7 @@ class Penta:
         if (
             not skip_registry
             and self.urls_namespace in Penta._registry
-            and not debug_server_url_reimport()
+            and is_debug_server()
         ):
             msg = f"""
 Looks like you created multiple Pentas or TestClients
@@ -562,52 +561,3 @@ Already registered: {Penta._registry}
 """
             raise ConfigError(msg.strip())
         Penta._registry.append(self.urls_namespace)
-
-
-_imported_while_running_in_debug_server = is_debug_server()
-
-
-def debug_server_url_reimport() -> bool:
-    """
-    Detect reimport of URL module to allow error to propagate to developer.
-
-    When Django loads urls it uses: ``django.urls.resolvers.urlconf_module()``
-
-    ```Python
-    @cached_property
-    def urlconf_module(self):
-        if isinstance(self.urlconf_name, str):
-            return import_module(self.urlconf_name)
-        else:
-            return self.urlconf_name
-    ```
-
-    This uses ``@cached_property`` to generally only import once.  But if the
-    import throws an error when using the development server, the following
-    code in ``django.utils.autoreload.BaseReloader.run()`` is used:
-
-    ```Python
-    # Prevent a race condition where URL modules aren't loaded when the
-    # reloader starts by accessing the urlconf_module property.
-    try:
-        get_resolver().urlconf_module
-    except Exception:
-        # Loading the urlconf can result in errors during development.
-        # If this occurs then swallow the error and continue.
-        pass
-    ```
-
-    This means the (likely) developer error that caused the Exception is
-    initially ignored. This is not generally a problem since the error will
-    usually be exercised again, and reported at that time.  But Ninja has
-    various code which guards against errors where items that cannot be reused,
-    are attempted to be reused.  This results in Ninja throwing a false error,
-    and hiding the true error from the developer when running under the
-    development server.
-
-    Returns:
-
-        True if this module was originally imported during Django dev-server
-        init but the caller is not being running during Django dev-server init.
-    """
-    return _imported_while_running_in_debug_server and not is_debug_server()

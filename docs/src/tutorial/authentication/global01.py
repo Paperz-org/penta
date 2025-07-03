@@ -1,4 +1,4 @@
-from penta import NinjaAPI, Form
+from penta import Form, NinjaAPI
 from penta.security import HttpBearer
 
 

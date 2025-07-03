@@ -3,8 +3,6 @@ import re
 from http.client import responses
 from typing import TYPE_CHECKING, Any, Dict, Generator, List, Optional, Set, Tuple
 
-from django.utils.termcolors import make_style
-
 from penta.constants import NOT_SET
 from penta.operation import Operation
 from penta.params.models import TModel, TModels
@@ -29,9 +27,6 @@ def get_schema(api: "Penta", path_prefix: str = "") -> "OpenAPISchema":
     return openapi
 
 
-bold_red_style = make_style(opts=("bold",), fg="red")
-
-
 class OpenAPISchema(dict):
     def __init__(self, api: "Penta", path_prefix: str) -> None:
         self.api = api
@@ -40,21 +35,23 @@ class OpenAPISchema(dict):
         self.securitySchemes: DictStrAny = {}
         self.all_operation_ids: Set = set()
         extra_info = api.openapi_extra.get("info", {})
-        super().__init__([
-            ("openapi", "3.1.0"),
-            (
-                "info",
-                {
-                    "title": api.title,
-                    "version": api.version,
-                    "description": api.description,
-                    **extra_info,
-                },
-            ),
-            ("paths", self.get_paths()),
-            ("components", self.get_components()),
-            ("servers", api.servers),
-        ])
+        super().__init__(
+            [
+                ("openapi", "3.1.0"),
+                (
+                    "info",
+                    {
+                        "title": api.title,
+                        "version": api.version,
+                        "description": api.description,
+                        **extra_info,
+                    },
+                ),
+                ("paths", self.get_paths()),
+                ("components", self.get_components()),
+                ("servers", api.servers),
+            ]
+        )
         for k, v in api.openapi_extra.items():
             if k not in self:
                 self[k] = v
@@ -103,6 +100,10 @@ class OpenAPISchema(dict):
                 main_dict[key] = update_dict[key]
 
     def operation_details(self, operation: Operation) -> DictStrAny:
+        from django.utils.termcolors import make_style
+
+        bold_red_style = make_style(opts=("bold",), fg="red")
+
         op_id = operation.operation_id or self.api.get_openapi_operation_id(operation)
         if op_id in self.all_operation_ids:
             print(
@@ -240,10 +241,12 @@ class OpenAPISchema(dict):
         content_type = BODY_CONTENT_TYPES["file"]
 
         # get the various schemas
-        result = merge_schemas([
-            self._create_schema_from_model(model, remove_level=False)[0]
-            for model in models
-        ])
+        result = merge_schemas(
+            [
+                self._create_schema_from_model(model, remove_level=False)[0]
+                for model in models
+            ]
+        )
         result["title"] = "MultiPartBodyParams"
 
         return result, content_type

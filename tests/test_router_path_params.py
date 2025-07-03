@@ -1,6 +1,6 @@
 import pytest
 
-from penta import Penta, Path, Router
+from penta import Path, Penta, Router
 from penta.testing import TestClient
 
 api = Penta()

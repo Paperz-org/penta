@@ -1,7 +1,7 @@
 import inspect
+import os
 from typing import Any, Callable, Optional, Type
 
-from django.conf import settings
 from django.http import HttpRequest, HttpResponseForbidden
 from django.middleware.csrf import CsrfViewMiddleware
 
@@ -38,10 +38,9 @@ def check_csrf(
 
 def is_debug_server() -> bool:
     """Check if running under the Django Debug Server"""
-    return settings.DEBUG and any(
-        s.filename.endswith("runserver.py") and s.function == "run"
-        for s in inspect.stack(0)[1:]
-    )
+    from django.conf import settings
+
+    return settings.DEBUG and os.environ.get("RUN_MAIN") == "true"
 
 
 def is_async_callable(f: Callable[..., Any]) -> bool:

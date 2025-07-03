@@ -1,4 +1,4 @@
-from penta.security import APIKeyQuery, APIKeyHeader
+from penta.security import APIKeyHeader, APIKeyQuery
 
 
 class AuthCheck:

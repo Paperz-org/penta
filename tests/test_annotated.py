@@ -3,7 +3,7 @@ from typing import List
 from typing_extensions import Annotated
 from util import pydantic_ref_fix
 
-from penta import Body, Cookie, Form, Header, Penta, Path, Query, Schema
+from penta import Body, Cookie, Form, Header, Path, Penta, Query, Schema
 from penta.testing import TestClient
 
 api = Penta()

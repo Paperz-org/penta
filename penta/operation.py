@@ -19,7 +19,6 @@ from asgiref.sync import async_to_sync
 from django.http import HttpRequest, HttpResponse, HttpResponseNotAllowed
 from django.http.response import HttpResponseBase
 
-from penta.compatibility.files import FIX_MIDDLEWARE_PATH, need_to_fix_request_files
 from penta.constants import NOT_SET, NOT_SET_TYPE
 from penta.errors import (
     AuthenticationError,
@@ -63,6 +62,11 @@ class Operation:
         url_name: Optional[str] = None,
         openapi_extra: Optional[Dict[str, Any]] = None,
     ) -> None:
+        from penta.compatibility.files import (
+            FIX_MIDDLEWARE_PATH,
+            need_to_fix_request_files,
+        )
+
         self.is_async = False
         self.path: str = path
         self.methods: List[str] = methods

@@ -13,7 +13,6 @@ from typing import (
 
 from django.urls import URLPattern
 from django.urls import path as django_path
-from django.utils.module_loading import import_string
 
 from penta.constants import NOT_SET, NOT_SET_TYPE
 from penta.errors import ConfigError
@@ -23,7 +22,7 @@ from penta.types import TCallable
 from penta.utils import normalize_path, replace_path_param_notation
 
 if TYPE_CHECKING:
-    from penta import Penta  # pragma: no cover
+    from penta import NinjaAPI  # pragma: no cover
 
 
 __all__ = ["Router"]
@@ -41,7 +40,7 @@ class Router:
         exclude_defaults: Optional[bool] = None,
         exclude_none: Optional[bool] = None,
     ) -> None:
-        self.api: Optional[Penta] = None
+        self.api: Optional[NinjaAPI] = None
         self.auth = auth
         self.throttle = throttle
         self.tags = tags
@@ -366,7 +365,7 @@ class Router:
         return None
 
     def set_api_instance(
-        self, api: "Penta", parent_router: Optional["Router"] = None
+        self, api: "NinjaAPI", parent_router: Optional["Router"] = None
     ) -> None:
         if self.auth is NOT_SET and parent_router:
             self.auth = parent_router.auth
@@ -401,6 +400,8 @@ class Router:
         throttle: Union[BaseThrottle, List[BaseThrottle], NOT_SET_TYPE] = NOT_SET,
         tags: Optional[List[str]] = None,
     ) -> None:
+        from django.utils.module_loading import import_string
+
         if isinstance(router, str):
             router = import_string(router)
             assert isinstance(router, Router)
@@ -426,9 +427,9 @@ class Router:
 
     def build_routers(self, prefix: str) -> List[Tuple[str, "Router"]]:
         if self.api is not None:
-            from penta.main import debug_server_url_reimport
+            from penta.utils import is_debug_server
 
-            if not debug_server_url_reimport():
+            if is_debug_server():
                 raise ConfigError(
                     f"Router@'{prefix}' has already been attached to API"
                     f" {self.api.title}:{self.api.version} "
