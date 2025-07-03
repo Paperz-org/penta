@@ -1,15 +1,15 @@
 from django.conf import settings
 from django.test import override_settings
 
-from penta import NinjaAPI, Redoc, Swagger
+from penta import Penta, Redoc, Swagger
 from penta.testing import TestClient
 
-NO_NINJA_INSTALLED_APPS = [i for i in settings.INSTALLED_APPS if i != "ninja"]
+NO_PENTA_INSTALLED_APPS = [i for i in settings.INSTALLED_APPS if i != "penta"]
 
 
 def test_swagger():
     "Default engine is swagger"
-    api = NinjaAPI()
+    api = Penta()
 
     assert isinstance(api.docs, Swagger)
 
@@ -19,8 +19,8 @@ def test_swagger():
     assert response.status_code == 200
     assert b"swagger-ui-init.js" in response.content
 
-    # Testing without ninja in INSTALLED_APPS
-    @override_settings(INSTALLED_APPS=NO_NINJA_INSTALLED_APPS)
+    # Testing without penta in INSTALLED_APPS
+    @override_settings(INSTALLED_APPS=NO_PENTA_INSTALLED_APPS)
     def call_docs():
         response = client.get("/docs")
         assert response.status_code == 200
@@ -30,7 +30,7 @@ def test_swagger():
 
 
 def test_swagger_settings():
-    api = NinjaAPI(docs=Swagger(settings={"persistAuthorization": True}))
+    api = Penta(docs=Swagger(settings={"persistAuthorization": True}))
     client = TestClient(api)
     response = client.get("/docs")
     assert response.status_code == 200
@@ -38,15 +38,15 @@ def test_swagger_settings():
 
 
 def test_redoc():
-    api = NinjaAPI(docs=Redoc())
+    api = Penta(docs=Redoc())
     client = TestClient(api)
 
     response = client.get("/docs")
     assert response.status_code == 200
     assert b"redoc.standalone.js" in response.content
 
-    # Testing without ninja in INSTALLED_APPS
-    @override_settings(INSTALLED_APPS=NO_NINJA_INSTALLED_APPS)
+    # Testing without penta in INSTALLED_APPS
+    @override_settings(INSTALLED_APPS=NO_PENTA_INSTALLED_APPS)
     def call_docs():
         response = client.get("/docs")
         assert response.status_code == 200
@@ -59,7 +59,7 @@ def test_redoc():
 
 
 def test_redoc_settings():
-    api = NinjaAPI(docs=Redoc(settings={"disableSearch": True}))
+    api = Penta(docs=Redoc(settings={"disableSearch": True}))
     client = TestClient(api)
     response = client.get("/docs")
     assert response.status_code == 200

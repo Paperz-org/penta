@@ -39,17 +39,17 @@ def test_export_custom():
         call_command(ExportCmd(), api="django.core.management.base.BaseCommand")
     assert (
         str(e.value)
-        == "django.core.management.base.BaseCommand is not instance of NinjaAPI!"
+        == "django.core.management.base.BaseCommand is not instance of Penta!"
     )
 
     call_command(ExportCmd(), api="demo.urls.api_v1")
     call_command(ExportCmd(), api="demo.urls.api_v2")
 
 
-@patch("ninja.management.commands.export_openapi_schema.resolve")
+@patch("penta.management.commands.export_openapi_schema.resolve")
 def test_export_default_without_api_endpoint(mock):
     mock.side_effect = AttributeError()
     output = StringIO()
     with pytest.raises(CommandError) as e:
         call_command(ExportCmd(), stdout=output)
-    assert str(e.value) == "No NinjaAPI instance found; please specify one with --api"
+    assert str(e.value) == "No Penta instance found; please specify one with --api"

@@ -61,7 +61,7 @@ def test_no_serialisation_context_used_when_no_supported(pydantic_version):
 
             return handler(self)
 
-    with mock.patch("ninja.operation.pydantic_version", pydantic_version):
+    with mock.patch("penta.operation.pydantic_version", pydantic_version):
         router = Router()
         router.add_api_operation(
             "/test", ["GET"], api_endpoint_test, response=SchemaWithCustomSerializer

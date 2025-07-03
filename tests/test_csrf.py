@@ -4,7 +4,7 @@ from django.conf import settings
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
 
-from penta import NinjaAPI
+from penta import Penta
 from penta.security import APIKeyCookie, APIKeyHeader, django_auth
 from penta.testing import TestClient as BaseTestClient
 
@@ -16,9 +16,9 @@ class TestClient(BaseTestClient):
         return request
 
 
-csrf_OFF = NinjaAPI(urls_namespace="csrf_OFF")
-csrf_ON = NinjaAPI(urls_namespace="csrf_ON", csrf=True)
-csrf_ON_with_django_auth = NinjaAPI(
+csrf_OFF = Penta(urls_namespace="csrf_OFF")
+csrf_ON = Penta(urls_namespace="csrf_ON", csrf=True)
+csrf_ON_with_django_auth = Penta(
     urls_namespace="csrf_ON", csrf=True, auth=django_auth
 )
 
@@ -73,7 +73,7 @@ def test_csrf_cookie_auth():
             return key == "test"
 
     cookie_auth = CookieAuth()
-    api = NinjaAPI(auth=cookie_auth)
+    api = Penta(auth=cookie_auth)
 
     @api.post("/test")
     def test_view(request):
@@ -149,7 +149,7 @@ def test_csrf_cookies_can_be_obtained():
 def test_docs():
     "Testing that docs are initializing csrf headers correctly"
 
-    api = NinjaAPI(csrf=True)
+    api = Penta(csrf=True)
 
     client = TestClient(api)
     resp = client.get("/docs")
@@ -173,13 +173,13 @@ def test_docs_cookie_auth():
         def authenticate(self, request, key):
             return key == "test"
 
-    api = NinjaAPI(csrf=False, auth=CookieAuth())
+    api = Penta(csrf=False, auth=CookieAuth())
     client = TestClient(api)
     resp = client.get("/docs")
     csrf_token = re.findall(r'data-csrf-token="(.*?)"', resp.content.decode("utf8"))[0]
     assert len(csrf_token) > 0
 
-    api = NinjaAPI(csrf=False, auth=HeaderAuth())
+    api = Penta(csrf=False, auth=HeaderAuth())
     client = TestClient(api)
     resp = client.get("/docs")
     csrf_token = re.findall(r'data-csrf-token="(.*?)"', resp.content.decode("utf8"))[0]

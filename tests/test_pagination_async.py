@@ -6,7 +6,7 @@ import pytest
 from django.db.models import QuerySet
 from someapp.models import Category
 
-from penta import NinjaAPI, Schema
+from penta import Penta, Schema
 from penta.errors import ConfigError
 from penta.pagination import (
     AsyncPaginationBase,
@@ -16,7 +16,7 @@ from penta.pagination import (
 )
 from penta.testing import TestAsyncClient
 
-api = NinjaAPI()
+api = Penta()
 
 ITEMS = list(range(100))
 
@@ -67,7 +67,7 @@ class AsyncNoOutputPagination(AsyncPaginationBase):
 
 @pytest.mark.asyncio
 async def test_async_config_error():
-    api = NinjaAPI()
+    api = Penta()
 
     with pytest.raises(
         ConfigError, match="Pagination class not configured for async requests"
@@ -81,7 +81,7 @@ async def test_async_config_error():
 
 @pytest.mark.asyncio
 async def test_async_custom_pagination():
-    api = NinjaAPI()
+    api = Penta()
 
     @api.get("/items_async", response=List[int])
     @paginate(AsyncNoOutputPagination)
@@ -96,7 +96,7 @@ async def test_async_custom_pagination():
 
 @pytest.mark.asyncio
 async def test_async_default():
-    api = NinjaAPI()
+    api = Penta()
 
     @api.get("/items_default", response=List[int])
     @paginate  # WITHOUT brackets (should use default pagination)
@@ -112,7 +112,7 @@ async def test_async_default():
 
 @pytest.mark.asyncio
 async def test_async_page_number():
-    api = NinjaAPI()
+    api = Penta()
 
     @api.get("/items_page_number", response=List[Any])
     @paginate(PageNumberPagination, page_size=10, pass_parameter="page_info")
@@ -136,7 +136,7 @@ async def test_test_async_pagination():
     class CatSchema(Schema):
         title: str
 
-    api = NinjaAPI()
+    api = Penta()
 
     @api.get("/cats", response=list[CatSchema])
     @paginate

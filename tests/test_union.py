@@ -3,7 +3,7 @@
 # from datetime import date
 # from typing import Union
 
-# from ninja import Router
+# from penta import Router
 # from penta.testing import TestClient
 
 # router = Router()

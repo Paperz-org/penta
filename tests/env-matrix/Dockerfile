@@ -36,7 +36,7 @@ RUN /install_env.sh 3.6.10  3.1     env-36-31
 RUN /install_env.sh 3.7.7   3.1     env-37-31
 RUN /install_env.sh 3.8.3   3.1     env-38-31
 
-COPY ninja /ninja
+COPY penta /penta
 COPY tests /tests
 COPY docs /docs
 COPY tests/env-matrix/run.sh /run.sh

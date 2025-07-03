@@ -1,11 +1,11 @@
 from unittest.mock import patch
 
-from penta import NinjaAPI
+from penta import Penta
 from penta.testing import TestClient
 
 
 def test_examples():
-    api = NinjaAPI()
+    api = Penta()
 
     with patch("builtins.api", api, create=True):
         import docs.src.tutorial.path.code01  # noqa: F401
@@ -15,7 +15,7 @@ def test_examples():
         response = client.get("/items/123")
         assert response.json() == {"item_id": "123"}
 
-    api = NinjaAPI()
+    api = Penta()
 
     with patch("builtins.api", api, create=True):
         import docs.src.tutorial.path.code010  # noqa: F401

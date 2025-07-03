@@ -1,9 +1,9 @@
 import pytest
 
-from penta import NinjaAPI, Path, Router
+from penta import Penta, Path, Router
 from penta.testing import TestClient
 
-api = NinjaAPI()
+api = Penta()
 router_with_path_type = Router()
 router_without_path_type = Router()
 router_with_multiple = Router()

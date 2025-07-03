@@ -1,6 +1,6 @@
 import pytest
 
-from penta import NinjaAPI, Router
+from penta import Penta, Router
 from penta.security import APIKeyQuery
 from penta.testing import TestClient
 
@@ -15,7 +15,7 @@ class Auth(APIKeyQuery):
             return key
 
 
-api = NinjaAPI(auth=Auth("api_auth"))
+api = Penta(auth=Auth("api_auth"))
 
 r1 = Router()
 r2 = Router()

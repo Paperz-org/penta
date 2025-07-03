@@ -6,12 +6,12 @@ import pytest
 from django.contrib.admin.views.decorators import staff_member_required
 from django.test import Client, override_settings
 
-from penta import Body, Field, File, Form, NinjaAPI, Query, Schema, UploadedFile
+from penta import Body, Field, File, Form, Penta, Query, Schema, UploadedFile
 from penta.openapi.urls import get_openapi_urls
 from penta.pagination import PaginationBase, paginate
 from penta.renderers import JSONRenderer
 
-api = NinjaAPI()
+api = Penta()
 
 
 class Payload(Schema):
@@ -168,8 +168,8 @@ def test_schema_views_no_INSTALLED_APPS(client: Client):
     "Making sure that cdn and included js works fine"
     from django.conf import settings
 
-    # removing ninja from settings:
-    INSTALLED_APPS = [i for i in settings.INSTALLED_APPS if i != "ninja"]
+    # removing penta from settings:
+    INSTALLED_APPS = [i for i in settings.INSTALLED_APPS if i != "penta"]
 
     @override_settings(INSTALLED_APPS=INSTALLED_APPS)
     def call_docs():
@@ -778,15 +778,15 @@ def test_new_union_payload_type(schema):
 
 
 def test_get_openapi_urls():
-    api = NinjaAPI(openapi_url=None)
+    api = Penta(openapi_url=None)
     paths = get_openapi_urls(api)
     assert len(paths) == 0
 
-    api = NinjaAPI(docs_url=None)
+    api = Penta(docs_url=None)
     paths = get_openapi_urls(api)
     assert len(paths) == 1
 
-    api = NinjaAPI(openapi_url="/path", docs_url="/path")
+    api = Penta(openapi_url="/path", docs_url="/path")
     with pytest.raises(
         AssertionError, match="Please use different urls for openapi_url and docs_url"
     ):
@@ -794,7 +794,7 @@ def test_get_openapi_urls():
 
 
 def test_unique_operation_ids(capsys):
-    api = NinjaAPI()
+    api = Penta()
 
     @api.get("/1")
     def same_name(request):
@@ -810,7 +810,7 @@ def test_unique_operation_ids(capsys):
 
 
 def test_docs_decorator():
-    api = NinjaAPI(docs_decorator=staff_member_required)
+    api = Penta(docs_decorator=staff_member_required)
 
     paths = get_openapi_urls(api)
     assert len(paths) == 2
@@ -830,7 +830,7 @@ class TestRenderer(JSONRenderer):
 
 
 def test_renderer_media_type():
-    api = NinjaAPI(renderer=TestRenderer)
+    api = Penta(renderer=TestRenderer)
 
     @api.get("/1", response=TypeA)
     def same_name(
@@ -851,7 +851,7 @@ def test_renderer_media_type():
 
 
 def test_all_paths_rendered():
-    api = NinjaAPI(renderer=TestRenderer)
+    api = Penta(renderer=TestRenderer)
 
     @api.post("/1")
     def some_name_create(
@@ -881,7 +881,7 @@ def test_all_paths_rendered():
 
 
 def test_all_paths_typed_params_rendered():
-    api = NinjaAPI(renderer=TestRenderer)
+    api = Penta(renderer=TestRenderer)
 
     @api.post("/1")
     def some_name_create(
@@ -911,7 +911,7 @@ def test_all_paths_typed_params_rendered():
 
 
 def test_no_default_for_custom_items_attribute():
-    api = NinjaAPI(renderer=TestRenderer)
+    api = Penta(renderer=TestRenderer)
 
     class EmployeeOut(Schema):
         id: int

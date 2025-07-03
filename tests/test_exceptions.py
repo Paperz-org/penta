@@ -1,10 +1,10 @@
 import pytest
 from django.http import Http404
 
-from penta import NinjaAPI, Schema
+from penta import Penta, Schema
 from penta.testing import TestAsyncClient, TestClient
 
-api = NinjaAPI()
+api = Penta()
 
 
 class CustomException(Exception):
@@ -74,7 +74,7 @@ def test_exceptions(route, status_code, json):
 
 @pytest.mark.asyncio
 async def test_asyncio_exceptions():
-    api = NinjaAPI()
+    api = Penta()
 
     @api.get("/error")
     async def thrower(request):
@@ -86,7 +86,7 @@ async def test_asyncio_exceptions():
 
 
 def test_no_handlers():
-    api = NinjaAPI()
+    api = Penta()
     api._exception_handlers = {}
 
     @api.get("/error")

@@ -177,7 +177,7 @@ def test_enum_encoding():
 
 
 def test_pydantic_url():
-    data = {"url": Url("https://django-ninja.dev/")}
+    data = {"url": Url("https://django-penta.dev/")}
     response = Response(data)
     response_data = json.loads(response.content)
-    assert response_data == {"url": "https://django-ninja.dev/"}
+    assert response_data == {"url": "https://django-penta.dev/"}

@@ -1,4 +1,4 @@
-from penta import NinjaAPI
+from penta import Penta
 
 
 def test_openapi_info_defined():
@@ -7,7 +7,7 @@ def test_openapi_info_defined():
         "termsOfService": "https://example.com/terms/",
         "title": "Test API",
     }
-    api = NinjaAPI(openapi_extra={"info": extra_info}, version="1.0.0")
+    api = Penta(openapi_extra={"info": extra_info}, version="1.0.0")
     schema = api.get_openapi_schema()
 
     assert schema["info"]["termsOfService"] == "https://example.com/terms/"
@@ -16,7 +16,7 @@ def test_openapi_info_defined():
 
 
 def test_openapi_no_additional_info():
-    api = NinjaAPI(title="Test API")
+    api = Penta(title="Test API")
     schema = api.get_openapi_schema()
 
     assert schema["info"]["title"] == "Test API"
@@ -25,7 +25,7 @@ def test_openapi_no_additional_info():
 
 def test_openapi_extra():
     "Test adding extra attribute to the schema"
-    api = NinjaAPI(
+    api = Penta(
         openapi_extra={
             "externalDocs": {
                 "description": "Find more info here",
@@ -38,7 +38,7 @@ def test_openapi_extra():
 
     assert schema == {
         "openapi": "3.1.0",
-        "info": {"title": "NinjaAPI", "version": "1.0.0", "description": ""},
+        "info": {"title": "Penta", "version": "1.0.0", "description": ""},
         "paths": {},
         "components": {"schemas": {}},
         "servers": [],

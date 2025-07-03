@@ -15,4 +15,4 @@ django.setup()
 
 
 def pytest_generate_tests(metafunc):
-    os.environ["NINJA_SKIP_REGISTRY"] = "yes"
+    os.environ["PENTA_SKIP_REGISTRY"] = "yes"

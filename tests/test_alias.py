@@ -1,11 +1,11 @@
-from penta import Field, NinjaAPI, Schema
+from penta import Field, Penta, Schema
 
 
 class SchemaWithAlias(Schema):
     foo: str = Field("", alias="bar")
 
 
-api = NinjaAPI()
+api = Penta()
 
 
 @api.get("/path", response=SchemaWithAlias)

@@ -1,9 +1,9 @@
 from django.core.files.uploadedfile import SimpleUploadedFile
 
-from penta import File, Form, NinjaAPI, UploadedFile
+from penta import File, Form, Penta, UploadedFile
 from penta.testing import TestClient
 
-api = NinjaAPI()
+api = Penta()
 
 
 @api.post("/str_and_file")

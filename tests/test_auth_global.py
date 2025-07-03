@@ -1,4 +1,4 @@
-from penta import NinjaAPI, Router
+from penta import Penta, Router
 from penta.security import APIKeyQuery
 from penta.testing import TestClient
 
@@ -15,7 +15,7 @@ class KeyQuery2(APIKeyQuery):
             return key
 
 
-api = NinjaAPI(auth=KeyQuery1())
+api = Penta(auth=KeyQuery1())
 
 
 @api.get("/default")

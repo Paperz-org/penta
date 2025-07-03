@@ -42,7 +42,7 @@ for d in DJANGO:
 
 print(
     """
-COPY ninja /ninja
+COPY penta /penta
 COPY tests /tests
 COPY docs /docs
 COPY tests/env-matrix/run.sh /run.sh

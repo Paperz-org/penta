@@ -1,6 +1,6 @@
 import pytest
 
-from penta import NinjaAPI, Query
+from penta import Penta, Query
 from penta.utils import contribute_operation_args, replace_path_param_notation
 
 
@@ -26,7 +26,7 @@ def test_contribute_operation_args():
     contribute_operation_args(some_func, "arg1", str, Query(...))
     contribute_operation_args(some_func, "arg2", int, Query(...))
 
-    api = NinjaAPI()
+    api = Penta()
 
     api.get("/test")(some_func)
 

@@ -67,8 +67,8 @@ client = TestClient(router)
 @pytest.mark.parametrize(
     "path,expected_status,expected_response",
     [
-        ("/headers1", 200, "Ninja"),
-        ("/headers2", 200, "Ninja"),
+        ("/headers1", 200, "Penta"),
+        ("/headers2", 200, "Penta"),
         ("/headers3", 200, 10),
         ("/headers4", 200, 10),
         (
@@ -91,7 +91,7 @@ client = TestClient(router)
 def test_headers(path, expected_status, expected_response):
     response = client.get(
         path,
-        headers={"User-Agent": "Ninja", "Content-Length": "10"},
+        headers={"User-Agent": "Penta", "Content-Length": "10"},
         COOKIES={"weapon": "shuriken"},
     )
     assert response.status_code == expected_status, response.content

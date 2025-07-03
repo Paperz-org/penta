@@ -1,7 +1,7 @@
 from functools import wraps
 from typing import List
 
-from penta import NinjaAPI
+from penta import Penta
 from penta.decorators import decorate_view
 from penta.pagination import paginate
 from penta.testing import TestClient
@@ -18,7 +18,7 @@ def some_decorator(view_func):
 
 
 def test_decorator_before():
-    api = NinjaAPI()
+    api = Penta()
 
     @decorate_view(some_decorator)
     @api.get("/before")
@@ -32,7 +32,7 @@ def test_decorator_before():
 
 
 def test_decorator_after():
-    api = NinjaAPI()
+    api = Penta()
 
     @api.get("/after")
     @decorate_view(some_decorator)
@@ -46,7 +46,7 @@ def test_decorator_after():
 
 
 def test_decorator_multiple():
-    api = NinjaAPI()
+    api = Penta()
 
     @api.get("/multi", response=List[int])
     @decorate_view(some_decorator)

@@ -2,7 +2,7 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from penta import NinjaAPI
+from penta import Penta
 from penta.testing import TestClient
 
 
@@ -23,7 +23,7 @@ def test_intro():
 def test_examples():
     from someapp.models import Client
 
-    api = NinjaAPI(csrf=True)
+    api = Penta(csrf=True)
     Client.objects.create(key="12345")
 
     with patch("builtins.api", api, create=True):

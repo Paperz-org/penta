@@ -3,11 +3,11 @@ from typing import Any, Dict, List
 import pytest
 from pydantic import field_validator
 
-from penta import Body, Form, NinjaAPI, Schema
+from penta import Body, Form, Penta, Schema
 from penta.errors import ConfigError, ValidationError, ValidationErrorContext
 from penta.testing import TestClient
 
-api = NinjaAPI()
+api = Penta()
 
 # testing Body marker:
 
@@ -73,7 +73,7 @@ def test_body_validation_error():
 
 
 def test_incorrect_annotation():
-    api = NinjaAPI()
+    api = Penta()
 
     class Some(Schema):
         a: int
@@ -86,7 +86,7 @@ def test_incorrect_annotation():
             return 42
 
 
-class CustomErrorAPI(NinjaAPI):
+class CustomErrorAPI(Penta):
     def validation_error_from_error_contexts(
         self,
         error_contexts: List[ValidationErrorContext],
@@ -98,7 +98,7 @@ class CustomErrorAPI(NinjaAPI):
                 include_url=False, include_context=False, include_input=False
             ):
                 errors.append({
-                    "source": model.__ninja_param_source__,
+                    "source": model.__penta_param_source__,
                     "message": e["msg"],
                 })
         return ValidationError(errors)

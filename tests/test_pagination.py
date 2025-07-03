@@ -6,7 +6,7 @@ import pytest
 from django.test import override_settings
 from pydantic.errors import PydanticSchemaGenerationError
 
-from penta import NinjaAPI, Schema
+from penta import Penta, Schema
 from penta.errors import ConfigError
 from penta.operation import Operation
 from penta.pagination import (
@@ -18,7 +18,7 @@ from penta.pagination import (
 )
 from penta.testing import TestClient
 
-api = NinjaAPI()
+api = Penta()
 
 
 ITEMS = list(range(100))
@@ -488,14 +488,14 @@ def test_case10_max_page_size():
     ]
 
 
-@override_settings(NINJA_PAGINATION_MAX_LIMIT=1000)
+@override_settings(PENTA_PAGINATION_MAX_LIMIT=1000)
 def test_10_max_limit_set():
     # reload to apply django settings
     from penta import conf, pagination
 
     importlib.reload(conf)
     importlib.reload(pagination)
-    new_api = NinjaAPI()
+    new_api = Penta()
     new_client = TestClient(new_api)
 
     @new_api.get("/items_10", response=List[int])
@@ -535,14 +535,14 @@ def test_10_max_limit_set():
     ]
 
 
-@override_settings(NINJA_PAGINATION_MAX_LIMIT=1000)
+@override_settings(PENTA_PAGINATION_MAX_LIMIT=1000)
 def test_11_max_limit_set_and_exceeded():
     # reload to apply django settings
     from penta import conf, pagination
 
     importlib.reload(conf)
     importlib.reload(pagination)
-    new_api = NinjaAPI()
+    new_api = Penta()
     new_client = TestClient(new_api)
 
     @new_api.get("/items_11", response=List[int])
@@ -584,7 +584,7 @@ def test_config_error_NOT_SET():
 @pytest.mark.skipif(version_info < (3, 11), reason="Not needed at this Python version")
 def test_pagination_works_with_unnamed_classes():
     """
-    This test lets you check that the typing.Any case handled in `ninja.pagination.make_response_paginated`
+    This test lets you check that the typing.Any case handled in `penta.pagination.make_response_paginated`
     works for Python>=3.11, as a typing.Any does possess the __name__ attribute past that version
     """
     operation = Operation("/whatever", ["GET"], lambda: None, response=List[int])

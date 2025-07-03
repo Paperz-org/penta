@@ -2,14 +2,14 @@ import asyncio
 
 import pytest
 
-from penta import NinjaAPI
+from penta import Penta
 from penta.security import APIKeyQuery
 from penta.testing import TestAsyncClient
 
 
 @pytest.mark.asyncio
 async def test_asyncio_operations():
-    api = NinjaAPI()
+    api = Penta()
 
     class KeyQuery(APIKeyQuery):
         def authenticate(self, request, key):

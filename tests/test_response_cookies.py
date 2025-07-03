@@ -1,9 +1,9 @@
 from django.http import HttpResponse
 
-from penta import NinjaAPI
+from penta import Penta
 from penta.testing import TestClient
 
-api = NinjaAPI()
+api = Penta()
 
 
 @api.get("/test-no-cookies")

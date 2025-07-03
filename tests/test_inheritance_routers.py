@@ -1,9 +1,9 @@
 import pytest
 
-from penta import NinjaAPI, Router
+from penta import Penta, Router
 from penta.testing import TestClient
 
-api = NinjaAPI()
+api = Penta()
 
 
 @api.get("/endpoint")

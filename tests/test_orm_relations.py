@@ -1,6 +1,6 @@
 from django.db import models
 
-from penta import NinjaAPI
+from penta import Penta
 from penta.orm import create_schema
 from penta.testing import TestClient
 
@@ -20,7 +20,7 @@ def test_manytomany():
 
     WithM2MSchema = create_schema(ModelWithM2M, exclude=["id"])
 
-    api = NinjaAPI()
+    api = Penta()
 
     @api.post("/bar")
     def post_with_m2m(request, payload: WithM2MSchema):

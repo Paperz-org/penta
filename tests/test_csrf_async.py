@@ -1,7 +1,7 @@
 import pytest
 from django.conf import settings
 
-from penta import NinjaAPI
+from penta import Penta
 from penta.testing import TestAsyncClient as BaseTestAsyncClient
 
 
@@ -18,7 +18,7 @@ COOKIES = {settings.CSRF_COOKIE_NAME: TOKEN}
 
 @pytest.mark.asyncio
 async def test_csrf_off():
-    csrf_OFF = NinjaAPI(urls_namespace="csrf_OFF")
+    csrf_OFF = Penta(urls_namespace="csrf_OFF")
 
     @csrf_OFF.post("/post")
     async def post_off(request):
@@ -31,7 +31,7 @@ async def test_csrf_off():
 
 @pytest.mark.asyncio
 async def test_csrf_on():
-    csrf_ON = NinjaAPI(urls_namespace="csrf_ON", csrf=True)
+    csrf_ON = Penta(urls_namespace="csrf_ON", csrf=True)
 
     @csrf_ON.post("/post")
     async def post_on(request):

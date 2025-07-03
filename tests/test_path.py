@@ -290,9 +290,9 @@ def test_get_path(path, expected_status, expected_response):
         # ("/path/param-django-int-str/42", 200, "42"), # https://github.com/pydantic/pydantic/issues/5993
         ("/path/param-django-int-str/42.5", "Cannot resolve", Exception),
         (
-            "/path/param-django-slug/django-ninja-is-the-best",
+            "/path/param-django-slug/django-penta-is-the-best",
             200,
-            "django-ninja-is-the-best",
+            "django-penta-is-the-best",
         ),
         ("/path/param-django-slug/42.5", "Cannot resolve", Exception),
         (

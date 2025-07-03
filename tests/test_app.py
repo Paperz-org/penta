@@ -6,11 +6,11 @@ from tempfile import NamedTemporaryFile
 import pytest
 from django.http import FileResponse, HttpResponse
 
-from penta import NinjaAPI
+from penta import Penta
 from penta.main import ConfigError
 from penta.testing import TestClient
 
-api = NinjaAPI()
+api = Penta()
 
 client = TestClient(api)
 
@@ -104,8 +104,8 @@ def test_method(method, path, expected_status, expected_data, expected_streaming
 
 def test_validates():
     try:
-        os.environ["NINJA_SKIP_REGISTRY"] = ""
+        os.environ["PENTA_SKIP_REGISTRY"] = ""
         with pytest.raises(ConfigError):
-            _urls = NinjaAPI().urls
+            _urls = Penta().urls
     finally:
-        os.environ["NINJA_SKIP_REGISTRY"] = "yes"
+        os.environ["PENTA_SKIP_REGISTRY"] = "yes"

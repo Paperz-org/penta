@@ -2,10 +2,10 @@ from unittest import mock
 
 import pytest
 
-from penta import NinjaAPI, Router
+from penta import Penta, Router
 from penta.errors import ConfigError
 
-api = NinjaAPI()
+api = Penta()
 router = Router()
 
 
@@ -31,17 +31,17 @@ def test_api_instance():
 
 
 def test_reuse_router_error():
-    test_api = NinjaAPI()
+    test_api = Penta()
     test_router = Router()
     test_api.add_router("/", test_router)
 
     # django debug server can attempt to import the urls twice when errors exist
     # verify we get the correct error reported
-    match = "Router@'/another-path' has already been attached to API NinjaAPI:1.0.0"
+    match = "Router@'/another-path' has already been attached to API Penta:1.0.0"
     with pytest.raises(ConfigError, match=match):
-        with mock.patch("ninja.main._imported_while_running_in_debug_server", False):
+        with mock.patch("penta.main._imported_while_running_in_debug_server", False):
             test_api.add_router("/another-path", test_router)
 
     # The error should be ignored under debug server to allow other errors to be reported
-    with mock.patch("ninja.main._imported_while_running_in_debug_server", True):
+    with mock.patch("penta.main._imported_while_running_in_debug_server", True):
         test_api.add_router("/another-path", test_router)

@@ -3,7 +3,7 @@ from typing import Optional
 import pytest
 from pydantic import Field
 
-from penta import NinjaAPI, Router, Schema
+from penta import Penta, Router, Schema
 from penta.testing import TestClient
 
 
@@ -44,7 +44,7 @@ class SomeResponse(Schema):
 )
 def test_router_defaults(oparg, retdict, assertone, asserttwo):
     """Test that the router level settings work and can be overridden at the op level"""
-    api = NinjaAPI()
+    api = Penta()
     router = Router(**{oparg: True})
     api.add_router("/", router)
 
@@ -55,8 +55,8 @@ def test_router_defaults(oparg, retdict, assertone, asserttwo):
 
     client = TestClient(api)
 
-    assert getattr(func1._ninja_operation, oparg) is True
-    assert getattr(func2._ninja_operation, oparg) is False
+    assert getattr(func1._penta_operation, oparg) is True
+    assert getattr(func2._penta_operation, oparg) is False
 
     assert client.get("/test1").json() == assertone
     assert client.get("/test2").json() == asserttwo

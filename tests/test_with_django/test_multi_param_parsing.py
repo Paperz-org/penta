@@ -6,10 +6,10 @@ import pytest
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import Client as DjangoTestClient
 
-from penta.testing import TestClient as NinjaTestClient
+from penta.testing import TestClient as PentaTestClient
 from tests.demo_project.multi_param.api import router
 
-ninja_client = NinjaTestClient(router)
+penta_client = PentaTestClient(router)
 
 test_file = SimpleUploadedFile("test.txt", b"data123")
 
@@ -116,7 +116,7 @@ def test_validate_test_data():
 
 
 @pytest.mark.parametrize("path, client_args", tuple(test_client_args.items()))
-def test_data_round_trip_with_ninja_client(path, client_args):
+def test_data_round_trip_with_penta_client(path, client_args):
     client_args = test_client_args[path]
     kwargs = {"path": path}
     for k in ("path", "headers", "COOKIES", "POST", "json", "FILES"):
@@ -127,7 +127,7 @@ def test_data_round_trip_with_ninja_client(path, client_args):
     if query:
         kwargs["path"] += f"?{query}"
 
-    response = ninja_client.post(**kwargs)
+    response = penta_client.post(**kwargs)
     assert response.json() == expected_response
     assert response.status_code == 200
 

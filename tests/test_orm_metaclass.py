@@ -34,7 +34,7 @@ def test_simple():
         "required": ["firstname"],
     }
 
-    assert SampleSchema(firstname="ninja", lastname="Django").hello() == "Hello(ninja)"
+    assert SampleSchema(firstname="penta", lastname="Django").hello() == "Hello(penta)"
 
     # checking exclude ----------------------------------------------
     class SampleSchema2(ModelSchema):

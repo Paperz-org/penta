@@ -2,7 +2,7 @@ from unittest.mock import Mock
 
 import pytest
 
-from penta import NinjaAPI
+from penta import Penta
 from penta.errors import AuthorizationError, ConfigError
 from penta.security import (
     APIKeyCookie,
@@ -82,7 +82,7 @@ def demo_operation(request):
     return {"auth": request.auth}
 
 
-api = NinjaAPI(csrf=True)
+api = Penta(csrf=True)
 
 
 @api.exception_handler(CustomException)

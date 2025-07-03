@@ -4,7 +4,7 @@ from typing import Any
 from django.http import HttpRequest
 from typing_extensions import Annotated
 
-from penta import Body, BodyEx, NinjaAPI, P, Schema
+from penta import Body, BodyEx, Penta, P, Schema
 
 
 class Payload(Schema):
@@ -13,7 +13,7 @@ class Payload(Schema):
     s: str
 
 
-api = NinjaAPI()
+api = Penta()
 
 
 @api.post("/old_way")

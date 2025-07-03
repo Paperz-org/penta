@@ -1,6 +1,6 @@
-from penta import NinjaAPI
+from penta import Penta
 
-api = NinjaAPI()
+api = Penta()
 
 
 @api.get("/operation1", operation_id="my_id")

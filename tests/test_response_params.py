@@ -1,9 +1,9 @@
 from typing import Optional
 
-from penta import NinjaAPI, Schema
+from penta import Penta, Schema
 from penta.testing import TestClient
 
-api = NinjaAPI()
+api = Penta()
 
 
 class SomeResponse(Schema):

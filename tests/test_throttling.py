@@ -2,7 +2,7 @@ import pytest
 from django.core.cache import cache
 from django.core.exceptions import ImproperlyConfigured
 
-from penta import NinjaAPI, Router
+from penta import Penta, Router
 from penta.testing import TestAsyncClient, TestClient
 from penta.throttling import (
     AnonRateThrottle,
@@ -22,7 +22,7 @@ def test_global_throttling():
     th = AnonRateThrottle("1/s")
     set_throttle_timer(th, 0)
 
-    api = NinjaAPI(throttle=[th])
+    api = Penta(throttle=[th])
 
     @api.get("/check")
     def check(request):
@@ -48,7 +48,7 @@ def test_router_throttling():
     th = AnonRateThrottle("1/s")
     set_throttle_timer(th, 0)
 
-    api = NinjaAPI()
+    api = Penta()
     router = Router()
 
     @router.get("/check")
@@ -73,7 +73,7 @@ def test_router2_throttling():
     th = AnonRateThrottle("1/s")
     set_throttle_timer(th, 0)
 
-    api = NinjaAPI(throttle=th)
+    api = Penta(throttle=th)
     router = Router()
 
     @router.get("/check")
@@ -97,7 +97,7 @@ def test_operation_throttling():
     th = AnonRateThrottle("1/s")
     set_throttle_timer(th, 0)
 
-    api = NinjaAPI()
+    api = Penta()
 
     @api.get("/check1", throttle=th)
     def check(request):
@@ -119,7 +119,7 @@ async def test_async_throttling():
     th = AnonRateThrottle("1/s")
     set_throttle_timer(th, 0)
 
-    api = NinjaAPI(throttle=th)
+    api = Penta(throttle=th)
 
     @api.get("/check-async")
     async def check(request):
@@ -136,7 +136,7 @@ async def test_async_throttling():
 
 # "Unit tests" for the throttling module
 
-_client = TestClient(NinjaAPI())
+_client = TestClient(Penta())
 
 
 def build_request(addr="8.8.8.8", x_forwarded_for=None):

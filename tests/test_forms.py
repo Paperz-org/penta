@@ -1,10 +1,10 @@
 import pytest
 
-from penta import Form, NinjaAPI, Schema
+from penta import Form, Penta, Schema
 from penta.errors import ConfigError
 from penta.testing import TestClient
 
-api = NinjaAPI()
+api = Penta()
 
 
 @api.post("/form")

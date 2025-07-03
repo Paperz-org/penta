@@ -4,11 +4,11 @@ import pytest
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.utils.datastructures import MultiValueDict
 
-from penta import File, NinjaAPI, UploadedFile
+from penta import File, Penta, UploadedFile
 from penta.errors import ConfigError
 from penta.testing import TestClient
 
-api = NinjaAPI()
+api = Penta()
 
 
 @api.post("/file1")
@@ -137,7 +137,7 @@ def test_invalid_file():
 
 
 def test_files_fix_middleware():
-    api = NinjaAPI()
+    api = Penta()
 
     with pytest.raises(ConfigError):
 

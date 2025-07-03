@@ -2,11 +2,11 @@ from typing import List
 
 import pytest
 
-from penta import NinjaAPI, Schema
+from penta import Penta, Schema
 from penta.pagination import RouterPaginated
 from penta.testing import TestAsyncClient, TestClient
 
-api = NinjaAPI(default_router=RouterPaginated())
+api = Penta(default_router=RouterPaginated())
 
 
 class ItemSchema(Schema):

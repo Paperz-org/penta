@@ -2,7 +2,7 @@ from typing import List
 
 from django.http import HttpRequest, QueryDict
 
-from penta import NinjaAPI
+from penta import Penta
 from penta.parser import Parser
 from penta.testing import TestClient
 
@@ -25,7 +25,7 @@ class MyParser(Parser):
         return result
 
 
-api = NinjaAPI(parser=MyParser())
+api = Penta(parser=MyParser())
 
 
 @api.post("/test")

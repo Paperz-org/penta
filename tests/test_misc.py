@@ -4,7 +4,7 @@ import uuid
 import pytest
 from pydantic import BaseModel
 
-from penta import NinjaAPI
+from penta import Penta
 from penta.constants import NOT_SET
 from penta.signature.details import is_pydantic_model
 from penta.signature.utils import UUIDStrConverter
@@ -21,14 +21,14 @@ def test_is_pydantic_model():
 
 def test_client():
     "covering everything in testclient (including invalid paths)"
-    api = NinjaAPI()
+    api = Penta()
     client = TestClient(api)
     with pytest.raises(Exception):  # noqa: B017
         client.get("/404")
 
 
 def test_kwargs():
-    api = NinjaAPI()
+    api = Penta()
 
     @api.get("/")
     def operation(request, a: str, *args, **kwargs):

@@ -4,7 +4,7 @@ from typing import List, Optional
 
 from pydantic import BaseModel
 
-from penta import NinjaAPI, Query
+from penta import Penta, Query
 from penta.testing import TestClient
 
 
@@ -25,7 +25,7 @@ class Booking(BaseModel):
     room: RoomEnum = RoomEnum.double
 
 
-api = NinjaAPI()
+api = Penta()
 
 
 @api.post("/book")

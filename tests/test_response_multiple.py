@@ -3,12 +3,12 @@ from typing import List, Union
 import pytest
 from pydantic import ValidationError
 
-from penta import NinjaAPI, Schema
+from penta import Penta, Schema
 from penta.errors import ConfigError
 from penta.responses import codes_2xx, codes_3xx
 from penta.testing import TestClient
 
-api = NinjaAPI()
+api = Penta()
 
 
 @api.get("/check_int", response={200: int})

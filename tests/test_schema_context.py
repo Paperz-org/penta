@@ -1,4 +1,4 @@
-from penta import NinjaAPI, Schema
+from penta import Penta, Schema
 from penta.testing import TestClient
 
 
@@ -31,7 +31,7 @@ class DataWithRequestContext(Schema):
         return result
 
 
-api = NinjaAPI()
+api = Penta()
 
 
 @api.post("/resolve_ctx", response=DataWithRequestContext)

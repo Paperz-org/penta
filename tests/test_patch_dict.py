@@ -2,11 +2,11 @@ from typing import Optional
 
 import pytest
 
-from penta import NinjaAPI, Schema
+from penta import Penta, Schema
 from penta.patch_dict import PatchDict
 from penta.testing import TestClient
 
-api = NinjaAPI()
+api = Penta()
 
 client = TestClient(api)
 

@@ -35,7 +35,7 @@ RUN bash /install_env.sh 3.8.3   3.1b1   env-38-31
 RUN bash /install_env.sh 3.9.0b3 3.0     env-39-30
 
 
-COPY ninja /ninja
+COPY penta /penta
 COPY tests /tests
 COPY docs /docs
 

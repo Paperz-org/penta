@@ -4,7 +4,7 @@ import pytest
 from django.utils.encoding import force_str
 from django.utils.xmlutils import SimplerXMLGenerator
 
-from penta import NinjaAPI
+from penta import Penta
 from penta.renderers import BaseRenderer
 from penta.testing import TestClient
 
@@ -60,8 +60,8 @@ def operation(request):
     ]
 
 
-api_xml = NinjaAPI(renderer=XMLRenderer())
-api_csv = NinjaAPI(renderer=CSVRenderer())
+api_xml = Penta(renderer=XMLRenderer())
+api_csv = Penta(renderer=CSVRenderer())
 
 
 api_xml.get("/test")(operation)

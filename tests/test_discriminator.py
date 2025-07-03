@@ -3,7 +3,7 @@ from typing import Union
 from pydantic import Field
 from typing_extensions import Annotated, Literal
 
-from penta import NinjaAPI, Schema
+from penta import Penta, Schema
 from penta.testing import TestClient
 
 
@@ -24,7 +24,7 @@ UnionDiscriminator = Annotated[Union[Example1, Example2], Field(discriminator="l
 RegularUnion = Union[Example1, Example2]
 
 
-api = NinjaAPI()
+api = Penta()
 
 
 @api.post("/descr-union")

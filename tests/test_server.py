@@ -1,10 +1,10 @@
-from penta import NinjaAPI
+from penta import Penta
 
 
 class TestServer:
     def test_server_basic(self):
         server = {"url": "http://example.com"}
-        api = NinjaAPI(servers=[server])
+        api = Penta(servers=[server])
         schema = api.get_openapi_schema()
 
         schema_server = schema["servers"]
@@ -15,7 +15,7 @@ class TestServer:
             "url": "http://example.com",
             "description": "this is the example server",
         }
-        api = NinjaAPI(servers=[server])
+        api = Penta(servers=[server])
         schema = api.get_openapi_schema()
 
         schema_server = schema["servers"]
@@ -31,7 +31,7 @@ class TestServer:
             "description": "this is the example server 2",
         }
         servers = [server_1, server_2]
-        api = NinjaAPI(servers=servers)
+        api = Penta(servers=servers)
         schema = api.get_openapi_schema()
 
         schema_server = schema["servers"]

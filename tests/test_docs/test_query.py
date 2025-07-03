@@ -1,11 +1,11 @@
 from unittest.mock import patch
 
-from penta import NinjaAPI
+from penta import Penta
 from penta.testing import TestClient
 
 
 def test_examples():
-    api = NinjaAPI()
+    api = Penta()
 
     with patch("builtins.api", api, create=True):
         import docs.src.tutorial.query.code01  # noqa: F401
@@ -17,7 +17,7 @@ def test_examples():
 
         # Defaults
         assert client.get("/weapons").json() == [
-            "Ninjato",
+            "Penta",
             "Shuriken",
             "Katana",
             "Kama",
@@ -27,7 +27,7 @@ def test_examples():
         ]
 
         assert client.get("/weapons?offset=0&limit=3").json() == [
-            "Ninjato",
+            "Penta",
             "Shuriken",
             "Katana",
         ]

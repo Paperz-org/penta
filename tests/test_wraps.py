@@ -61,7 +61,7 @@ def get_text_bad(request):
     return "Hello World"
 
 
-with mock.patch("ninja.signature.details.warnings.warn_explicit"):
+with mock.patch("penta.signature.details.warnings.warn_explicit"):
 
     @router.get("/path-bad/{item_id}")
     @a_bad_test_wrapper
@@ -75,7 +75,7 @@ def get_query_type_bad(request, query: int):
     return f"foo bar {query}"
 
 
-with mock.patch("ninja.signature.details.warnings.warn_explicit"):
+with mock.patch("penta.signature.details.warnings.warn_explicit"):
 
     @router.get("/path-query-bad/{item_id}")
     @a_bad_test_wrapper

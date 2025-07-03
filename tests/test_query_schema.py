@@ -3,7 +3,7 @@ from enum import IntEnum
 
 from pydantic import Field
 
-from penta import NinjaAPI, Query, Schema
+from penta import Penta, Query, Schema
 
 
 class Range(IntEnum):
@@ -23,7 +23,7 @@ class Data(Schema):
     a_float: float = Field(alias="float", default=1.5)
 
 
-api = NinjaAPI()
+api = Penta()
 
 
 @api.get("/test")

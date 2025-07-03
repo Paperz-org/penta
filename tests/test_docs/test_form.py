@@ -3,12 +3,12 @@ from unittest.mock import patch
 
 import pytest
 
-from penta import NinjaAPI
+from penta import Penta
 from penta.testing import TestClient
 
 
 def test_examples():
-    api = NinjaAPI()
+    api = Penta()
 
     with patch("builtins.api", api, create=True):
         import docs.src.tutorial.form.code01  # noqa: F401
@@ -41,7 +41,7 @@ def test_examples():
 
 @pytest.mark.skipif(sys.version_info[:2] < (3, 9), reason="requires py3.9+")
 def test_examples_extra():
-    api = NinjaAPI()
+    api = Penta()
 
     with patch("builtins.api", api, create=True):
         import docs.src.tutorial.form.code03  # noqa: F401

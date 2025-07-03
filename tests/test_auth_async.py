@@ -2,14 +2,14 @@ import asyncio
 
 import pytest
 
-from penta import NinjaAPI
+from penta import Penta
 from penta.security import APIKeyQuery, HttpBearer
 from penta.testing import TestAsyncClient, TestClient
 
 
 @pytest.mark.asyncio
 async def test_async_view_handles_async_auth_func():
-    api = NinjaAPI()
+    api = Penta()
 
     async def auth(request):
         key = request.GET.get("key")
@@ -36,7 +36,7 @@ async def test_async_view_handles_async_auth_func():
 
 @pytest.mark.asyncio
 async def test_async_view_handles_async_auth_cls():
-    api = NinjaAPI()
+    api = Penta()
 
     class Auth:
         async def __call__(self, request):
@@ -64,7 +64,7 @@ async def test_async_view_handles_async_auth_cls():
 
 @pytest.mark.asyncio
 async def test_async_view_handles_multi_auth():
-    api = NinjaAPI()
+    api = Penta()
 
     def auth_1(request):
         return None
@@ -90,7 +90,7 @@ async def test_async_view_handles_multi_auth():
 
 @pytest.mark.asyncio
 async def test_async_view_handles_auth_errors():
-    api = NinjaAPI()
+    api = Penta()
 
     async def auth(request):
         raise Exception("boom")
@@ -118,7 +118,7 @@ async def test_sync_authenticate_method():
             if key == "secret":
                 return key
 
-    api = NinjaAPI(auth=KeyAuth())
+    api = Penta(auth=KeyAuth())
 
     @api.get("/async")
     async def async_view(request):
@@ -140,7 +140,7 @@ def test_async_authenticate_method_in_sync_context():
             if key == "secret":
                 return key
 
-    api = NinjaAPI(auth=KeyAuth())
+    api = Penta(auth=KeyAuth())
 
     @api.get("/sync")
     def sync_view(request):
@@ -163,7 +163,7 @@ async def test_async_with_bearer():
             if key == "secret":
                 return key
 
-    api = NinjaAPI(auth=BearerAuth())
+    api = Penta(auth=BearerAuth())
 
     @api.get("/async")
     async def async_view(request):
