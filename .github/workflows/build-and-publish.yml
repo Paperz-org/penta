@@ -28,7 +28,7 @@ jobs:
     uses: ./.github/workflows/publish.yml
     with:
       environment-name: testpypi
-      environment-url: https://test.pypi.org/p/unchained
+      environment-url: https://test.pypi.org/p/penta
       version: ${{ needs.build.outputs.version }}
     secrets: inherit
 
@@ -39,6 +39,6 @@ jobs:
     uses: ./.github/workflows/publish.yml
     with:
       environment-name: pypi
-      environment-url: https://pypi.org/p/unchained
+      environment-url: https://pypi.org/p/penta
       version: ${{ needs.build.outputs.version }}
     secrets: inherit

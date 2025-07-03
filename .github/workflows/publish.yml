@@ -15,8 +15,8 @@ on:
         required: true
         type: choice
         options:
-          - https://pypi.org/p/unchained
-          - https://test.pypi.org/p/unchained
+          - https://pypi.org/p/penta
+          - https://test.pypi.org/p/penta
       version:
         description: 'The version of the package'
         required: true
