@@ -1,5 +1,5 @@
-from ninja import NinjaAPI
-from ninja.security import django_auth
+from penta import NinjaAPI
+from penta.security import django_auth
 
 api = NinjaAPI(csrf=True)
 

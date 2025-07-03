@@ -4,9 +4,9 @@ from django.conf import settings
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
 
-from ninja import NinjaAPI
-from ninja.security import APIKeyCookie, APIKeyHeader, django_auth
-from ninja.testing import TestClient as BaseTestClient
+from penta import NinjaAPI
+from penta.security import APIKeyCookie, APIKeyHeader, django_auth
+from penta.testing import TestClient as BaseTestClient
 
 
 class TestClient(BaseTestClient):

@@ -1,8 +1,8 @@
 import pytest
 from django.conf import settings
 
-from ninja import NinjaAPI
-from ninja.testing import TestAsyncClient as BaseTestAsyncClient
+from penta import NinjaAPI
+from penta.testing import TestAsyncClient as BaseTestAsyncClient
 
 
 class TestAsyncClient(BaseTestAsyncClient):

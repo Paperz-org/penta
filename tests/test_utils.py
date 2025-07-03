@@ -1,7 +1,7 @@
 import pytest
 
-from ninja import NinjaAPI, Query
-from ninja.utils import contribute_operation_args, replace_path_param_notation
+from penta import NinjaAPI, Query
+from penta.utils import contribute_operation_args, replace_path_param_notation
 
 
 @pytest.mark.parametrize(

@@ -8,9 +8,9 @@ from django.db import models
 from django.db.models import Manager
 from util import pydantic_ref_fix
 
-from ninja.errors import ConfigError
-from ninja.orm import create_schema, register_field
-from ninja.orm.shortcuts import L, S
+from penta.errors import ConfigError
+from penta.orm import create_schema, register_field
+from penta.orm.shortcuts import L, S
 
 
 def test_inheritance():
@@ -529,8 +529,8 @@ def test_custom_fields():
 def test_duplicate_schema_names():
     from django.db import models
 
-    from ninja import Schema
-    from ninja.orm import create_schema
+    from penta import Schema
+    from penta.orm import create_schema
 
     class TestModelDuplicate(models.Model):
         field1 = models.CharField()

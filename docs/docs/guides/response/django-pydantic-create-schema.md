@@ -24,7 +24,7 @@ Take this example:
 
 ```python hl_lines="2 4"
 from django.contrib.auth.models import User
-from ninja.orm import create_schema
+from penta.orm import create_schema
 
 UserSchema = create_schema(User)
 

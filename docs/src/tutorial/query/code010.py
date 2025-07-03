@@ -3,7 +3,7 @@ from typing import List
 
 from pydantic import Field
 
-from ninja import Query, Schema
+from penta import Query, Schema
 
 
 class Filters(Schema):

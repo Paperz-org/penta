@@ -2,8 +2,8 @@ from unittest import mock
 
 import pytest
 
-from ninja import NinjaAPI, Router
-from ninja.errors import ConfigError
+from penta import NinjaAPI, Router
+from penta.errors import ConfigError
 
 api = NinjaAPI()
 router = Router()

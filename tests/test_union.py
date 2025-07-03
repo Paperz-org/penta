@@ -4,7 +4,7 @@
 # from typing import Union
 
 # from ninja import Router
-# from ninja.testing import TestClient
+# from penta.testing import TestClient
 
 # router = Router()
 

@@ -18,7 +18,7 @@ Let's create our custom YAML parser:
 import yaml
 from typing import List
 from ninja import NinjaAPI
-from ninja.parser import Parser
+from penta.parser import Parser
 
 
 class MyYamlParser(Parser):
@@ -80,7 +80,7 @@ Parser code:
 ```python hl_lines="1 8 9"
 import orjson
 from ninja import NinjaAPI
-from ninja.parser import Parser
+from penta.parser import Parser
 
 
 class ORJSONParser(Parser):

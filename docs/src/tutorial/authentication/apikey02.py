@@ -1,4 +1,4 @@
-from ninja.security import APIKeyHeader
+from penta.security import APIKeyHeader
 
 
 class ApiKey(APIKeyHeader):

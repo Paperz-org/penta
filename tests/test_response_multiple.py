@@ -3,10 +3,10 @@ from typing import List, Union
 import pytest
 from pydantic import ValidationError
 
-from ninja import NinjaAPI, Schema
-from ninja.errors import ConfigError
-from ninja.responses import codes_2xx, codes_3xx
-from ninja.testing import TestClient
+from penta import NinjaAPI, Schema
+from penta.errors import ConfigError
+from penta.responses import codes_2xx, codes_3xx
+from penta.testing import TestClient
 
 api = NinjaAPI()
 

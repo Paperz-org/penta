@@ -1,8 +1,8 @@
 from django.conf import settings
 from django.test import override_settings
 
-from ninja import NinjaAPI, Redoc, Swagger
-from ninja.testing import TestClient
+from penta import NinjaAPI, Redoc, Swagger
+from penta.testing import TestClient
 
 NO_NINJA_INSTALLED_APPS = [i for i in settings.INSTALLED_APPS if i != "ninja"]
 

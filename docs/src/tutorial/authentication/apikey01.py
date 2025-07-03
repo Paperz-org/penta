@@ -1,4 +1,4 @@
-from ninja.security import APIKeyQuery
+from penta.security import APIKeyQuery
 from someapp.models import Client
 
 

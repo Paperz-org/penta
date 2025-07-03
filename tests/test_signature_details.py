@@ -3,7 +3,7 @@ from sys import version_info
 
 import pytest
 
-from ninja.signature.details import is_collection_type
+from penta.signature.details import is_collection_type
 
 
 @pytest.mark.parametrize(

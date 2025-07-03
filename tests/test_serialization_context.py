@@ -3,9 +3,9 @@ from unittest import mock
 import pytest
 from pydantic import model_serializer
 
-from ninja import Router, Schema
-from ninja.schema import pydantic_version
-from ninja.testing import TestClient
+from penta import Router, Schema
+from penta.schema import pydantic_version
+from penta.testing import TestClient
 
 
 def api_endpoint_test(request):

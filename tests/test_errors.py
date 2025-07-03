@@ -1,6 +1,6 @@
 import pickle
 
-from ninja.errors import HttpError, ValidationError
+from penta.errors import HttpError, ValidationError
 
 
 def test_validation_error_is_picklable_and_unpicklable():

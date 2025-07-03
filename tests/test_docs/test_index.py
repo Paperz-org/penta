@@ -1,5 +1,5 @@
 from docs.src.index001 import api
-from ninja.testing import TestClient
+from penta.testing import TestClient
 
 client = TestClient(api)
 

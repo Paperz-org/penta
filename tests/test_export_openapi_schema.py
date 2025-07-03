@@ -8,7 +8,7 @@ import pytest
 from django.core.management import call_command
 from django.core.management.base import CommandError
 
-from ninja.management.commands.export_openapi_schema import Command as ExportCmd
+from penta.management.commands.export_openapi_schema import Command as ExportCmd
 
 
 def test_export_default():

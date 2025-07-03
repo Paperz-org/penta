@@ -3,8 +3,8 @@ from typing import Optional
 import pytest
 from pydantic import Field
 
-from ninja import NinjaAPI, Router, Schema
-from ninja.testing import TestClient
+from penta import NinjaAPI, Router, Schema
+from penta.testing import TestClient
 
 
 class SomeResponse(Schema):

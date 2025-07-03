@@ -3,8 +3,8 @@ from typing import Optional
 import pytest
 from pydantic import ConfigDict
 
-from ninja import Body, Cookie, Header, Router, Schema
-from ninja.testing import TestClient
+from penta import Body, Cookie, Header, Router, Schema
+from penta.testing import TestClient
 
 
 class OptionalEmptySchema(Schema):

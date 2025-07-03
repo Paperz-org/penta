@@ -3,9 +3,9 @@ from typing import Any, Dict, List
 import pytest
 from pydantic import field_validator
 
-from ninja import Body, Form, NinjaAPI, Schema
-from ninja.errors import ConfigError, ValidationError, ValidationErrorContext
-from ninja.testing import TestClient
+from penta import Body, Form, NinjaAPI, Schema
+from penta.errors import ConfigError, ValidationError, ValidationErrorContext
+from penta.testing import TestClient
 
 api = NinjaAPI()
 

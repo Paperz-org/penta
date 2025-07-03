@@ -6,7 +6,7 @@ import pytest
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import Client as DjangoTestClient
 
-from ninja.testing import TestClient as NinjaTestClient
+from penta.testing import TestClient as NinjaTestClient
 from tests.demo_project.multi_param.api import router
 
 ninja_client = NinjaTestClient(router)

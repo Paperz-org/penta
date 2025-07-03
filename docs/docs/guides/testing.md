@@ -22,7 +22,7 @@ api.add_router("", router)
 You can use the Django test class:
 ```python
 from django.test import TestCase
-from ninja.testing import TestClient
+from penta.testing import TestClient
 
 class HelloTest(TestCase):
     def test_hello(self):
@@ -79,7 +79,7 @@ It is also possible to specify a User for the request:
 To test operations in async context use `TestAsyncClient`:
 
 ```python
-from ninja.testing import TestAsyncClient
+from penta.testing import TestAsyncClient
 
 client = TestAsyncClient(router)
 response = await client.post("/test/")

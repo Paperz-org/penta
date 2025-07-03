@@ -3,7 +3,7 @@ from uuid import UUID
 
 from django.urls import register_converter
 
-from ninja import Field, Path, Query, Router, Schema
+from penta import Field, Path, Query, Router, Schema
 
 router = Router()
 

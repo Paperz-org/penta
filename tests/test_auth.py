@@ -2,9 +2,9 @@ from unittest.mock import Mock
 
 import pytest
 
-from ninja import NinjaAPI
-from ninja.errors import AuthorizationError, ConfigError
-from ninja.security import (
+from penta import NinjaAPI
+from penta.errors import AuthorizationError, ConfigError
+from penta.security import (
     APIKeyCookie,
     APIKeyHeader,
     APIKeyQuery,
@@ -14,8 +14,8 @@ from ninja.security import (
     django_auth_is_staff,
     django_auth_superuser,
 )
-from ninja.security.base import AuthBase
-from ninja.testing import TestClient
+from penta.security.base import AuthBase
+from penta.testing import TestClient
 
 
 def callable_auth(request):

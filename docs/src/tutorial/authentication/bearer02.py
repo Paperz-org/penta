@@ -1,5 +1,5 @@
-from ninja import NinjaAPI
-from ninja.security import HttpBearer
+from penta import NinjaAPI
+from penta.security import HttpBearer
 
 api = NinjaAPI()
 

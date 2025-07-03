@@ -1,4 +1,4 @@
-from ninja import Form, Schema
+from penta import Form, Schema
 from typing import Annotated, TypeVar
 from pydantic import WrapValidator
 from pydantic_core import PydanticUseDefault

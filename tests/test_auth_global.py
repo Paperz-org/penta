@@ -1,6 +1,6 @@
-from ninja import NinjaAPI, Router
-from ninja.security import APIKeyQuery
-from ninja.testing import TestClient
+from penta import NinjaAPI, Router
+from penta.security import APIKeyQuery
+from penta.testing import TestClient
 
 
 class KeyQuery1(APIKeyQuery):

@@ -1,4 +1,4 @@
-from ninja import NinjaAPI
+from penta import NinjaAPI
 
 api = NinjaAPI()
 

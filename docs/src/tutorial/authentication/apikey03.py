@@ -1,4 +1,4 @@
-from ninja.security import APIKeyCookie
+from penta.security import APIKeyCookie
 
 
 class CookieKey(APIKeyCookie):

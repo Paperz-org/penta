@@ -6,9 +6,9 @@ from tempfile import NamedTemporaryFile
 import pytest
 from django.http import FileResponse, HttpResponse
 
-from ninja import NinjaAPI
-from ninja.main import ConfigError
-from ninja.testing import TestClient
+from penta import NinjaAPI
+from penta.main import ConfigError
+from penta.testing import TestClient
 
 api = NinjaAPI()
 

@@ -194,7 +194,7 @@ This example does not work.
 Now django ninja introduces a decorator decorate_view that allows inject decorators that work with http response:
 
 ```python hl_lines="1 4"
-from ninja.decorators import decorate_view
+from penta.decorators import decorate_view
 
 @api.get("/test")
 @decorate_view(cache_page(5))

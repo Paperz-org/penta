@@ -3,8 +3,8 @@ from unittest import mock
 
 import pytest
 
-from ninja import Router
-from ninja.testing import TestClient
+from penta import Router
+from penta.testing import TestClient
 
 router = Router()
 client = TestClient(router)

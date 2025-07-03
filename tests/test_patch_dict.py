@@ -2,9 +2,9 @@ from typing import Optional
 
 import pytest
 
-from ninja import NinjaAPI, Schema
-from ninja.patch_dict import PatchDict
-from ninja.testing import TestClient
+from penta import NinjaAPI, Schema
+from penta.patch_dict import PatchDict
+from penta.testing import TestClient
 
 api = NinjaAPI()
 

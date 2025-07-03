@@ -141,7 +141,7 @@ class MyModel(models.Modle):
     embedding = pgvector.VectorField()
 
 # schemas.py
-from ninja.orm import register_field
+from penta.orm import register_field
 
 register_field('VectorField', list[float])
 

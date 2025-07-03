@@ -12,7 +12,7 @@ The core concept is that when you describe an API operation, you can define an a
 
 In this example, the client will only be able to call the `pets` method if it uses Django session authentication (the default is cookie based), otherwise an HTTP-401 error will be returned.
 
-If you need to authorize only a superuser, you can use `from ninja.security import django_auth_superuser` instead.
+If you need to authorize only a superuser, you can use `from penta.security import django_auth_superuser` instead.
 
 ## Automatic OpenAPI schema
 
@@ -43,7 +43,7 @@ In case you need to secure **all** methods of your API, you can pass the `auth` 
 
 ```python hl_lines="11 19"
 from ninja import NinjaAPI, Form
-from ninja.security import HttpBearer
+from penta.security import HttpBearer
 
 
 class GlobalAuth(HttpBearer):
@@ -135,7 +135,7 @@ Note: **`param_name`** is the name of the GET parameter that will be checked for
 Uses Django's default session authentication - authenticates any logged-in user:
 
 ```python
-from ninja.security import SessionAuth
+from penta.security import SessionAuth
 
 @api.get("/protected", auth=SessionAuth())
 def protected_view(request):
@@ -147,7 +147,7 @@ def protected_view(request):
 Authenticates only users with superuser privileges:
 
 ```python
-from ninja.security import SessionAuthSuperUser
+from penta.security import SessionAuthSuperUser
 
 @api.get("/admin-only", auth=SessionAuthSuperUser())
 def admin_view(request):
@@ -159,7 +159,7 @@ def admin_view(request):
 Authenticates users who are either superusers or staff members:
 
 ```python
-from ninja.security import SessionAuthIsStaff
+from penta.security import SessionAuthIsStaff
 
 @api.get("/staff-area", auth=SessionAuthIsStaff())
 def staff_view(request):

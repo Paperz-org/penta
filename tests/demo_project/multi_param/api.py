@@ -1,6 +1,6 @@
 """Test App to use with Swagger UI and in unit tests"""
 
-from ninja import (
+from penta import (
     Body,
     Cookie,
     Field,

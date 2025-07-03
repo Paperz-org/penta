@@ -6,7 +6,7 @@
 To apply pagination to a function - just apply `paginate` decorator:
 
 ```python hl_lines="1 4"
-from ninja.pagination import paginate
+from penta.pagination import paginate
 
 @api.get('/users', response=List[UserSchema])
 @paginate
@@ -33,7 +33,7 @@ by default limit is set to `100` (you can change it in your settings.py using `N
 This is the default pagination class (You can change it in your settings.py using `NINJA_PAGINATION_CLASS` path to a class)
 
 ```python hl_lines="1 4"
-from ninja.pagination import paginate, LimitOffsetPagination
+from penta.pagination import paginate, LimitOffsetPagination
 
 @api.get('/users', response=List[UserSchema])
 @paginate(LimitOffsetPagination)
@@ -54,7 +54,7 @@ this class has two input parameters:
 
 ### PageNumberPagination
 ```python hl_lines="1 4"
-from ninja.pagination import paginate, PageNumberPagination
+from penta.pagination import paginate, PageNumberPagination
 
 @api.get('/users', response=List[UserSchema])
 @paginate(PageNumberPagination)
@@ -118,7 +118,7 @@ To create a custom pagination class you should subclass `ninja.pagination.Pagina
 Example:
 
 ```python hl_lines="7 11 16 26"
-from ninja.pagination import paginate, PaginationBase
+from penta.pagination import paginate, PaginationBase
 from ninja import Schema
 
 
@@ -183,7 +183,7 @@ There is often a case when you need to add pagination to all views that returns 
 You can use a builtin router class (`RouterPaginated`) that automatically injects pagination to all operations that defined `response=List[SomeSchema]`:
 
 ```python hl_lines="1 3 6 10"
-from ninja.pagination import RouterPaginated
+from penta.pagination import RouterPaginated
 
 router = RouterPaginated()
 

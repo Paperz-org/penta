@@ -1,10 +1,10 @@
 from functools import wraps
 from typing import List
 
-from ninja import NinjaAPI
-from ninja.decorators import decorate_view
-from ninja.pagination import paginate
-from ninja.testing import TestClient
+from penta import NinjaAPI
+from penta.decorators import decorate_view
+from penta.pagination import paginate
+from penta.testing import TestClient
 
 
 def some_decorator(view_func):

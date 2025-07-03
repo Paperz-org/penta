@@ -1,5 +1,5 @@
 from typing import Optional
-from ninja import Schema
+from penta import Schema
 
 
 class Item(Schema):

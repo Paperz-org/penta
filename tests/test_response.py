@@ -8,9 +8,9 @@ from django.http import HttpResponse
 from pydantic import BaseModel, ValidationError
 from pydantic_core import Url
 
-from ninja import Router
-from ninja.responses import Response
-from ninja.testing import TestClient
+from penta import Router
+from penta.responses import Response
+from penta.testing import TestClient
 
 router = Router()
 

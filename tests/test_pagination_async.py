@@ -6,15 +6,15 @@ import pytest
 from django.db.models import QuerySet
 from someapp.models import Category
 
-from ninja import NinjaAPI, Schema
-from ninja.errors import ConfigError
-from ninja.pagination import (
+from penta import NinjaAPI, Schema
+from penta.errors import ConfigError
+from penta.pagination import (
     AsyncPaginationBase,
     PageNumberPagination,
     PaginationBase,
     paginate,
 )
-from ninja.testing import TestAsyncClient
+from penta.testing import TestAsyncClient
 
 api = NinjaAPI()
 

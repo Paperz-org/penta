@@ -1,4 +1,4 @@
-from ninja.conf import settings
+from penta.conf import settings
 
 
 def test_default_configuration():

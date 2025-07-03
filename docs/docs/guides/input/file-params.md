@@ -4,7 +4,7 @@ Handling files are no different from other parameters.
 
 ```python hl_lines="1 2 5"
 from ninja import NinjaAPI, File
-from ninja.files import UploadedFile
+from penta.files import UploadedFile
 
 @api.post("/upload")
 def upload(request, file: File[UploadedFile]):
@@ -33,7 +33,7 @@ To **upload several files** at the same time, just declare a `List` of `Uploaded
 ```python hl_lines="1 6"
 from typing import List
 from ninja import NinjaAPI, File
-from ninja.files import UploadedFile
+from penta.files import UploadedFile
 
 @api.post("/upload-many")
 def upload_many(request, files: File[List[UploadedFile]]):

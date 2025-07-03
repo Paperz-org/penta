@@ -6,10 +6,10 @@ import pytest
 from django.contrib.admin.views.decorators import staff_member_required
 from django.test import Client, override_settings
 
-from ninja import Body, Field, File, Form, NinjaAPI, Query, Schema, UploadedFile
-from ninja.openapi.urls import get_openapi_urls
-from ninja.pagination import PaginationBase, paginate
-from ninja.renderers import JSONRenderer
+from penta import Body, Field, File, Form, NinjaAPI, Query, Schema, UploadedFile
+from penta.openapi.urls import get_openapi_urls
+from penta.pagination import PaginationBase, paginate
+from penta.renderers import JSONRenderer
 
 api = NinjaAPI()
 

@@ -4,8 +4,8 @@ import pytest
 from django.http import QueryDict  # noqa
 from pydantic import BaseModel, Field, conlist
 
-from ninja import Body, Form, Query, Router, Schema
-from ninja.testing import TestClient
+from penta import Body, Form, Query, Router, Schema
+from penta.testing import TestClient
 
 router = Router()
 

@@ -2,9 +2,9 @@ from typing import List
 
 from django.http import HttpRequest, QueryDict
 
-from ninja import NinjaAPI
-from ninja.parser import Parser
-from ninja.testing import TestClient
+from penta import NinjaAPI
+from penta.parser import Parser
+from penta.testing import TestClient
 
 
 class MyParser(Parser):

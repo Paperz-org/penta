@@ -2,9 +2,9 @@ import asyncio
 
 import pytest
 
-from ninja import NinjaAPI
-from ninja.security import APIKeyQuery, HttpBearer
-from ninja.testing import TestAsyncClient, TestClient
+from penta import NinjaAPI
+from penta.security import APIKeyQuery, HttpBearer
+from penta.testing import TestAsyncClient, TestClient
 
 
 @pytest.mark.asyncio

@@ -2,9 +2,9 @@ from typing import List
 
 import pytest
 
-from ninja import NinjaAPI, Schema
-from ninja.pagination import RouterPaginated
-from ninja.testing import TestAsyncClient, TestClient
+from penta import NinjaAPI, Schema
+from penta.pagination import RouterPaginated
+from penta.testing import TestAsyncClient, TestClient
 
 api = NinjaAPI(default_router=RouterPaginated())
 

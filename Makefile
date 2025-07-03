@@ -6,7 +6,7 @@ help:
 
 .PHONY: install
 install: ## Install dependencies
-	flit install --deps develop --symlink
+	uv pip install -e ".[test,doc,dev]"
 
 .PHONY: lint
 lint: ## Run code linters

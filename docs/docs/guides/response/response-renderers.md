@@ -9,7 +9,7 @@ To create your own renderer, you need to inherit `ninja.renderers.BaseRenderer` 
 
 ```python hl_lines="5 8 9"
 from ninja import NinjaAPI
-from ninja.renderers import BaseRenderer
+from penta.renderers import BaseRenderer
 
 
 class MyRenderer(BaseRenderer):
@@ -40,7 +40,7 @@ Here's an example renderer class that uses `orjson`:
 ```python hl_lines="9 10"
 import orjson
 from ninja import NinjaAPI
-from ninja.renderers import BaseRenderer
+from penta.renderers import BaseRenderer
 
 
 class ORJSONRenderer(BaseRenderer):
@@ -65,7 +65,7 @@ from io import StringIO
 from django.utils.encoding import force_str
 from django.utils.xmlutils import SimplerXMLGenerator
 from ninja import NinjaAPI
-from ninja.renderers import BaseRenderer
+from penta.renderers import BaseRenderer
 
 
 class XMLRenderer(BaseRenderer):

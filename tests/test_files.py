@@ -4,9 +4,9 @@ import pytest
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.utils.datastructures import MultiValueDict
 
-from ninja import File, NinjaAPI, UploadedFile
-from ninja.errors import ConfigError
-from ninja.testing import TestClient
+from penta import File, NinjaAPI, UploadedFile
+from penta.errors import ConfigError
+from penta.testing import TestClient
 
 api = NinjaAPI()
 

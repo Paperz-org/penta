@@ -5,7 +5,7 @@ from django.core.exceptions import ImproperlyConfigured
 from django.db.models import Q, QuerySet
 from pydantic import Field
 
-from ninja import FilterSchema
+from penta import FilterSchema
 
 
 class FakeQS(QuerySet):

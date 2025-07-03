@@ -1,8 +1,8 @@
 import pytest
 
-from ninja import Form, NinjaAPI, Schema
-from ninja.errors import ConfigError
-from ninja.testing import TestClient
+from penta import Form, NinjaAPI, Schema
+from penta.errors import ConfigError
+from penta.testing import TestClient
 
 api = NinjaAPI()
 

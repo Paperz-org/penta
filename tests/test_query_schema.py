@@ -3,7 +3,7 @@ from enum import IntEnum
 
 from pydantic import Field
 
-from ninja import NinjaAPI, Query, Schema
+from penta import NinjaAPI, Query, Schema
 
 
 class Range(IntEnum):
@@ -131,7 +131,7 @@ def test_schema_all_of_no_ref():
     }
     definitions = {"Type": {"title": "Best Type Ever!"}}
 
-    from ninja.openapi.schema import resolve_allOf
+    from penta.openapi.schema import resolve_allOf
 
     resolve_allOf(details, definitions)
 

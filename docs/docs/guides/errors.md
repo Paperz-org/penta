@@ -98,7 +98,7 @@ Requests that fail validation raise `ninja.errors.ValidationError` (not to be co
 You can change this behavior by overriding the default handler for `ValidationError`s:
 
 ```python hl_lines="1 4"
-from ninja.errors import ValidationError
+from penta.errors import ValidationError
 ...
 
 @api.exception_handler(ValidationError)
@@ -110,7 +110,7 @@ If you need even more control over validation errors (for example, if you need t
 the model that failed validation), you can supply your own `validation_error_from_error_contexts` in a `NinjaAPI` subclass:
 
 ```python hl_lines="4"
-from ninja.errors import ValidationError, ValidationErrorContext
+from penta.errors import ValidationError, ValidationErrorContext
 from typing import Any, Dict, List
 
 class CustomNinjaAPI(NinjaAPI):
@@ -143,7 +143,7 @@ As an alternative to custom exceptions and writing handlers for it - you can as 
 
 
 ```python
-from ninja.errors import HttpError
+from penta.errors import HttpError
 
 @api.get("/some/resource")
 def some_operation(request):

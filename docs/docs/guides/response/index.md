@@ -306,7 +306,7 @@ To avoid this duplication you can use multiple response codes for a schema:
 
 ```python hl_lines="2 5 8 10"
 ...
-from ninja.responses import codes_4xx
+from penta.responses import codes_4xx
 
 
 @api.post('/login', response={200: Token, codes_4xx: Message})
@@ -321,11 +321,11 @@ def login(request, payload: Auth):
 **Django Ninja** comes with the following HTTP codes:
 
 ```python
-from ninja.responses import codes_1xx
-from ninja.responses import codes_2xx
-from ninja.responses import codes_3xx
-from ninja.responses import codes_4xx
-from ninja.responses import codes_5xx
+from penta.responses import codes_1xx
+from penta.responses import codes_2xx
+from penta.responses import codes_3xx
+from penta.responses import codes_4xx
+from penta.responses import codes_5xx
 ```
 
 You can also create your own range using a `frozenset`:

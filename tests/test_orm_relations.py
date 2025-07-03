@@ -1,8 +1,8 @@
 from django.db import models
 
-from ninja import NinjaAPI
-from ninja.orm import create_schema
-from ninja.testing import TestClient
+from penta import NinjaAPI
+from penta.orm import create_schema
+from penta.testing import TestClient
 
 
 def test_manytomany():

@@ -4,11 +4,11 @@ import uuid
 import pytest
 from pydantic import BaseModel
 
-from ninja import NinjaAPI
-from ninja.constants import NOT_SET
-from ninja.signature.details import is_pydantic_model
-from ninja.signature.utils import UUIDStrConverter
-from ninja.testing import TestClient
+from penta import NinjaAPI
+from penta.constants import NOT_SET
+from penta.signature.details import is_pydantic_model
+from penta.signature.utils import UUIDStrConverter
+from penta.testing import TestClient
 
 
 def test_is_pydantic_model():

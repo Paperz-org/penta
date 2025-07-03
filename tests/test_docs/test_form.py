@@ -3,8 +3,8 @@ from unittest.mock import patch
 
 import pytest
 
-from ninja import NinjaAPI
-from ninja.testing import TestClient
+from penta import NinjaAPI
+from penta.testing import TestClient
 
 
 def test_examples():

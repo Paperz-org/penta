@@ -1,8 +1,8 @@
 import pytest
 from django.db import models
 
-from ninja import ModelSchema
-from ninja.errors import ConfigError
+from penta import ModelSchema
+from penta.errors import ConfigError
 
 
 def test_simple():

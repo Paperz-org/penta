@@ -5,7 +5,7 @@ import pytest
 from django.db import models
 from pydantic import BaseModel, ValidationError
 
-from ninja import ModelSchema, Schema
+from penta import ModelSchema, Schema
 
 
 class OptModel(BaseModel):

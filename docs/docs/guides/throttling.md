@@ -28,7 +28,7 @@ The following units are supported:
 The following example will limit unauthenticated users to only 10 requests per second, while authenticated can make 100/s
 
 ```Python
-from ninja.throttling import AnonRateThrottle, AuthRateThrottle
+from penta.throttling import AnonRateThrottle, AuthRateThrottle
 
 api = NinjaAPI(
     throttle=[
@@ -64,7 +64,7 @@ router = Router(..., throttle=[AnonRateThrottle('1000/h')])
 If `throttle` argument is passed to operation - it will overrule all global and router throttles:
 
 ```Python
-from ninja.throttling import UserRateThrottle
+from penta.throttling import UserRateThrottle
 
 @api.get('/some', throttle=[UserRateThrottle('10000/d')])
 def some(request):
@@ -95,7 +95,7 @@ To create a custom throttle, override `BaseThrottle` (or any of builtin throttle
 Example
 
 ```Python
-from ninja.throttling import AnonRateThrottle
+from penta.throttling import AnonRateThrottle
 
 class NoReadsThrottle(AnonRateThrottle):
     """Do not throttle GET requests"""

@@ -1,5 +1,5 @@
-from ninja import NinjaAPI, Router
-from ninja.testing import TestClient
+from penta import NinjaAPI, Router
+from penta.testing import TestClient
 
 router = Router()
 

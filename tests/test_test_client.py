@@ -5,9 +5,9 @@ from unittest import mock
 import pytest
 from django.utils import timezone
 
-from ninja import Router
-from ninja.schema import Schema
-from ninja.testing import TestClient
+from penta import Router
+from penta.schema import Schema
+from penta.testing import TestClient
 
 router = Router()
 

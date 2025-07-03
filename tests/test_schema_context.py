@@ -1,5 +1,5 @@
-from ninja import NinjaAPI, Schema
-from ninja.testing import TestClient
+from penta import NinjaAPI, Schema
+from penta.testing import TestClient
 
 
 class ResolveWithKWargs(Schema):

@@ -31,7 +31,7 @@ api = NinjaAPI(csrf=True)
 
 ```python hl_lines="8"
 from ninja import NinjaAPI
-from ninja.security import APIKeyCookie
+from penta.security import APIKeyCookie
 
 class CookieAuth(APIKeyCookie):
     def authenticate(self, request, key):
@@ -46,7 +46,7 @@ or django-auth based (which is inherited from cookie based auth):
 
 ```python hl_lines="4"
 from ninja import NinjaAPI
-from ninja.security import django_auth
+from penta.security import django_auth
 
 api = NinjaAPI(auth=django_auth)
 ```

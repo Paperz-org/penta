@@ -1,4 +1,4 @@
-from ninja import NinjaAPI
+from penta import NinjaAPI
 
 
 def test_openapi_info_defined():

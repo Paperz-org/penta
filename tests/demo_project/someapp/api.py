@@ -4,7 +4,7 @@ from typing import List
 from django.shortcuts import get_object_or_404
 from pydantic import BaseModel
 
-from ninja import Router
+from penta import Router
 
 from .models import Event
 

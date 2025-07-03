@@ -6,17 +6,17 @@ import pytest
 from django.test import override_settings
 from pydantic.errors import PydanticSchemaGenerationError
 
-from ninja import NinjaAPI, Schema
-from ninja.errors import ConfigError
-from ninja.operation import Operation
-from ninja.pagination import (
+from penta import NinjaAPI, Schema
+from penta.errors import ConfigError
+from penta.operation import Operation
+from penta.pagination import (
     LimitOffsetPagination,
     PageNumberPagination,
     PaginationBase,
     make_response_paginated,
     paginate,
 )
-from ninja.testing import TestClient
+from penta.testing import TestClient
 
 api = NinjaAPI()
 
@@ -491,7 +491,7 @@ def test_case10_max_page_size():
 @override_settings(NINJA_PAGINATION_MAX_LIMIT=1000)
 def test_10_max_limit_set():
     # reload to apply django settings
-    from ninja import conf, pagination
+    from penta import conf, pagination
 
     importlib.reload(conf)
     importlib.reload(pagination)
@@ -538,7 +538,7 @@ def test_10_max_limit_set():
 @override_settings(NINJA_PAGINATION_MAX_LIMIT=1000)
 def test_11_max_limit_set_and_exceeded():
     # reload to apply django settings
-    from ninja import conf, pagination
+    from penta import conf, pagination
 
     importlib.reload(conf)
     importlib.reload(pagination)

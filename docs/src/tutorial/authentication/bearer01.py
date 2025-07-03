@@ -1,4 +1,4 @@
-from ninja.security import HttpBearer
+from penta.security import HttpBearer
 
 
 class AuthBearer(HttpBearer):

@@ -1,7 +1,7 @@
 from django.core.files.uploadedfile import SimpleUploadedFile
 
-from ninja import File, Form, NinjaAPI, UploadedFile
-from ninja.testing import TestClient
+from penta import File, Form, NinjaAPI, UploadedFile
+from penta.testing import TestClient
 
 api = NinjaAPI()
 

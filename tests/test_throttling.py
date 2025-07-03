@@ -2,9 +2,9 @@ import pytest
 from django.core.cache import cache
 from django.core.exceptions import ImproperlyConfigured
 
-from ninja import NinjaAPI, Router
-from ninja.testing import TestAsyncClient, TestClient
-from ninja.throttling import (
+from penta import NinjaAPI, Router
+from penta.testing import TestAsyncClient, TestClient
+from penta.throttling import (
     AnonRateThrottle,
     AuthRateThrottle,
     BaseThrottle,
@@ -272,7 +272,7 @@ def test_rate_parser():
 
 
 def test_proxy_throttle():
-    from ninja.conf import settings
+    from penta.conf import settings
 
     settings.NUM_PROXIES = 0  # instead of None
 

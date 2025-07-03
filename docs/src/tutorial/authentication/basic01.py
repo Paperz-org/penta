@@ -1,4 +1,4 @@
-from ninja.security import HttpBasicAuth
+from penta.security import HttpBasicAuth
 
 
 class BasicAuth(HttpBasicAuth):

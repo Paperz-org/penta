@@ -1,5 +1,5 @@
-from ninja import NinjaAPI, Form
-from ninja.security import HttpBearer
+from penta import NinjaAPI, Form
+from penta.security import HttpBearer
 
 
 class GlobalAuth(HttpBearer):
