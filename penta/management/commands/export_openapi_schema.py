@@ -8,7 +8,7 @@ from django.utils.module_loading import import_string
 
 from penta.main import Penta
 from penta.management.utils import command_docstring
-from penta.responses import NinjaJSONEncoder
+from penta.responses import PentaJSONEncoder
 
 
 class Command(BaseCommand):
@@ -85,7 +85,7 @@ class Command(BaseCommand):
         schema = api.get_openapi_schema()
         result = json.dumps(
             schema,
-            cls=NinjaJSONEncoder,
+            cls=PentaJSONEncoder,
             indent=options["indent"],
             sort_keys=options["sort_keys"],
             ensure_ascii=options["ensure_ascii"],

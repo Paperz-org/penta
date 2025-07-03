@@ -8,7 +8,7 @@ from pydantic import BaseModel
 from pydantic_core import Url
 
 __all__ = [
-    "NinjaJSONEncoder",
+    "PentaJSONEncoder",
     "Response",
     "codes_1xx",
     "codes_2xx",
@@ -18,7 +18,7 @@ __all__ = [
 ]
 
 
-class NinjaJSONEncoder(DjangoJSONEncoder):
+class PentaJSONEncoder(DjangoJSONEncoder):
     def default(self, o: Any) -> Any:
         if isinstance(o, BaseModel):
             return o.model_dump()
@@ -33,7 +33,7 @@ class NinjaJSONEncoder(DjangoJSONEncoder):
 
 class Response(JsonResponse):
     def __init__(self, data: Any, **kwargs: Any) -> None:
-        super().__init__(data, encoder=NinjaJSONEncoder, safe=False, **kwargs)
+        super().__init__(data, encoder=PentaJSONEncoder, safe=False, **kwargs)
 
 
 def resp_codes(from_code: int, to_code: int) -> FrozenSet[int]:

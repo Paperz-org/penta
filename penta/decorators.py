@@ -10,7 +10,7 @@ from penta.utils import contribute_operation_callback
 # there is no way to apply some standard decorators form
 # django stdlib or public plugins
 #
-# @decorate_view allows to apply any view decorator to Ninja api operation
+# @decorate_view allows to apply any view decorator to Penta api operation
 #
 # @api.get("/some")
 # @decorate_view(cache_page(60 * 15)) # <-------

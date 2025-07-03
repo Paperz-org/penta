@@ -8,7 +8,7 @@ from django.http import QueryDict, StreamingHttpResponse
 from django.http.request import HttpHeaders, HttpRequest
 
 from penta import Penta, Router
-from penta.responses import NinjaJSONEncoder
+from penta.responses import PentaJSONEncoder
 from penta.responses import Response as HttpResponse
 
 
@@ -23,7 +23,7 @@ def build_absolute_uri(location: Optional[str] = None) -> str:
 
 # TODO: this should be changed
 # maybe add here urlconf object and add urls from here
-class NinjaClientBase:
+class PentaClientBase:
     __test__ = False  # <- skip pytest
 
     def __init__(
@@ -38,7 +38,7 @@ class NinjaClientBase:
 
     def get(
         self, path: str, data: Optional[Dict] = None, **request_params: Any
-    ) -> "NinjaResponse":
+    ) -> "PentaResponse":
         return self.request("GET", path, data, **request_params)
 
     def post(
@@ -47,7 +47,7 @@ class NinjaClientBase:
         data: Optional[Dict] = None,
         json: Any = None,
         **request_params: Any,
-    ) -> "NinjaResponse":
+    ) -> "PentaResponse":
         return self.request("POST", path, data, json, **request_params)
 
     def patch(
@@ -56,7 +56,7 @@ class NinjaClientBase:
         data: Optional[Dict] = None,
         json: Any = None,
         **request_params: Any,
-    ) -> "NinjaResponse":
+    ) -> "PentaResponse":
         return self.request("PATCH", path, data, json, **request_params)
 
     def put(
@@ -65,7 +65,7 @@ class NinjaClientBase:
         data: Optional[Dict] = None,
         json: Any = None,
         **request_params: Any,
-    ) -> "NinjaResponse":
+    ) -> "PentaResponse":
         return self.request("PUT", path, data, json, **request_params)
 
     def delete(
@@ -74,7 +74,7 @@ class NinjaClientBase:
         data: Optional[Dict] = None,
         json: Any = None,
         **request_params: Any,
-    ) -> "NinjaResponse":
+    ) -> "PentaResponse":
         return self.request("DELETE", path, data, json, **request_params)
 
     def request(
@@ -84,9 +84,9 @@ class NinjaClientBase:
         data: Optional[Dict] = None,
         json: Any = None,
         **request_params: Any,
-    ) -> "NinjaResponse":
+    ) -> "PentaResponse":
         if json is not None:
-            request_params["body"] = json_dumps(json, cls=NinjaJSONEncoder)
+            request_params["body"] = json_dumps(json, cls=PentaJSONEncoder)
         if data is None:
             data = {}
         if self.headers or request_params.get("headers"):
@@ -188,19 +188,19 @@ class NinjaClientBase:
         return request
 
 
-class TestClient(NinjaClientBase):
-    def _call(self, func: Callable, request: Mock, kwargs: Dict) -> "NinjaResponse":
-        return NinjaResponse(func(request, **kwargs))
+class TestClient(PentaClientBase):
+    def _call(self, func: Callable, request: Mock, kwargs: Dict) -> "PentaResponse":
+        return PentaResponse(func(request, **kwargs))
 
 
-class TestAsyncClient(NinjaClientBase):
+class TestAsyncClient(PentaClientBase):
     async def _call(
         self, func: Callable, request: Mock, kwargs: Dict
-    ) -> "NinjaResponse":
-        return NinjaResponse(await func(request, **kwargs))
+    ) -> "PentaResponse":
+        return PentaResponse(await func(request, **kwargs))
 
 
-class NinjaResponse:
+class PentaResponse:
     def __init__(self, http_response: Union[HttpResponse, StreamingHttpResponse]):
         self._response = http_response
         self.status_code = http_response.status_code

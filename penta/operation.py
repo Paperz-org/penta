@@ -339,7 +339,7 @@ class Operation:
         if response_param is None:
             return None
         attrs = {"__annotations__": {"response": response_param}}
-        return type("NinjaResponseSchema", (Schema,), attrs)
+        return type("PentaResponseSchema", (Schema,), attrs)
 
 
 class AsyncOperation(Operation):

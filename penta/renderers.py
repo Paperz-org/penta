@@ -3,7 +3,7 @@ from typing import Any, Mapping, Optional, Type
 
 from django.http import HttpRequest
 
-from penta.responses import NinjaJSONEncoder
+from penta.responses import PentaJSONEncoder
 
 __all__ = ["BaseRenderer", "JSONRenderer"]
 
@@ -18,7 +18,7 @@ class BaseRenderer:
 
 class JSONRenderer(BaseRenderer):
     media_type = "application/json"
-    encoder_class: Type[json.JSONEncoder] = NinjaJSONEncoder
+    encoder_class: Type[json.JSONEncoder] = PentaJSONEncoder
     json_dumps_params: Mapping[str, Any] = {}
 
     def render(self, request: HttpRequest, data: Any, *, response_status: int) -> Any:

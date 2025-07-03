@@ -60,13 +60,12 @@ class SimpleRateThrottle(BaseThrottle):
     Previous request information used for throttling is stored in the cache.
     """
 
-    from penta.conf import settings
 
     cache = default_cache
     timer = time.time
     cache_format = "throttle_%(scope)s_%(ident)s"
     scope: Optional[str] = None
-    THROTTLE_RATES: Dict[str, Optional[str]] = settings.DEFAULT_THROTTLE_RATES
+   
     _PERIODS = {
         "s": 1,
         "m": 60,
@@ -79,6 +78,8 @@ class SimpleRateThrottle(BaseThrottle):
     }
 
     def __init__(self, rate: Optional[str] = None):
+        from penta.conf import settings
+        self.THROTTLE_RATES: Dict[str, Optional[str]] = settings.DEFAULT_THROTTLE_RATES
         self.rate: Optional[str]
         if rate:
             self.rate = rate

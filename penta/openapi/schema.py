@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Any, Dict, Generator, List, Optional, Set, Tup
 from penta.constants import NOT_SET
 from penta.operation import Operation
 from penta.params.models import TModel, TModels
-from penta.schema import NinjaGenerateJsonSchema
+from penta.schema import PentaGenerateJsonSchema
 from penta.types import DictStrAny
 from penta.utils import normalize_path
 
@@ -153,7 +153,7 @@ class OpenAPISchema(dict):
 
         schema = model.model_json_schema(
             ref_template=REF_TEMPLATE,
-            schema_generator=NinjaGenerateJsonSchema,
+            schema_generator=PentaGenerateJsonSchema,
         )
 
         required = set(schema.get("required", []))
@@ -218,7 +218,7 @@ class OpenAPISchema(dict):
             schema = model.model_json_schema(
                 ref_template=REF_TEMPLATE,
                 by_alias=by_alias,
-                schema_generator=NinjaGenerateJsonSchema,
+                schema_generator=PentaGenerateJsonSchema,
             ).copy()
 
         # move Schemas from definitions

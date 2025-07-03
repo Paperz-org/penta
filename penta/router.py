@@ -22,7 +22,7 @@ from penta.types import TCallable
 from penta.utils import normalize_path, replace_path_param_notation
 
 if TYPE_CHECKING:
-    from penta import NinjaAPI  # pragma: no cover
+    from penta import Penta  # pragma: no cover
 
 
 __all__ = ["Router"]
@@ -40,7 +40,7 @@ class Router:
         exclude_defaults: Optional[bool] = None,
         exclude_none: Optional[bool] = None,
     ) -> None:
-        self.api: Optional[NinjaAPI] = None
+        self.api: Optional[Penta] = None
         self.auth = auth
         self.throttle = throttle
         self.tags = tags
@@ -365,7 +365,7 @@ class Router:
         return None
 
     def set_api_instance(
-        self, api: "NinjaAPI", parent_router: Optional["Router"] = None
+        self, api: "Penta", parent_router: Optional["Router"] = None
     ) -> None:
         if self.auth is NOT_SET and parent_router:
             self.auth = parent_router.auth

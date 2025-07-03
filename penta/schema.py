@@ -183,7 +183,7 @@ class ResolverMetaclass(ModelMetaclass):
         return result
 
 
-class NinjaGenerateJsonSchema(GenerateJsonSchema):
+class PentaGenerateJsonSchema(GenerateJsonSchema):
     def default_schema(self, schema: Any) -> JsonSchemaValue:
         # Pydantic default actually renders null's and default_factory's
         # which really breaks swagger and django model callable defaults
@@ -237,7 +237,7 @@ class Schema(BaseModel, metaclass=ResolverMetaclass):
 
     @classmethod
     def json_schema(cls) -> DictStrAny:
-        return cls.model_json_schema(schema_generator=NinjaGenerateJsonSchema)
+        return cls.model_json_schema(schema_generator=PentaGenerateJsonSchema)
 
     @classmethod
     def schema(cls) -> DictStrAny:  # type: ignore
