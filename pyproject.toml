@@ -42,6 +42,7 @@ classifiers = [
 ]
 dependencies = [
     "Django >=3.1, <6.0",
+    "fast-depends>=2.4.12",
     "pydantic >=2.0,<3.0.0",
     "ruff>=0.5.7",
 ]
@@ -104,3 +105,7 @@ branch = true
 fail_under = 100
 skip_covered = true
 show_missing = true
+
+[tool.setuptools_scm]
+version_scheme = "guess-next-dev"
+local_scheme = "no-local-version"
