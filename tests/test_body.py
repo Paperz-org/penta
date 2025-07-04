@@ -97,10 +97,12 @@ class CustomErrorAPI(Penta):
             for e in context.pydantic_validation_error.errors(
                 include_url=False, include_context=False, include_input=False
             ):
-                errors.append({
-                    "source": model.__penta_param_source__,
-                    "message": e["msg"],
-                })
+                errors.append(
+                    {
+                        "source": model.__penta_param_source__,
+                        "message": e["msg"],
+                    }
+                )
         return ValidationError(errors)
 
 

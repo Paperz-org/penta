@@ -39,11 +39,11 @@ on:
 
 jobs:
   publish:
-    name: Publish to ${{ inputs.environment-name }}
+    name: Publish to ${{ inputs['environment-name'] }}
     runs-on: ubuntu-latest
     environment:
-      name: ${{ inputs.environment-name }}
-      url: ${{ inputs.environment-url }}
+      name: ${{ inputs['environment-name'] }}
+      url: ${{ inputs['environment-url'] }}
 
     permissions:
       id-token: write 
@@ -56,7 +56,7 @@ jobs:
           path: dist/
 
       - name: Publish to testpypi
-        if: ${{ inputs.environment-name == 'testpypi' }}
+        if: ${{ inputs['environment-name'] == 'testpypi' }}
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           verbose: true
@@ -64,7 +64,7 @@ jobs:
           repository-url: https://test.pypi.org/legacy/
 
       - name: Publish to pypi
-        if: ${{ inputs.environment-name == 'pypi' }}
+        if: ${{ inputs['environment-name'] == 'pypi' }}
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           attestations: false

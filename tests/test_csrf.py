@@ -18,9 +18,7 @@ class TestClient(BaseTestClient):
 
 csrf_OFF = Penta(urls_namespace="csrf_OFF")
 csrf_ON = Penta(urls_namespace="csrf_ON", csrf=True)
-csrf_ON_with_django_auth = Penta(
-    urls_namespace="csrf_ON", csrf=True, auth=django_auth
-)
+csrf_ON_with_django_auth = Penta(urls_namespace="csrf_ON", csrf=True, auth=django_auth)
 
 
 @csrf_OFF.post("/post")

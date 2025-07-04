@@ -7,12 +7,12 @@ from penta import Form, Schema
 
 
 def _empty_str_to_default(v, handler, info):
-    if isinstance(v, str) and v == '':
+    if isinstance(v, str) and v == "":
         raise PydanticUseDefault
     return handler(v)
 
 
-T = TypeVar('T')
+T = TypeVar("T")
 EmptyStrToDefault = Annotated[T, WrapValidator(_empty_str_to_default)]
 
 
