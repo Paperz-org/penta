@@ -55,8 +55,8 @@ class ViewSignature:
         self.params = []
         for name, arg in self.signature.parameters.items():
             # This is useless for us
-            #if name == "request":
-                #continue
+            # if name == "request":
+            # continue
 
             if arg.kind == arg.VAR_KEYWORD:
                 # Skipping **kwargs
