@@ -3,7 +3,6 @@
 from typing import Callable, cast
 
 from django.db.models import QuerySet
-from django.http import HttpRequest
 
 from penta import Query
 from penta.pagination import paginate
@@ -20,11 +19,11 @@ from ..types import (
 )
 from .base import BaseViewSet
 
-ListItemsReturnType = Callable[[HttpRequest, Query], QuerySet[ModelType]]
-GetItemReturnType = Callable[[HttpRequest, PKType], ModelType]
-CreateItemReturnType = Callable[[HttpRequest, CreateSchemaType], ModelType]
-UpdateItemReturnType = Callable[[HttpRequest, PKType, UpdateSchemaType], ModelType]
-DeleteItemReturnType = Callable[[HttpRequest, PKType], tuple[int, None]]
+ListItemsReturnType = Callable[[Query], QuerySet[ModelType]]
+GetItemReturnType = Callable[[PKType], ModelType]
+CreateItemReturnType = Callable[[CreateSchemaType], ModelType]
+UpdateItemReturnType = Callable[[PKType, UpdateSchemaType], ModelType]
+DeleteItemReturnType = Callable[[PKType], tuple[int, None]]
 
 
 class SyncViewSet(
@@ -89,9 +88,7 @@ class SyncViewSet(
         """List items."""
 
         @paginate
-        def _list_items(
-            request: HttpRequest, filters: self.filter_schema = Query(...)
-        ) -> QuerySet[ModelType]:  # noqa: B008
+        def _list_items(filters: self.filter_schema = Query(...)) -> QuerySet[ModelType]:  # noqa: B008
             """List items."""
             return cast(QuerySet[ModelType], filters.filter(self.queryset))
 
@@ -102,7 +99,7 @@ class SyncViewSet(
         """Get item."""
 
         @rename(pk_name=self.pk_name)
-        def _get_item(request: HttpRequest, pk_name: self.pk_type) -> ModelType:
+        def _get_item(pk_name: self.pk_type) -> ModelType:
             try:
                 return self._get_object(pk_name)
             except self.model.DoesNotExist as e:
@@ -114,9 +111,7 @@ class SyncViewSet(
     def create_item(self) -> CreateItemReturnType:
         """Create item."""
 
-        def _create_item(
-            request: HttpRequest, payload: self.create_schema
-        ) -> ModelType:  # type: ignore[E0611]
+        def _create_item(payload: self.create_schema) -> ModelType:  # type: ignore[E0611]
             """Create item."""
             try:
                 data = payload.dict()
@@ -146,9 +141,7 @@ class SyncViewSet(
         """Update item."""
 
         @rename(pk_name=self.pk_name)
-        def _update_item(
-            request: HttpRequest, pk_name: self.pk_type, payload: self.update_schema
-        ) -> ModelType:  # type: ignore[E0611]
+        def _update_item(pk_name: self.pk_type, payload: self.update_schema) -> ModelType:  # type: ignore[E0611]
             """Update item."""
             try:
                 obj = self._get_object(pk_name)
@@ -201,9 +194,7 @@ class SyncViewSet(
         """Delete item."""
 
         @rename(pk_name=self.pk_name)
-        def _delete_item(
-            request: HttpRequest, pk_name: self.pk_type
-        ) -> tuple[int, None]:
+        def _delete_item(pk_name: self.pk_type) -> tuple[int, None]:
             """Delete item."""
             try:
                 obj = self._get_object(pk_name)

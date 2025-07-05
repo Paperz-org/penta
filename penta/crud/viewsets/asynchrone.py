@@ -5,7 +5,6 @@ from typing import Any, Callable, cast
 
 from django.db import DatabaseError
 from django.db.models import QuerySet
-from django.http import HttpRequest
 from pydantic import ValidationError
 
 from penta import Query
@@ -23,16 +22,16 @@ from ..types import (
 )
 from .base import BaseViewSet
 
-ListItemsReturnType = Callable[[HttpRequest, Query], QuerySet[ModelType]]
-GetItemReturnType = Callable[[HttpRequest, PKType], Coroutine[Any, Any, ModelType]]
+ListItemsReturnType = Callable[[Query], QuerySet[ModelType]]
+GetItemReturnType = Callable[[PKType], Coroutine[Any, Any, ModelType]]
 CreateItemReturnType = Callable[
-    [HttpRequest, CreateSchemaType], Coroutine[Any, Any, Any]
+    [CreateSchemaType], Coroutine[Any, Any, Any]
 ]
 UpdateItemReturnType = Callable[
-    [HttpRequest, PKType, UpdateSchemaType], Coroutine[Any, Any, Any]
+    [PKType, UpdateSchemaType], Coroutine[Any, Any, Any]
 ]
 DeleteItemReturnType = Callable[
-    [HttpRequest, PKType], Coroutine[Any, Any, tuple[int, None]]
+    [PKType], Coroutine[Any, Any, tuple[int, None]]
 ]
 
 
@@ -71,9 +70,7 @@ class AsyncViewSet(
         """List items."""
 
         @paginate
-        def _list_items(
-            request: HttpRequest, filters: self.filter_schema = Query(...)
-        ) -> QuerySet[ModelType]:  # noqa: B008
+        def _list_items(filters: self.filter_schema = Query(...)) -> QuerySet[ModelType]:  # noqa: B008
             return cast(QuerySet[ModelType], filters.filter(self.queryset))
 
         return _list_items
@@ -83,7 +80,7 @@ class AsyncViewSet(
         """Get item."""
 
         @rename(pk_name=self.pk_name)
-        async def _get_item(request: HttpRequest, pk_name: self.pk_type) -> ModelType:
+        async def _get_item(pk_name: self.pk_type) -> ModelType:
             try:
                 return await self._get_object(pk_name)
             except self.model.DoesNotExist as e:
@@ -95,9 +92,7 @@ class AsyncViewSet(
     def create_item(self) -> CreateItemReturnType:
         """Create item."""
 
-        async def _create_item(
-            request: HttpRequest, payload: self.create_schema
-        ) -> self.read_schema:  # type: ignore[E0611]
+        async def _create_item(payload: self.create_schema) -> self.read_schema:  # type: ignore[E0611]
             try:
                 data = payload.dict()
 
@@ -119,8 +114,7 @@ class AsyncViewSet(
         """Update item."""
 
         @rename(pk_name=self.pk_name)
-        async def _update_item(
-            request: HttpRequest, pk_name: self.pk_type, payload: self.update_schema
+        async def _update_item(pk_name: self.pk_type, payload: self.update_schema
         ) -> self.read_schema:  # type: ignore[E0611]
             try:
                 obj = await self._get_object(pk_name)
@@ -152,8 +146,7 @@ class AsyncViewSet(
         """Delete item."""
 
         @rename(pk_name=self.pk_name)
-        async def _delete_item(
-            request: HttpRequest, pk_name: self.pk_type
+        async def _delete_item(pk_name: self.pk_type
         ) -> tuple[int, None]:
             try:
                 obj = await self._get_object(pk_name)
