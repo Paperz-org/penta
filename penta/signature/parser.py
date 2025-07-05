@@ -1,5 +1,8 @@
 import inspect
-from typing import Annotated, get_args, get_origin
+from typing import TYPE_CHECKING, Annotated, cast, get_args, get_origin
+
+if TYPE_CHECKING:
+    from penta.dependencies.depends import _Depends
 
 from django.http import HttpRequest
 
@@ -45,12 +48,29 @@ class Parameter(inspect.Parameter):
     @property
     def is_depends(self) -> bool:
         """Check if the parameter is a depends parameter."""
-        from penta.dependencies import Depends
+        from penta.dependencies.depends import _Depends
 
         if self.is_annotated:
             _, instance = get_args(self.annotation)
-            return isinstance(instance, Depends)
-        return issubclass(self.annotation, Depends)
+            return isinstance(instance, _Depends)
+        return isinstance(self.default, _Depends)
+
+    @property
+    def dependency(self) -> "_Depends":
+        if not self.is_depends:
+            raise ValueError(
+                "Parameter is not a Depends and don't have any dependency function associated"
+            )
+
+        from penta.dependencies.depends import _Depends
+
+        depend: _Depends
+        if self.is_annotated:
+            _, depend = get_args(self.annotation)
+        else:
+            depend = self.default
+
+        return depend
 
     @property
     def is_custom_depends(self) -> bool:
@@ -65,7 +85,6 @@ class Parameter(inspect.Parameter):
     @classmethod
     def from_parameter(cls, param: inspect.Parameter) -> "Parameter":
         """Create an UnchainedParam instance from an inspect.Parameter."""
-
         return cls(
             name=param.name,
             kind=param.kind,
@@ -82,7 +101,7 @@ class Signature(inspect.Signature):
         parameters=None,
         return_annotation=inspect.Signature.empty,
         __validate_parameters__=True,
-    ):
+    ) -> None:
         if parameters is not None:
             parameters = [
                 Parameter.from_parameter(p) if not isinstance(p, Parameter) else p
@@ -105,8 +124,43 @@ class Signature(inspect.Signature):
             locals=locals,
             eval_str=eval_str,
         )
-        parameters = [
-            Parameter.from_parameter(p) if not isinstance(p, Parameter) else p
-            for p in sig.parameters.values()
-        ]
+        parameters: list[Parameter] = []
+        for p in sig.parameters.values():
+            if p.is_depends:
+                parameters.extend(
+                    cls.from_callable(p.dependency.dependency).parameters.values()
+                )
+            else:
+                parameters.append(
+                    Parameter.from_parameter(p) if not isinstance(p, Parameter) else p
+                )
+
+        parameters = _resolve_duplicate_parameters(parameters)
+
         return cls(parameters=parameters, return_annotation=sig.return_annotation)
+
+
+def _resolve_duplicate_parameters(parameters: list[Parameter]) -> list[Parameter]:
+    """
+    Group parameters by name and ensure duplicates are identical.
+    Returns a list of unique parameters.
+    """
+
+    parameter_groups: dict[str, list[Parameter]] = {}
+
+    for parameter in parameters:
+        parameter_groups.setdefault(parameter.name, []).append(parameter)
+
+    resolved_parameters = []
+    for name, variants in parameter_groups.items():
+        if not variants:
+            return True
+
+        # TODO: need to be enhance, with taking account subtypes for example
+        if len(variants) > 1 and not all(param == variants[0] for param in variants):
+            raise ValueError(
+                f"Duplicated parameter '{name}' with different signatures: {variants}"
+            )
+        resolved_parameters.append(variants[0])
+
+    return resolved_parameters

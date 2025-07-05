@@ -1,13 +1,13 @@
 from functools import partial
 from typing import Generic, TypeVar
 
-from penta.dependencies.depends import Depends
+from penta.dependencies.depends import _Depends
 from penta.signature.parser import Signature
 
 T = TypeVar("T")
 
 
-class BaseCustom(Depends, Generic[T]):
+class BaseCustom(_Depends, Generic[T]):
     annotation_type: type[T]
 
     def __init__(

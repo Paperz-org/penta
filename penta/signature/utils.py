@@ -7,6 +7,7 @@ from django.urls import register_converter
 from django.urls.converters import UUIDConverter
 from pydantic._internal._typing_extra import eval_type_lenient as evaluate_forwardref
 
+from penta.signature.parser import Signature
 from penta.types import DictStrAny
 
 __all__ = [
@@ -20,7 +21,7 @@ __all__ = [
 
 def get_typed_signature(call: Callable[..., Any]) -> inspect.Signature:
     "Finds call signature and resolves all forwardrefs"
-    signature = inspect.signature(call)
+    signature = Signature.from_callable(call)
     globalns = getattr(call, "__globals__", {})
     typed_params = [
         inspect.Parameter(

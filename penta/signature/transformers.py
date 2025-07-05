@@ -19,7 +19,6 @@ def create_signature_with_auto_dependencies(signature: Signature) -> Signature:
     for _, param in signature.parameters.items():
         if param.is_request:
             parameters.append(_parameter(param, RequestDependency))
-
         # elif param.is_header:
         #    parameters.append(_parameter(param, HeaderDependency))
         # elif param.is_query_params:
