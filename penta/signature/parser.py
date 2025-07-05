@@ -126,6 +126,11 @@ class Signature(inspect.Signature):
         )
         parameters: list[Parameter] = []
         for p in sig.parameters.values():
+            # TODO: not sure why this is needed, but it is
+            # In the crud, we have a parameter that is an inspect.Parameter
+            # and we need to convert it to a Parameter
+            if isinstance(p, inspect.Parameter):
+                p = Parameter.from_parameter(p)
             if p.is_depends:
                 parameters.extend(
                     cls.from_callable(p.dependency.dependency).parameters.values()
