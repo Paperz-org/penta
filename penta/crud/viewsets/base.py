@@ -17,7 +17,15 @@ from ..types import (
 
 
 class BaseViewSet(
-    ABC, Generic[ModelType, CreateSchemaType, ReadSchemaType, UpdateSchemaType, FilterSchemaType, PKType]
+    ABC,
+    Generic[
+        ModelType,
+        CreateSchemaType,
+        ReadSchemaType,
+        UpdateSchemaType,
+        FilterSchemaType,
+        PKType,
+    ],
 ):
     """Base class for ViewSets that implements common functionality shared between sync and async versions."""
 
@@ -43,13 +51,19 @@ class BaseViewSet(
         self.pk_name = pk_name
 
     @abstractmethod
-    def _handle_foreign_keys(self, data: dict) -> dict | Coroutine[Any, Any, dict[Any, Any]]:
+    def _handle_foreign_keys(
+        self, data: dict
+    ) -> dict | Coroutine[Any, Any, dict[Any, Any]]:
         """Handle foreign key relations by converting IDs to model instances (sync version)."""
         ...
 
     def _extract_m2m_fields(self, data: dict) -> tuple[dict, dict]:
         """Extract many-to-many fields from payload data."""
-        m2m_fields = {field.name: data.pop(field.name) for field in self.model._meta.many_to_many if field.name in data}
+        m2m_fields = {
+            field.name: data.pop(field.name)
+            for field in self.model._meta.many_to_many
+            if field.name in data
+        }
         return data, m2m_fields
 
     def _format_error_message(self, operation: str, error: Exception) -> str:

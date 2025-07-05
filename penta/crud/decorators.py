@@ -45,7 +45,8 @@ def _rename_parameter(
 
         # Modify the function's signature
         new_params = [
-            param.replace(name=new_name) if param.name == old_name else param for param in sig.parameters.values()
+            param.replace(name=new_name) if param.name == old_name else param
+            for param in sig.parameters.values()
         ]
         new_sig = sig.replace(parameters=new_params)
 
@@ -70,7 +71,9 @@ def _rename_parameter(
     return decorator
 
 
-def async_rename_parameter(**rename_map: str) -> Callable[[Callable[..., Any]], Callable[..., Any]]:
+def async_rename_parameter(
+    **rename_map: str,
+) -> Callable[[Callable[..., Any]], Callable[..., Any]]:
     """
     Decorator to rename a single parameter in an async function's signature and adjust kwargs when called.
 
@@ -86,7 +89,9 @@ def async_rename_parameter(**rename_map: str) -> Callable[[Callable[..., Any]], 
     return _rename_parameter(rename_map, is_async=True)
 
 
-def rename_parameter(**rename_map: str) -> Callable[[Callable[..., Any]], Callable[..., Any]]:
+def rename_parameter(
+    **rename_map: str,
+) -> Callable[[Callable[..., Any]], Callable[..., Any]]:
     """
     Decorator to rename a single parameter in a synchronous function's signature and adjust kwargs when called.
 

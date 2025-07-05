@@ -2,7 +2,6 @@ from contextvars import ContextVar
 
 from penta.request import Request
 
-
 request = ContextVar("request", default=None)
 
 

@@ -27,7 +27,16 @@ UpdateItemReturnType = Callable[[HttpRequest, PKType, UpdateSchemaType], ModelTy
 DeleteItemReturnType = Callable[[HttpRequest, PKType], tuple[int, None]]
 
 
-class SyncViewSet(BaseViewSet[ModelType, CreateSchemaType, ReadSchemaType, UpdateSchemaType, FilterSchemaType, PKType]):
+class SyncViewSet(
+    BaseViewSet[
+        ModelType,
+        CreateSchemaType,
+        ReadSchemaType,
+        UpdateSchemaType,
+        FilterSchemaType,
+        PKType,
+    ]
+):
     """Sync implementation of the ViewSet."""
 
     def _get_object(self, id: PKType) -> ModelType:  # noqa: A002
@@ -80,7 +89,9 @@ class SyncViewSet(BaseViewSet[ModelType, CreateSchemaType, ReadSchemaType, Updat
         """List items."""
 
         @paginate
-        def _list_items(request: HttpRequest, filters: self.filter_schema = Query(...)) -> QuerySet[ModelType]:  # noqa: B008
+        def _list_items(
+            request: HttpRequest, filters: self.filter_schema = Query(...)
+        ) -> QuerySet[ModelType]:  # noqa: B008
             """List items."""
             return cast(QuerySet[ModelType], filters.filter(self.queryset))
 
@@ -103,7 +114,9 @@ class SyncViewSet(BaseViewSet[ModelType, CreateSchemaType, ReadSchemaType, Updat
     def create_item(self) -> CreateItemReturnType:
         """Create item."""
 
-        def _create_item(request: HttpRequest, payload: self.create_schema) -> ModelType:  # type: ignore[E0611]
+        def _create_item(
+            request: HttpRequest, payload: self.create_schema
+        ) -> ModelType:  # type: ignore[E0611]
             """Create item."""
             try:
                 data = payload.dict()
@@ -133,7 +146,9 @@ class SyncViewSet(BaseViewSet[ModelType, CreateSchemaType, ReadSchemaType, Updat
         """Update item."""
 
         @rename(pk_name=self.pk_name)
-        def _update_item(request: HttpRequest, pk_name: self.pk_type, payload: self.update_schema) -> ModelType:  # type: ignore[E0611]
+        def _update_item(
+            request: HttpRequest, pk_name: self.pk_type, payload: self.update_schema
+        ) -> ModelType:  # type: ignore[E0611]
             """Update item."""
             try:
                 obj = self._get_object(pk_name)
@@ -186,7 +201,9 @@ class SyncViewSet(BaseViewSet[ModelType, CreateSchemaType, ReadSchemaType, Updat
         """Delete item."""
 
         @rename(pk_name=self.pk_name)
-        def _delete_item(request: HttpRequest, pk_name: self.pk_type) -> tuple[int, None]:
+        def _delete_item(
+            request: HttpRequest, pk_name: self.pk_type
+        ) -> tuple[int, None]:
             """Delete item."""
             try:
                 obj = self._get_object(pk_name)

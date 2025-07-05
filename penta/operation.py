@@ -14,11 +14,11 @@ from typing import (
     cast,
 )
 
-from fast_depends import inject
 import pydantic
 from asgiref.sync import async_to_sync
 from django.http import HttpRequest, HttpResponse, HttpResponseNotAllowed
 from django.http.response import HttpResponseBase
+from fast_depends import inject
 
 from penta import context
 from penta.constants import NOT_SET, NOT_SET_TYPE
@@ -456,7 +456,7 @@ class PathView:
         if is_async(view_func):
             self.is_async = True
             OperationClass = AsyncOperation
-        
+
         view_func = inject(view_func)
 
         operation = OperationClass(

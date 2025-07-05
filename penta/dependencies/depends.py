@@ -1,7 +1,8 @@
 from typing import Any, Callable, get_args
-from fast_depends.dependencies import model
-from penta.signature import Signature
 
+from fast_depends.dependencies import model
+
+from penta.signature import Signature
 from penta.signature.transformers import create_signature_with_auto_dependencies
 
 
@@ -23,9 +24,11 @@ class Depends(model.Depends):
             if param.is_custom_depends:
                 type_, instance = get_args(param.annotation)
                 # Add the type to the CustomField
-                setattr(instance, "param_name", param.name)
-                setattr(instance, "annotation_type", type_)
-                setattr(instance, "default", param.default)
+                instance.param_name = param.name
+                instance.annotation_type = type_
+                instance.default = param.default
 
         # This transform the signature of the dependency to add the auto dependencies (request, settings, app, state)
-        self.dependency.__signature__ = create_signature_with_auto_dependencies(signature)
+        self.dependency.__signature__ = create_signature_with_auto_dependencies(
+            signature
+        )

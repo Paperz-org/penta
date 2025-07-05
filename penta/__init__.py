@@ -5,6 +5,7 @@ __version__ = "1.4.3"
 
 from pydantic import Field
 
+from penta.dependencies import Depends
 from penta.files import UploadedFile
 from penta.filter_schema import FilterSchema
 from penta.main import Penta
@@ -30,7 +31,6 @@ from penta.params import (
 from penta.patch_dict import PatchDict
 from penta.router import Router
 from penta.schema import Schema
-from penta.dependencies import Depends
 
 __all__ = [
     "Field",
