@@ -24,6 +24,8 @@ from penta.params.models import (
     _MultiPartBody,
 )
 from penta.signature.utils import get_path_param_names, get_typed_signature
+from fast_depends.dependencies import  model
+
 
 __all__ = [
     "ViewSignature",
@@ -71,6 +73,14 @@ class ViewSignature:
             if arg.annotation is HttpResponse:
                 self.response_arg = name
                 continue
+            
+            # TODO:
+            # Ceci permet d'éviter de rajouter dans la signature les injections.
+            # Maintenant on doit vérifier qu'il n'y a pas de type a rajouter dans la signature qui dependent d'injection de dependances (query params par exemple)
+            if arg.annotation and get_origin(arg.annotation) is Annotated:
+                _, instance = get_args(arg.annotation)
+                if isinstance(instance, model.Depends):
+                    continue
 
             if (
                 arg.annotation is inspect.Parameter.empty
@@ -120,6 +130,7 @@ class ViewSignature:
                     lineno=inspect.getsourcelines(self.view_func)[1],
                     source=None,
                 )
+    
 
     def _create_models(self) -> TModels:
         params_by_source_cls: Dict[Any, List[FuncParam]] = defaultdict(list)
@@ -227,6 +238,8 @@ class ViewSignature:
                 annotation, default = args
                 if prev_default != self.signature.empty:
                     default.default = prev_default
+            #TODO: Je pense que c'est ici qu'il faut verifier le type de l'annotation depends.
+            # SI c'est un type Query, il faudra l'injecter ici par exemple.
 
         if annotation == self.signature.empty:
             if default == self.signature.empty:

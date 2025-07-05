@@ -30,6 +30,7 @@ from penta.params import (
 from penta.patch_dict import PatchDict
 from penta.router import Router
 from penta.schema import Schema
+from penta.dependencies import Depends
 
 __all__ = [
     "Field",
@@ -57,4 +58,5 @@ __all__ = [
     "Swagger",
     "Redoc",
     "PatchDict",
+    "Depends",
 ]

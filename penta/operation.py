@@ -14,11 +14,13 @@ from typing import (
     cast,
 )
 
+from fast_depends import inject
 import pydantic
 from asgiref.sync import async_to_sync
 from django.http import HttpRequest, HttpResponse, HttpResponseNotAllowed
 from django.http.response import HttpResponseBase
 
+from penta import context
 from penta.constants import NOT_SET, NOT_SET_TYPE
 from penta.errors import (
     AuthenticationError,
@@ -27,6 +29,7 @@ from penta.errors import (
     ValidationErrorContext,
 )
 from penta.params.models import TModels
+from penta.request import Request
 from penta.schema import Schema, pydantic_version
 from penta.signature import ViewSignature, is_async
 from penta.throttling import BaseThrottle
@@ -128,13 +131,21 @@ class Operation:
                 callback(self)
 
     def run(self, request: HttpRequest, **kw: Any) -> HttpResponseBase:
+        # This is a trick to override the class of the request ... After the instanciation
+        # `request` is an ASGIRequest instance from Django.
+        # `Request` is our custom class, that inherit from ASGIRequest.
+        # With this trick, we are changing the type of the instance
+        # It like ... inheritence in the future ¯\_(ツ)_/¯
+        request.__class__ = Request
+        context.request.set(request)
+
         error = self._run_checks(request)
         if error:
             return error
         try:
             temporal_response = self.api.create_temporal_response(request)
             values = self._get_values(request, kw, temporal_response)
-            result = self.view_func(request, **values)
+            result = self.view_func(**values)
             return self._result_to_response(request, result, temporal_response)
         except Exception as e:
             if isinstance(e, TypeError) and "required positional argument" in str(e):
@@ -348,13 +359,20 @@ class AsyncOperation(Operation):
         self.is_async = True
 
     async def run(self, request: HttpRequest, **kw: Any) -> HttpResponseBase:  # type: ignore
+        # This is a trick to override the class of the request ... After the instanciation
+        # `request` is an ASGIRequest instance from Django.
+        # `Request` is our custom class, that inherit from ASGIRequest.
+        # With this trick, we are changing the type of the instance
+        # It like ... inheritence in the future ¯\_(ツ)_/¯
+        request.__class__ = Request
+        context.request.set(request)
         error = await self._run_checks(request)
         if error:
             return error
         try:
             temporal_response = self.api.create_temporal_response(request)
             values = self._get_values(request, kw, temporal_response)
-            result = await self.view_func(request, **values)
+            result = await self.view_func(**values)
             return self._result_to_response(request, result, temporal_response)
         except Exception as e:
             return self.api.on_exception(request, e)
@@ -438,6 +456,8 @@ class PathView:
         if is_async(view_func):
             self.is_async = True
             OperationClass = AsyncOperation
+        
+        view_func = inject(view_func)
 
         operation = OperationClass(
             path,
