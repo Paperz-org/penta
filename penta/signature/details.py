@@ -54,11 +54,9 @@ class ViewSignature:
 
         self.params = []
         for name, arg in self.signature.parameters.items():
-            if name == "request":
-                # TODO: maybe better assert that 1st param is request or check by type?
-                # maybe even have attribute like `has_request`
-                # so that users can ignore passing request if not needed
-                continue
+            # This is useless for us
+            #if name == "request":
+                #continue
 
             if arg.kind == arg.VAR_KEYWORD:
                 # Skipping **kwargs
