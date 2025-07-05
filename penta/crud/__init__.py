@@ -11,5 +11,3 @@ __all__ = [
     "EntryNotFound",
     "SyncViewSet",
 ]
-
-__version__ = "0.1.0"
