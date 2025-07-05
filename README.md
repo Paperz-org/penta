@@ -1,12 +1,3 @@
-<a href="https://github.com/vitalik/django-ninja/issues/383"><img width="814" alt="SCR-20230123-m1t" src="https://user-images.githubusercontent.com/95222/214056666-585c0479-c122-4cb3-add4-b8844088ccdd.png"></a>
-
-
-
-<a href="https://github.com/vitalik/django-ninja/issues/383">^ Please read ^</a>
-
-
-
-
 <p align="center">
   <a href="https://django-ninja.dev/"><img src="https://django-ninja.dev/img/logo-big.png"></a>
 </p>
@@ -20,9 +11,9 @@
 [![PyPI version](https://badge.fury.io/py/django-ninja.svg)](https://badge.fury.io/py/django-ninja)
 [![Downloads](https://static.pepy.tech/personalized-badge/django-ninja?period=month&units=international_system&left_color=black&right_color=brightgreen&left_text=downloads/month)](https://pepy.tech/project/django-ninja)
 
-# Django Ninja - Fast Django REST Framework
+# Penta - Fast Django REST Framework
 
-**Django Ninja** is a web framework for building APIs with **Django** and Python 3.6+ **type hints**.
+**Penta** is a web framework for building APIs with **Django** and Python 3.10+ **type hints**.
 
 
  **Key features:**
@@ -30,22 +21,20 @@
   - **Easy**: Designed to be easy to use and intuitive.
   - **FAST execution**: Very high performance thanks to **<a href="https://pydantic-docs.helpmanual.io" target="_blank">Pydantic</a>** and **<a href="/docs/docs/guides/async-support.md">async support</a>**.
   - **Fast to code**: Type hints and automatic docs lets you focus only on business logic.
+  - **Dependency injection**
   - **Standards-based**: Based on the open standards for APIs: **OpenAPI** (previously known as Swagger) and **JSON Schema**.
   - **Django friendly**: (obviously) has good integration with the Django core and ORM.
-  - **Production ready**: Used by multiple companies on live projects (If you use django-ninja and would like to publish your feedback, please email ppr.vitaly@gmail.com).
 
 
 
-![Django Ninja REST Framework](docs/docs/img/benchmark.png)
-
-**Documentation**: https://django-ninja.dev
+**Documentation**: As Penta is a fork of django ninja, you can start [here](https://django-ninja.dev). We will create a dedicated documentation for Penta soon !
 
 ---
 
 ## Installation
 
 ```
-pip install django-ninja
+pip install penta
 ```
 
 
@@ -56,9 +45,9 @@ pip install django-ninja
 In your django project next to urls.py create new `api.py` file:
 
 ```Python
-from ninja import NinjaAPI
+from penta import Penta
 
-api = NinjaAPI()
+api = Penta()
 
 
 @api.get("/add")
