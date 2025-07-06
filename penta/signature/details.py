@@ -104,6 +104,21 @@ class ViewSignature:
 
         self._validate_view_path_params()
 
+        inspect_params = []
+        # We need to update function signature based on the params we parsed.
+        # It's used because fast-depends need a proper signature to work.
+        for param in self.params:
+            inspect_params.append(
+                inspect.Parameter(
+                    param.name,
+                    kind=inspect.Parameter.POSITIONAL_OR_KEYWORD,
+                    annotation=param.annotation,
+                )
+            )
+        
+        self.signature = self.signature.replace(parameters=inspect_params)
+        self.view_func.__signature__ = self.signature
+
     def _validate_view_path_params(self) -> None:
         """verify all path params are present in the path model fields"""
         if self.path_params_names:

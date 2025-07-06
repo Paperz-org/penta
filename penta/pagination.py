@@ -217,15 +217,15 @@ def _inject_pagination(
             raise ConfigError("Pagination class not configured for async requests")
 
         @wraps(func)
-        async def view_with_pagination(request: HttpRequest, **kwargs: Any) -> Any:
+        async def view_with_pagination(**kwargs: Any) -> Any:
             pagination_params = kwargs.pop("penta_pagination")
             if paginator.pass_parameter:
                 kwargs[paginator.pass_parameter] = pagination_params
 
-            items = await func(request, **kwargs)
+            items = await func(**kwargs)
 
             result = await paginator.apaginate_queryset(
-                items, pagination=pagination_params, request=request, **kwargs
+                items, pagination=pagination_params, **kwargs
             )
 
             async def evaluate(results: Union[List, QuerySet]) -> AsyncGenerator:
@@ -242,15 +242,15 @@ def _inject_pagination(
     else:
 
         @wraps(func)
-        def view_with_pagination(request: HttpRequest, **kwargs: Any) -> Any:
+        def view_with_pagination(**kwargs: Any) -> Any:
             pagination_params = kwargs.pop("penta_pagination")
             if paginator.pass_parameter:
                 kwargs[paginator.pass_parameter] = pagination_params
 
-            items = func(request, **kwargs)
+            items = func(**kwargs)
 
             result = paginator.paginate_queryset(
-                items, pagination=pagination_params, request=request, **kwargs
+                items, pagination=pagination_params, **kwargs
             )
             if paginator.Output:  # type: ignore
                 result[paginator.items_attribute] = list(
