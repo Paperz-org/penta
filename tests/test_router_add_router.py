@@ -1,11 +1,12 @@
 from penta import Penta, Router
+from penta.dependencies.request import RequestDependency
 from penta.testing import TestClient
 
 router = Router()
 
 
 @router.get("/")
-def op(request):
+def op(request: RequestDependency):
     return True
 
 

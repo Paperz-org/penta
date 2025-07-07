@@ -1,3 +1,4 @@
+from penta.dependencies.request import RequestDependency
 import pytest
 from pydantic import BaseModel
 
@@ -28,50 +29,50 @@ router = Router()
 
 
 @router.post("/test1")
-def view1(request, some: SomeModel):
+def view1(request: RequestDependency, some: SomeModel):
     assert isinstance(some, SomeModel)
     return some
 
 
 @router.post("/test2")
-def view2(request, some: SomeModel, other: OtherModel):
+def view2(request: RequestDependency, some: SomeModel, other: OtherModel):
     assert isinstance(some, SomeModel)
     assert isinstance(other, OtherModel)
     return {"some": some, "other": other}
 
 
 @router.post("/test3")
-def view3(request, some: "SomeModel"):
+def view3(request: RequestDependency, some: "SomeModel"):
     assert isinstance(some, SomeModel)
     return some
 
 
 @router.post("/test_form")
-def view4(request, form: OtherModel = Form(...)):
+def view4(request: RequestDependency, form: OtherModel = Form(...)):
     assert isinstance(form, OtherModel)
     return form
 
 
 @router.post("/test_query")
-def view4query(request, q: OtherModel = Query(...)):
+def view4query(request: RequestDependency, q: OtherModel = Query(...)):
     assert isinstance(q, OtherModel)
     return q
 
 
 @router.post("/selfref")
-def view5(request, obj: SelfReference):
+def view5(request: RequestDependency, obj: SelfReference):
     assert isinstance(obj, SelfReference)
     return obj
 
 
 @router.post("/model-default")
-def view6(request, obj: OtherModel = None):
+def view6(request: RequestDependency, obj: OtherModel = None):
     assert isinstance(obj, (OtherModel, None.__class__))
     return obj
 
 
 @router.post("/model-default2")
-def view7(request, obj: OtherModel = OtherModel(x=1, y=1)):
+def view7(request: RequestDependency, obj: OtherModel = OtherModel(x=1, y=1)):
     assert isinstance(obj, OtherModel)
     return obj
 

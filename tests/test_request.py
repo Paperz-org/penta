@@ -1,5 +1,6 @@
 from typing import Optional
 
+from penta.dependencies.request import RequestDependency
 import pytest
 from pydantic import ConfigDict
 
@@ -22,42 +23,42 @@ router = Router()
 
 
 @router.get("/headers1")
-def headers1(request, user_agent: str = Header(...)):
+def headers1(request: RequestDependency, user_agent: str = Header(...)):
     return user_agent
 
 
 @router.get("/headers2")
-def headers2(request, ua: str = Header(..., alias="User-Agent")):
+def headers2(request: RequestDependency, ua: str = Header(..., alias="User-Agent")):
     return ua
 
 
 @router.get("/headers3")
-def headers3(request, content_length: int = Header(...)):
+def headers3(request: RequestDependency, content_length: int = Header(...)):
     return content_length
 
 
 @router.get("/headers4")
-def headers4(request, c_len: int = Header(..., alias="Content-length")):
+def headers4(request: RequestDependency, c_len: int = Header(..., alias="Content-length")):
     return c_len
 
 
 @router.get("/headers5")
-def headers5(request, missing: int = Header(...)):
+def headers5(request: RequestDependency, missing: int = Header(...)):
     return missing
 
 
 @router.get("/cookies1")
-def cookies1(request, weapon: str = Cookie(...)):
+def cookies1(request: RequestDependency, weapon: str = Cookie(...)):
     return weapon
 
 
 @router.get("/cookies2")
-def cookies2(request, wpn: str = Cookie(..., alias="weapon")):
+def cookies2(request: RequestDependency, wpn: str = Cookie(..., alias="weapon")):
     return wpn
 
 
 @router.post("/test-schema")
-def schema(request, payload: ExtraForbidSchema = Body(...)):
+def schema(request: RequestDependency, payload: ExtraForbidSchema = Body(...)):
     return "ok"
 
 

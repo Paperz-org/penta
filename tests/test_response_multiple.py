@@ -12,27 +12,27 @@ api = Penta()
 
 
 @api.get("/check_int", response={200: int})
-def check_int(request):
+def check_int():
     return 200, "1"
 
 
 @api.get("/check_int2", response={200: int})
-def check_int2(request):
+def check_int2():
     return 200, "str"
 
 
 @api.get("/check_single_with_status", response=int)
-def check_single_with_status(request, code: int):
+def check_single_with_status(code: int):
     return code, 1
 
 
 @api.get("/check_response_schema", response={400: int})
-def check_response_schema(request):
+def check_response_schema():
     return 200, 1
 
 
 @api.get("/check_no_content", response={204: None})
-def check_no_content(request, return_code: bool):
+def check_no_content(return_code: bool):
     if return_code:
         return 204, None
     return  # None
@@ -42,7 +42,7 @@ def check_no_content(request, return_code: bool):
     "/check_multiple_codes",
     response={codes_2xx: int, codes_3xx: str, ...: float},
 )
-def check_multiple_codes(request, code: int):
+def check_multiple_codes(code: int):
     return code, "1"
 
 
@@ -64,17 +64,17 @@ class ErrorModel(Schema):
 
 
 @api.get("/check_model", response={200: UserModel, 202: UserModel})
-def check_model(request):
+def check_model():
     return 202, User(1, "John", "Password")
 
 
 @api.get("/check_list_model", response={200: List[UserModel]})
-def check_list_model(request):
+def check_list_model():
     return 200, [User(1, "John", "Password")]
 
 
 @api.get("/check_union", response={200: Union[int, UserModel], 400: ErrorModel})
-def check_union(request, q: int):
+def check_union(q: int):
     if q == 0:
         return 200, 1
     if q == 1:

@@ -9,7 +9,7 @@ api = Penta()
 
 
 @api.get("/path", response=SchemaWithAlias)
-def alias_operation(request):
+def alias_operation():
     return {"bar": "value"}
 
 
@@ -33,5 +33,5 @@ def test_alias():
 #       when alias is used both for response and request schema
 #       basically it need to generate 2 schemas - one with alias another without
 # @api.post("/path", response=SchemaWithAlias)
-# def alias_operation(request, payload: SchemaWithAlias):
+# def alias_operation(request: RequestDependency, payload: SchemaWithAlias):
 #     return {"bar": payload.foo}

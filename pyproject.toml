@@ -44,6 +44,7 @@ dependencies = [
     "Django >=3.1, <6.0",
     "fast-depends>=2.4.12",
     "pydantic >=2.0,<3.0.0",
+    "pytest>=8.4.1",
     "ruff>=0.5.7",
 ]
 urls = { Documentation = "https://paperz-org.github.io/penta", Repository = "https://github.com/paperz-org/penta" }

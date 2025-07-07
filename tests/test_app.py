@@ -3,6 +3,7 @@ import os
 from pathlib import Path
 from tempfile import NamedTemporaryFile
 
+from penta.dependencies.request import RequestDependency
 import pytest
 from django.http import FileResponse, HttpResponse
 
@@ -22,48 +23,48 @@ client = TestClient(api)
 # and both routers have same path defined
 
 
-@api.get("")
-def emptypath(request):
+@api.get("/")
+def emptypath():
     return "/"
 
 
 @api.get("/get")
-def get(request):
+def get(request: RequestDependency):
     return f"this is {request.method}"
 
 
 @api.post("/post")
-def post(request):
+def post(request: RequestDependency):
     return f"this is {request.method}"
 
 
 @api.put("/put")
-def put(request):
+def put(request: RequestDependency):
     return f"this is {request.method}"
 
 
 @api.patch("/patch")
-def patch(request):
+def patch(request: RequestDependency):
     return f"this is {request.method}"
 
 
 @api.delete("/delete")
-def delete(request):
+def delete(request: RequestDependency):
     return f"this is {request.method}"
 
 
 @api.api_operation(["GET", "POST"], "/multi")
-def multiple(request):
+def multiple(request: RequestDependency):
     return f"this is {request.method}"
 
 
 @api.get("/html")
-def html(request):
+def html():
     return HttpResponse("html")
 
 
 @api.get("/file")
-def file_response(request):
+def file_response():
     tmp = NamedTemporaryFile(delete=False)
     try:
         p = Path(tmp.name)

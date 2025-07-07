@@ -21,7 +21,6 @@ class Payload(Schema):
 
 @api.post("/multi/{p}")
 def multi_op(
-    request,
     q: Annotated[str, Query(description="Query param")],
     p: Annotated[int, Path(description="Path param")],
     f: Annotated[FormData, Form(description="Form params")],
@@ -32,21 +31,18 @@ def multi_op(
 
 @api.post("/query_list")
 def query_list(
-    request,
     q: Annotated[List[str], Query(description="User ID")],
 ):
     return {"q": q}
 
 
 @api.post("/headers")
-def headers(request, h: Annotated[str, Header()] = "some-default"):
+def headers(h: Annotated[str, Header()] = "some-default"):
     return {"h": h}
 
 
 @api.post("/body")
-def body_op(
-    request, payload: Annotated[Payload, Body(examples=[{"t": 42, "p": "test"}])]
-):
+def body_op(payload: Annotated[Payload, Body(examples=[{"t": 42, "p": "test"}])]):
     return {"payload": payload}
 
 

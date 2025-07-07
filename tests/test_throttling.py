@@ -1,3 +1,4 @@
+from penta.dependencies.request import RequestDependency
 import pytest
 from django.core.cache import cache
 from django.core.exceptions import ImproperlyConfigured
@@ -25,7 +26,7 @@ def test_global_throttling():
     api = Penta(throttle=[th])
 
     @api.get("/check")
-    def check(request):
+    def check():
         return "OK"
 
     client = TestClient(api)
@@ -52,7 +53,7 @@ def test_router_throttling():
     router = Router()
 
     @router.get("/check")
-    def check(request):
+    def check():
         return "OK"
 
     api.add_router("/router", router, throttle=th)
@@ -77,7 +78,7 @@ def test_router2_throttling():
     router = Router()
 
     @router.get("/check")
-    def check(request):
+    def check():
         return "OK"
 
     api.add_router("/router", router)
@@ -100,7 +101,7 @@ def test_operation_throttling():
     api = Penta()
 
     @api.get("/check1", throttle=th)
-    def check(request):
+    def check():
         return "OK"
 
     client = TestClient(api)
@@ -122,7 +123,7 @@ async def test_async_throttling():
     api = Penta(throttle=th)
 
     @api.get("/check-async")
-    async def check(request):
+    async def check():
         return "OK"
 
     client = TestAsyncClient(api)

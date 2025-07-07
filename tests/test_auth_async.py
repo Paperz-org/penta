@@ -1,5 +1,6 @@
 import asyncio
 
+from penta.dependencies.request import RequestDependency
 import pytest
 
 from penta import Penta
@@ -11,13 +12,13 @@ from penta.testing import TestAsyncClient, TestClient
 async def test_async_view_handles_async_auth_func():
     api = Penta()
 
-    async def auth(request):
+    async def auth(request: RequestDependency):
         key = request.GET.get("key")
         if key == "secret":
             return key
 
     @api.get("/async", auth=auth)
-    async def view(request):
+    async def view(request: RequestDependency):
         await asyncio.sleep(0)
         return {"key": request.auth}
 
@@ -39,13 +40,13 @@ async def test_async_view_handles_async_auth_cls():
     api = Penta()
 
     class Auth:
-        async def __call__(self, request):
+        async def __call__(self, request: RequestDependency):
             key = request.GET.get("key")
             if key == "secret":
                 return key
 
     @api.get("/async", auth=Auth())
-    async def view(request):
+    async def view(request: RequestDependency):
         await asyncio.sleep(0)
         return {"key": request.auth}
 
@@ -72,13 +73,13 @@ async def test_async_view_handles_multi_auth():
     async def auth_2(request):
         return None
 
-    async def auth_3(request):
+    async def auth_3(request: RequestDependency):
         key = request.GET.get("key")
         if key == "secret":
             return key
 
     @api.get("/async", auth=[auth_1, auth_2, auth_3])
-    async def view(request):
+    async def view(request: RequestDependency):
         await asyncio.sleep(0)
         return {"key": request.auth}
 
@@ -92,16 +93,16 @@ async def test_async_view_handles_multi_auth():
 async def test_async_view_handles_auth_errors():
     api = Penta()
 
-    async def auth(request):
+    async def auth():
         raise Exception("boom")
 
     @api.get("/async", auth=auth)
-    async def view(request):
+    async def view(request: RequestDependency):
         await asyncio.sleep(0)
         return {"key": request.auth}
 
     @api.exception_handler(Exception)
-    def on_custom_error(request, exc):
+    def on_custom_error(request: RequestDependency, exc: Exception):
         return api.create_response(request, {"custom": True}, status=401)
 
     client = TestAsyncClient(api)
@@ -113,7 +114,7 @@ async def test_async_view_handles_auth_errors():
 @pytest.mark.asyncio
 async def test_sync_authenticate_method():
     class KeyAuth(APIKeyQuery):
-        async def authenticate(self, request, key):
+        async def authenticate(self, request: RequestDependency, key):
             await asyncio.sleep(0)
             if key == "secret":
                 return key
@@ -121,7 +122,7 @@ async def test_sync_authenticate_method():
     api = Penta(auth=KeyAuth())
 
     @api.get("/async")
-    async def async_view(request):
+    async def async_view(request: RequestDependency):
         return {"auth": request.auth}
 
     client = TestAsyncClient(api)
@@ -135,7 +136,7 @@ async def test_sync_authenticate_method():
 
 def test_async_authenticate_method_in_sync_context():
     class KeyAuth(APIKeyQuery):
-        async def authenticate(self, request, key):
+        async def authenticate(self, request: RequestDependency, key):
             await asyncio.sleep(0)
             if key == "secret":
                 return key
@@ -143,7 +144,7 @@ def test_async_authenticate_method_in_sync_context():
     api = Penta(auth=KeyAuth())
 
     @api.get("/sync")
-    def sync_view(request):
+    def sync_view(request: RequestDependency):
         return {"auth": request.auth}
 
     client = TestClient(api)
@@ -158,7 +159,7 @@ def test_async_authenticate_method_in_sync_context():
 @pytest.mark.asyncio
 async def test_async_with_bearer():
     class BearerAuth(HttpBearer):
-        async def authenticate(self, request, key):
+        async def authenticate(self, request: RequestDependency, key):
             await asyncio.sleep(0)
             if key == "secret":
                 return key
@@ -166,7 +167,7 @@ async def test_async_with_bearer():
     api = Penta(auth=BearerAuth())
 
     @api.get("/async")
-    async def async_view(request):
+    async def async_view(request: RequestDependency):
         return {"auth": request.auth}
 
     client = TestAsyncClient(api)

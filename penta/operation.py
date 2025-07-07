@@ -470,7 +470,6 @@ class PathView:
         if is_async(view_func):
             self.is_async = True
             OperationClass = AsyncOperation
-        print(OperationClass)
 
         operation = OperationClass(
             path,

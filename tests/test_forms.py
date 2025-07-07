@@ -1,3 +1,4 @@
+from penta.dependencies.request import RequestDependency
 import pytest
 
 from penta import Form, Penta, Schema
@@ -8,7 +9,7 @@ api = Penta()
 
 
 @api.post("/form")
-def form_operation(request, s: str = Form(...), i: int = Form(None)):
+def form_operation(request: RequestDependency, s: str = Form(...), i: int = Form(None)):
     return {"s": s, "i": i}
 
 
@@ -62,14 +63,14 @@ def test_duplicate_names():
     with pytest.raises(ConfigError, match=match):
 
         @api.post("/broken1")
-        def broken1(request, p1: int = Form(...), data: TestData = Form(...)):
+        def broken1(request: RequestDependency, p1: int = Form(...), data: TestData = Form(...)):
             pass
 
     match = "Duplicated name: 'p1' also in 'data'"
     with pytest.raises(ConfigError, match=match):
 
         @api.post("/broken2")
-        def broken2(request, data: TestData = Form(...), p1: int = Form(...)):
+        def broken2(request: RequestDependency, data: TestData = Form(...), p1: int = Form(...)):
             pass
 
 
@@ -80,5 +81,5 @@ def test_duplicate_names():
 
 
 # @api.post("/login")
-# def login(request, credentials: Credentials = Form(...)):
+# def login(request: RequestDependency, credentials: Credentials = Form(...)):
 #     return {'username': credentials.username}

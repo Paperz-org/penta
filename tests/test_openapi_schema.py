@@ -2,6 +2,7 @@ import sys
 from typing import Any, List, Union
 from unittest.mock import Mock
 
+from penta.dependencies.request import RequestDependency
 import pytest
 from django.contrib.admin.views.decorators import staff_member_required
 from django.test import Client, override_settings
@@ -794,11 +795,11 @@ def test_unique_operation_ids(capsys):
     api = Penta()
 
     @api.get("/1")
-    def same_name(request):
+    def same_name(request: RequestDependency,):
         pass
 
     @api.get("/2")  # noqa: F811
-    def same_name(request):  # noqa: F811
+    def same_name(request: RequestDependency,):  # noqa: F811
         pass
 
     api.get_openapi_schema()
@@ -863,11 +864,11 @@ def test_all_paths_rendered():
         pass
 
     @api.get("/1/{param}")
-    def some_name_get_one(request, param: int):
+    def some_name_get_one(request: RequestDependency, param: int):
         pass
 
     @api.delete("/1/{param}")
-    def some_name_delete(request, param: int):
+    def some_name_delete(request: RequestDependency, param: int):
         pass
 
     schema = api.get_openapi_schema()
@@ -893,11 +894,11 @@ def test_all_paths_typed_params_rendered():
         pass
 
     @api.get("/1/{int:param}")
-    def some_name_get_one(request, param: int):
+    def some_name_get_one(request: RequestDependency, param: int):
         pass
 
     @api.delete("/1/{str:param}")
-    def some_name_delete(request, param: str):
+    def some_name_delete(request: RequestDependency, param: str):
         pass
 
     schema = api.get_openapi_schema()
@@ -932,7 +933,7 @@ def test_no_default_for_custom_items_attribute():
         response=List[EmployeeOut],
     )
     @paginate(CustomPagination)
-    def get_employees(request):
+    def get_employees(request: RequestDependency,):
         pass
 
     schema = api.get_openapi_schema()

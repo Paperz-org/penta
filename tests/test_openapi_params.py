@@ -1,10 +1,11 @@
 from penta import Penta
+from penta.dependencies.request import RequestDependency
 
 api = Penta()
 
 
 @api.get("/operation1", operation_id="my_id")
-def operation_1(request):
+def operation_1(request: RequestDependency):
     """
     This will be in description
     """
@@ -12,18 +13,18 @@ def operation_1(request):
 
 
 @api.get("/operation2", description="description from argument", deprecated=True)
-def operation2(request):
+def operation2(request: RequestDependency):
     return {"description": True, "deprecated": True}
 
 
 @api.get("/operation3", summary="Summary from argument", description="description arg")
-def operation3(request):
+def operation3(request: RequestDependency):
     "This one also has docstring description"
     return {"summary": True, "description": "multiple"}
 
 
 @api.get("/operation4", tags=["tag1", "tag2"])
-def operation4(request):
+def operation4(request: RequestDependency):
     return {"tags": True}
 
 
@@ -48,12 +49,12 @@ def operation4(request):
         },
     },
 )
-def operation5(request):
+def operation5(request: RequestDependency):
     return {"openapi_extra": True}
 
 
 @api.get("/not-included", include_in_schema=False)
-def not_included(request):
+def not_included(request: RequestDependency):
     return True
 
 

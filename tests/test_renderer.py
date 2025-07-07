@@ -1,5 +1,6 @@
 from io import StringIO
 
+from penta.dependencies.request import RequestDependency
 import pytest
 from django.utils.encoding import force_str
 from django.utils.xmlutils import SimplerXMLGenerator
@@ -12,7 +13,7 @@ from penta.testing import TestClient
 class XMLRenderer(BaseRenderer):
     media_type = "text/xml"
 
-    def render(self, request, data, *, response_status):
+    def render(self, request: RequestDependency, data, *, response_status):
         stream = StringIO()
         xml = SimplerXMLGenerator(stream, "utf-8")
         xml.startDocument()
@@ -46,14 +47,14 @@ class XMLRenderer(BaseRenderer):
 class CSVRenderer(BaseRenderer):
     media_type = "text/csv"
 
-    def render(self, request, data, *, response_status):
+    def render(self, request: RequestDependency, data, *, response_status):
         content = [",".join(data[0].keys())]
         for item in data:
             content.append(",".join(item.values()))
         return "\n".join(content)
 
 
-def operation(request):
+def operation(request: RequestDependency):
     return [
         {"name": "Jonathan", "lastname": "Doe"},
         {"name": "Sarah", "lastname": "Calvin"},

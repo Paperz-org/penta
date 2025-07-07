@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from fast_depends import Depends
+from penta.dependencies.depends import Depends
 
 from penta import context
 from penta.request import Request

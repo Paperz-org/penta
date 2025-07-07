@@ -1,5 +1,6 @@
 from typing import List
 
+from penta.dependencies.request import RequestDependency
 import pytest
 
 from penta import Penta, Schema
@@ -14,12 +15,12 @@ class ItemSchema(Schema):
 
 
 @api.get("/items", response=List[ItemSchema])
-def items(request):
+def items(request: RequestDependency):
     return [{"id": i} for i in range(1, 51)]
 
 
 @api.get("/items_nolist", response=ItemSchema)
-def items_nolist(request):
+def items_nolist(request: RequestDependency):
     return {"id": 1}
 
 
@@ -69,7 +70,7 @@ def test_for_NON_list_reponse():
 @pytest.mark.asyncio
 async def test_async_pagination():
     @api.get("/items_async", response=List[ItemSchema])
-    async def items_async(request):
+    async def items_async(request: RequestDependency):
         return [{"id": i} for i in range(1, 51)]
 
     client = TestAsyncClient(api)

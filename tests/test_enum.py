@@ -2,6 +2,7 @@ from datetime import date
 from enum import Enum
 from typing import List, Optional
 
+from penta.dependencies.request import RequestDependency
 from pydantic import BaseModel
 
 from penta import Penta, Query
@@ -29,29 +30,33 @@ api = Penta()
 
 
 @api.post("/book")
-def create_booking(request, booking: Booking):
+def create_booking(request: RequestDependency, booking: Booking):
     return booking
 
 
 @api.get("/search")
-def booking_search(request, room: RoomEnum):
+def booking_search(request: RequestDependency, room: RoomEnum):
     return {"room": room}
 
 
 @api.get("/optional")
 def enum_optional(
-    request, room: Optional[RoomEnum] = Query(None, description="description")
+    request: RequestDependency,
+    room: Optional[RoomEnum] = Query(None, description="description"),
 ):
     return {"room": room}
 
 
 @api.get("/optional2")
-def enum_optional2(request, extra: Optional[ExtraEnum] = None):
+def enum_optional2(request: RequestDependency, extra: Optional[ExtraEnum] = None):
     return {"extra": extra}
 
 
 @api.get("/list")
-def enum_list(request, rooms: List[RoomEnum] = Query(None, description="description")):
+def enum_list(
+    request: RequestDependency,
+    rooms: List[RoomEnum] = Query(None, description="description"),
+):
     return {"rooms": rooms}
 
 
@@ -62,7 +67,8 @@ class QueryOnlyEnum(str, Enum):
 
 @api.get("/new-list")
 def new_enum_list(
-    request, q: List[QueryOnlyEnum] = Query(None, description="description")
+    request: RequestDependency,
+    q: List[QueryOnlyEnum] = Query(None, description="description"),
 ):
     return {"q": q}
 

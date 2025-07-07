@@ -1,3 +1,4 @@
+from penta.dependencies.request import RequestDependency
 import pytest
 
 from penta import Penta, Router
@@ -10,7 +11,7 @@ class Auth(APIKeyQuery):
         self.secret = secret
         super().__init__()
 
-    def authenticate(self, request, key):
+    def authenticate(self, request: RequestDependency, key):
         if key == self.secret:
             return key
 
@@ -23,17 +24,17 @@ r2_1 = Router()
 
 
 @r1.get("/test")
-def operation1(request):
+def operation1(request: RequestDependency):
     return request.auth
 
 
 @r2.get("/test")
-def operation2(request):
+def operation2(request: RequestDependency):
     return request.auth
 
 
 @r2_1.get("/test")
-def operation3(request):
+def operation3(request: RequestDependency):
     return request.auth
 
 

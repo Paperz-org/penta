@@ -8,7 +8,6 @@ api = Penta()
 
 @api.post("/str_and_file")
 def str_and_file(
-    request,
     title: str = Form(...),
     description: str = Form(""),
     file: UploadedFile = File(...),

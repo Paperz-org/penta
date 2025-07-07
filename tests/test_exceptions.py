@@ -1,3 +1,4 @@
+from penta.dependencies.request import RequestDependency
 import pytest
 from django.http import Http404
 
@@ -12,7 +13,7 @@ class CustomException(Exception):
 
 
 @api.exception_handler(CustomException)
-def on_custom_error(request, exc):
+def on_custom_error(request: RequestDependency, exc):
     return api.create_response(request, {"custom": True}, status=422)
 
 
@@ -21,7 +22,7 @@ class Payload(Schema):
 
 
 @api.post("/error/{code}")
-def err_thrower(request, code: str, payload: Payload = None):
+def err_thrower(request: RequestDependency, code: str, payload: Payload = None):
     if code == "base":
         raise RuntimeError("test")
     if code == "404":
@@ -77,7 +78,7 @@ async def test_asyncio_exceptions():
     api = Penta()
 
     @api.get("/error")
-    async def thrower(request):
+    async def thrower(request: RequestDependency):
         raise Http404("test")
 
     client = TestAsyncClient(api)
@@ -90,7 +91,7 @@ def test_no_handlers():
     api._exception_handlers = {}
 
     @api.get("/error")
-    def thrower(request):
+    def thrower(request: RequestDependency):
         raise RuntimeError("test")
 
     client = TestClient(api)

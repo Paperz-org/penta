@@ -19,18 +19,18 @@ from penta.security.base import AuthBase
 from penta.testing import TestClient
 
 
-def callable_auth(request):
+def callable_auth(request: RequestDependency):
     return request.GET.get("auth")
 
 
 class KeyQuery(APIKeyQuery):
-    def authenticate(self, request, key):
+    def authenticate(self, request: RequestDependency, key):
         if key == "keyquerysecret":
             return key
 
 
 class KeyHeader(APIKeyHeader):
-    def authenticate(self, request, key):
+    def authenticate(self, request: RequestDependency, key):
         if key == "keyheadersecret":
             return key
 
@@ -40,26 +40,26 @@ class CustomException(Exception):
 
 
 class KeyHeaderCustomException(APIKeyHeader):
-    def authenticate(self, request, key):
+    def authenticate(self, request: RequestDependency, key):
         if key != "keyheadersecret":
             raise CustomException
         return key
 
 
 class KeyCookie(APIKeyCookie):
-    def authenticate(self, request, key):
+    def authenticate(self, request: RequestDependency, key):
         if key == "keycookiersecret":
             return key
 
 
 class BasicAuth(HttpBasicAuth):
-    def authenticate(self, request, username, password):
+    def authenticate(self, request: RequestDependency, username, password):
         if username == "admin" and password == "secret":
             return username
 
 
 class BearerAuth(HttpBearer):
-    def authenticate(self, request, token):
+    def authenticate(self, request: RequestDependency, token):
         if token == "bearertoken":
             return token
         if token == "nottherightone":
@@ -72,7 +72,7 @@ class AsyncBearerAuth(HttpBearer):
     which led to an await error
     """
 
-    async def authenticate(self, request, token):
+    async def authenticate(self, request: RequestDependency, token):
         if token == "bearertoken":
             return token
         if token == "nottherightone":

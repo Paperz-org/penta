@@ -3,6 +3,7 @@ from typing import List
 from django.http import HttpRequest, QueryDict
 
 from penta import Penta
+from penta.dependencies.request import RequestDependency
 from penta.parser import Parser
 from penta.testing import TestClient
 
@@ -29,7 +30,7 @@ api = Penta(parser=MyParser())
 
 
 @api.post("/test")
-def operation(request, body: List[str], emptyparam: str = None):
+def operation(request: RequestDependency, body: List[str], emptyparam: str = None):
     return {"emptyparam": emptyparam, "body": body}
 
 

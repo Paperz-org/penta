@@ -10,28 +10,28 @@ router_with_multiple = Router()
 
 
 @router_with_path_type.get("/metadata")
-def get_item_metadata(request, item_id: int = Path(None)) -> int:
+def get_item_metadata(item_id: int = Path(None)) -> int:
     return item_id
 
 
 @router_without_path_type.get("/")
-def get_item_metadata_2(request, item_id: str = Path(None)) -> str:
+def get_item_metadata_2(item_id: str = Path(None)) -> str:
     return item_id
 
 
 @router_without_path_type.get("/metadata")
-def get_item_metadata_3(request, item_id: str = Path(None)) -> str:
+def get_item_metadata_3(item_id: str = Path(None)) -> str:
     return item_id
 
 
 @router_without_path_type.get("/")
-def get_item_metadata_4(request, item_id: str = Path(None)) -> str:
+def get_item_metadata_4(item_id: str = Path(None)) -> str:
     return item_id
 
 
 @router_with_multiple.get("/metadata/{kind}")
 def get_item_metadata_5(
-    request, item_id: int = Path(None), name: str = Path(None), kind: str = Path(None)
+    item_id: int = Path(None), name: str = Path(None), kind: str = Path(None)
 ) -> str:
     return f"{item_id} {name} {kind}"
 

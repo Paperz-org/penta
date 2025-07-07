@@ -1,5 +1,6 @@
 from typing import Any, Dict, List
 
+from penta.dependencies.request import RequestDependency
 import pytest
 from pydantic import field_validator
 
@@ -13,12 +14,12 @@ api = Penta()
 
 
 @api.post("/task")
-def create_task(request, start: int = Body(...), end: int = Body(...)):
+def create_task(request: RequestDependency, start: int = Body(...), end: int = Body(...)):
     return [start, end]
 
 
 @api.post("/task2")
-def create_task2(request, start: int = Body(2), end: int = Form(1)):
+def create_task2(request: RequestDependency, start: int = Body(2), end: int = Form(1)):
     return [start, end]
 
 
@@ -35,7 +36,7 @@ class UserIn(Schema):
 
 
 @api.post("/users")
-def create_user(request, payload: UserIn):
+def create_user(request: RequestDependency, payload: UserIn):
     return payload.dict()
 
 
@@ -81,7 +82,7 @@ def test_incorrect_annotation():
     with pytest.raises(ConfigError):
 
         @api.post("/some")
-        def some(request, payload=Some):
+        def some(request: RequestDependency, payload=Some):
             #  ................. ^------ invalid usage assigning class instead of annotation
             return 42
 
@@ -110,7 +111,7 @@ custom_error_api = CustomErrorAPI()
 
 
 @custom_error_api.post("/users")
-def create_user2(request, payload: UserIn):
+def create_user2(request: RequestDependency, payload: UserIn):
     return payload.dict()
 
 

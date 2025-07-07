@@ -1,5 +1,6 @@
 from typing import List
 
+from penta.dependencies.request import RequestDependency
 import pytest
 from django.http import QueryDict  # noqa
 from pydantic import BaseModel, Field, conlist
@@ -12,7 +13,6 @@ router = Router()
 
 @router.post("/list1")
 def listview1(
-    request,
     query: List[int] = Query(...),
     form: List[int] = Form(...),
 ):
@@ -24,7 +24,6 @@ def listview1(
 
 @router.post("/list2")
 def listview2(
-    request,
     body: List[int],
     query: List[int] = Query(...),
 ):
@@ -40,14 +39,14 @@ class BodyModel(BaseModel):
 
 
 @router.post("/list3")
-def listview3(request, body: List[BodyModel]):
+def listview3(request: RequestDependency, body: List[BodyModel]):
     return {
         "body": body,
     }
 
 
 @router.post("/list-default")
-def listviewdefault(request, body: List[int] = [1]):  # noqa: B006
+def listviewdefault(request: RequestDependency, body: List[int] = [1]):  # noqa: B006
     # By default List[anything] is treated for body
     return {
         "body": body,
@@ -79,7 +78,6 @@ class Data(Schema):
 
 @router.post("/list5")
 def listview5(
-    request,
     body: conlist(int, min_length=1) = Body(...),
     a_query: Data = Query(...),
 ):
@@ -91,7 +89,6 @@ def listview5(
 
 @router.post("/list6")
 def listview6(
-    request,
     object_id: List[int] = Query(None, alias="id"),
 ):
     return {"query": object_id}

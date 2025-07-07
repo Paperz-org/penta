@@ -2,6 +2,7 @@ import asyncio
 from typing import Any, List
 
 import django
+from penta.dependencies.request import RequestDependency
 import pytest
 from django.db.models import QuerySet
 from someapp.models import Category
@@ -75,7 +76,7 @@ async def test_async_config_error():
 
         @api.get("/items_async_undefined", response=List[int])
         @paginate(NoAsyncPagination)
-        async def items_async_undefined(request, **kwargs):
+        async def items_async_undefined(request: RequestDependency, **kwargs):
             return ITEMS
 
 
@@ -85,7 +86,7 @@ async def test_async_custom_pagination():
 
     @api.get("/items_async", response=List[int])
     @paginate(AsyncNoOutputPagination)
-    async def items_async(request):
+    async def items_async(request: RequestDependency):
         return ITEMS
 
     client = TestAsyncClient(api)
@@ -100,7 +101,7 @@ async def test_async_default():
 
     @api.get("/items_default", response=List[int])
     @paginate  # WITHOUT brackets (should use default pagination)
-    async def items_default(request, someparam: int = 0, **kwargs):
+    async def items_default(request: RequestDependency, someparam: int = 0, **kwargs):
         await asyncio.sleep(0)
         return ITEMS
 
@@ -116,7 +117,7 @@ async def test_async_page_number():
 
     @api.get("/items_page_number", response=List[Any])
     @paginate(PageNumberPagination, page_size=10, pass_parameter="page_info")
-    async def items_page_number(request, **kwargs):
+    async def items_page_number(request: RequestDependency, **kwargs):
         return ITEMS + [kwargs["page_info"]]
 
     client = TestAsyncClient(api)
@@ -140,12 +141,12 @@ async def test_test_async_pagination():
 
     @api.get("/cats", response=list[CatSchema])
     @paginate
-    async def cats_paginated_limit_offset(request):
+    async def cats_paginated_limit_offset(request: RequestDependency):
         return Category.objects.order_by("id")
 
     @api.get("/cats-pages", response=list[CatSchema])
     @paginate(PageNumberPagination)
-    async def cats_paginated_page_number(request):
+    async def cats_paginated_page_number(request: RequestDependency):
         return Category.objects.order_by("id")
 
     client = TestAsyncClient(api)

@@ -1,6 +1,7 @@
 from django.db import models
 
 from penta import Penta
+from penta.dependencies.request import RequestDependency
 from penta.orm import create_schema
 from penta.testing import TestClient
 
@@ -23,7 +24,7 @@ def test_manytomany():
     api = Penta()
 
     @api.post("/bar")
-    def post_with_m2m(request, payload: WithM2MSchema):
+    def post_with_m2m(request: RequestDependency, payload: WithM2MSchema):
         return payload.dict()
 
     client = TestClient(api)

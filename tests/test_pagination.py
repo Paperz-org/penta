@@ -2,6 +2,7 @@ import importlib
 from sys import version_info
 from typing import Any, List
 
+from penta.dependencies.request import RequestDependency
 import pytest
 from django.test import override_settings
 from pydantic.errors import PydanticSchemaGenerationError
@@ -87,7 +88,9 @@ class NextPrevPagination(PaginationBase):
         next: str = None
         prev: str = None
 
-    def paginate_queryset(self, items, pagination: Input, request, **params):
+    def paginate_queryset(
+        self, items, pagination: Input, request: RequestDependency, **params
+    ):
         skip = pagination.skip
         prev_skip = skip - 5
         if prev_skip < 0:
@@ -101,62 +104,62 @@ class NextPrevPagination(PaginationBase):
 
 @api.get("/items_1", response=List[int])
 @paginate  # WITHOUT brackets (should use default pagination)
-def items_1(request, **kwargs):
+def items_1(request: RequestDependency, **kwargs):
     return ITEMS
 
 
 @api.get("/items_2", response=List[int])
 @paginate()  # with brackets (should use default pagination)
-def items_2(request, someparam: int = 0, **kwargs):
+def items_2(request: RequestDependency, someparam: int = 0, **kwargs):
     # also having custom param `someparam` - that should not be lost
     return ITEMS
 
 
 @api.get("/items_3", response=List[int])
 @paginate(CustomPagination)
-def items_3(request, **kwargs):
+def items_3(request: RequestDependency, **kwargs):
     return ITEMS
 
 
 @api.get("/items_4", response=List[int])
 @paginate(PageNumberPagination, page_size=10)
-def items_4(request, **kwargs):
+def items_4(request: RequestDependency, **kwargs):
     return ITEMS
 
 
 @api.get("/items_5", response=List[int])
 @paginate(PageNumberPagination, page_size=10)
-def items_5(request):
+def items_5(request: RequestDependency):
     return ITEMS
 
 
 @api.get("/items_6", response={101: int, 200: List[Any]})
 @paginate(PageNumberPagination, page_size=10, pass_parameter="page_info")
-def items_6(request, **kwargs):
+def items_6(request: RequestDependency, **kwargs):
     return ITEMS + [kwargs["page_info"]]
 
 
 @api.get("/items_7", response=List[int])
 @paginate(NoOutputPagination)
-def items_7(request):
+def items_7(request: RequestDependency):
     return list(range(15))
 
 
 @api.get("/items_8", response=List[int])
 @paginate(ResultsPaginator)
-def items_8(request):
+def items_8(request: RequestDependency):
     return list(range(1000))
 
 
 @api.get("/items_9", response=List[int])
 @paginate(NextPrevPagination)
-def items_9(request):
+def items_9(request: RequestDependency):
     return list(range(100))
 
 
 @api.get("/items_10", response=List[int])
 @paginate(PageNumberPagination, page_size=10, max_page_size=20)
-def items_10(request):
+def items_10(request: RequestDependency):
     return ITEMS
 
 
@@ -500,7 +503,7 @@ def test_10_max_limit_set():
 
     @new_api.get("/items_10", response=List[int])
     @paginate  # LimitOffsetPagination is set as default
-    def items_10(request, **kwargs):
+    def items_10(request: RequestDependency, **kwargs):
         return ITEMS
 
     response = new_client.get("/items_10?limit=1000").json()
@@ -547,7 +550,7 @@ def test_11_max_limit_set_and_exceeded():
 
     @new_api.get("/items_11", response=List[int])
     @paginate  # LimitOffsetPagination is set as default
-    def items_11(request, **kwargs):
+    def items_11(request: RequestDependency, **kwargs):
         return ITEMS
 
     response = new_client.get("/items_11?limit=1001").json()
@@ -568,7 +571,7 @@ def test_config_error_None():
 
         @api.get("/invalid1", response={200: None})
         @paginate
-        def invalid1(request):
+        def invalid1(request: RequestDependency):
             pass
 
 
@@ -577,7 +580,7 @@ def test_config_error_NOT_SET():
 
         @api.get("/invalid2")
         @paginate
-        def invalid2(request):
+        def invalid2(request: RequestDependency):
             pass
 
 

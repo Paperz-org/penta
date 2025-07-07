@@ -1,6 +1,7 @@
 from datetime import datetime
 from enum import IntEnum
 
+from penta.dependencies.request import RequestDependency
 from pydantic import Field
 
 from penta import Penta, Query, Schema
@@ -27,7 +28,7 @@ api = Penta()
 
 
 @api.get("/test")
-def query_params_schema(request, filters: Filter = Query(...)):
+def query_params_schema(request: RequestDependency, filters: Filter = Query(...)):
     return filters.dict()
 
 
@@ -42,7 +43,7 @@ def query_params_mixed_schema(
     return dict(query1=query1, query2=query2, filters=filters.dict(), data=data.dict())
 
 
-# def test_request():
+# def test_request: RequestDependency):
 #     client = TestClient(api)
 #     response = client.get("/test?from=1&to=2&range=20&foo=1&range2=50")
 #     print("!", response.json())
@@ -56,7 +57,7 @@ def query_params_mixed_schema(
 #     assert response.status_code == 422
 
 
-# def test_request_mixed():
+# def test_request: RequestDependency,mixed():
 #     client = TestClient(api)
 #     response = client.get(
 #         "/test-mixed?from=1&to=2&range=20&foo=1&range2=50&query1=2&int=3&float=1.6"

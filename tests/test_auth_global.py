@@ -1,16 +1,17 @@
 from penta import Penta, Router
+from penta.dependencies.request import RequestDependency
 from penta.security import APIKeyQuery
 from penta.testing import TestClient
 
 
 class KeyQuery1(APIKeyQuery):
-    def authenticate(self, request, key):
+    def authenticate(self, request: RequestDependency, key):
         if key == "k1":
             return key
 
 
 class KeyQuery2(APIKeyQuery):
-    def authenticate(self, request, key):
+    def authenticate(self, request: RequestDependency, key):
         if key == "k2":
             return key
 
@@ -19,17 +20,17 @@ api = Penta(auth=KeyQuery1())
 
 
 @api.get("/default")
-def default(request):
+def default(request: RequestDependency):
     return {"auth": request.auth}
 
 
 @api.api_operation(["POST", "PATCH"], "/multi-method-no-auth")
-def multi_no_auth(request):
+def multi_no_auth(request: RequestDependency):
     return {"auth": request.auth}
 
 
 @api.api_operation(["POST", "PATCH"], "/multi-method-auth", auth=KeyQuery2())
-def multi_auth(request):
+def multi_auth(request: RequestDependency):
     return {"auth": request.auth}
 
 
@@ -39,12 +40,12 @@ router = Router()
 
 
 @router.get("/router-operation")  # should come from global auth
-def router_operation(request):
+def router_operation(request: RequestDependency):
     return {"auth": str(request.auth)}
 
 
 @router.get("/router-operation-auth", auth=KeyQuery2())
-def router_operation_auth(request):
+def router_operation_auth(request: RequestDependency):
     return {"auth": str(request.auth)}
 
 
@@ -55,7 +56,7 @@ router_noauth = Router(auth=None)
 
 
 @router_noauth.get("/router-no-auth")
-def router_operation_no_auth(request):
+def router_operation_no_auth(request: RequestDependency):
     return {"auth": str(request.auth)}
 
 

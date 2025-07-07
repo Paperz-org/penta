@@ -32,33 +32,31 @@ def a_bad_test_wrapper(f):
 
 @router.get("/text")
 @a_good_test_wrapper
-def get_text(
-    request,
-):
+def get_text():
     return "Hello World"
 
 
 @router.get("/path/{item_id}")
 @a_good_test_wrapper
-def get_id(request, item_id):
+def get_id(item_id):
     return item_id
 
 
 @router.get("/query")
 @a_good_test_wrapper
-def get_query_type(request, query: int):
+def get_query_type(query: int):
     return f"foo bar {query}"
 
 
 @router.get("/path-query/{item_id}")
 @a_good_test_wrapper
-def get_query_id(request, item_id, query: int):
+def get_query_id(item_id, query: int):
     return f"foo bar {item_id} {query}"
 
 
 @router.get("/text-bad")
 @a_bad_test_wrapper
-def get_text_bad(request: RequestDependency):
+def get_text_bad():
     return "Hello World"
 
 
@@ -66,13 +64,13 @@ with mock.patch("penta.signature.details.warnings.warn_explicit"):
 
     @router.get("/path-bad/{item_id}")
     @a_bad_test_wrapper
-    def get_id_bad(request, item_id):
+    def get_id_bad(request: RequestDependency, item_id):
         return item_id
 
 
 @router.get("/query-bad")
 @a_bad_test_wrapper
-def get_query_type_bad(request, query: int):
+def get_query_type_bad(request: RequestDependency, query: int):
     return f"foo bar {query}"
 
 
@@ -80,7 +78,7 @@ with mock.patch("penta.signature.details.warnings.warn_explicit"):
 
     @router.get("/path-query-bad/{item_id}")
     @a_bad_test_wrapper
-    def get_query_id_bad(request, item_id, query: int):
+    def get_query_id_bad(request: RequestDependency, item_id, query: int):
         return f"foo bar {item_id} {query}"
 
 

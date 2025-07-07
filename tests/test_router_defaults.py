@@ -48,9 +48,9 @@ def test_router_defaults(oparg, retdict, assertone, asserttwo):
     router = Router(**{oparg: True})
     api.add_router("/", router)
 
-    func1 = router.get("/test1", response=SomeResponse)(lambda request: retdict)
+    func1 = router.get("/test1", response=SomeResponse)(lambda: retdict)
     func2 = router.get("/test2", response=SomeResponse, **{oparg: False})(
-        lambda request: retdict
+        lambda: retdict
     )
 
     client = TestClient(api)

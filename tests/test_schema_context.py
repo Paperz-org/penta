@@ -1,4 +1,5 @@
 from penta import Penta, Schema
+from penta.dependencies.request import RequestDependency
 from penta.testing import TestClient
 
 
@@ -35,7 +36,7 @@ api = Penta()
 
 
 @api.post("/resolve_ctx", response=DataWithRequestContext)
-def resolve_ctx(request, data: DataWithRequestContext):
+def resolve_ctx(request: RequestDependency, data: DataWithRequestContext):
     return {"other": data.dict()}
 
 

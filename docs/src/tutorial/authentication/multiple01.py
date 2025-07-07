@@ -1,3 +1,4 @@
+from penta.dependencies.request import RequestDependency
 from penta.security import APIKeyHeader, APIKeyQuery
 
 
@@ -16,5 +17,5 @@ class HeaderKey(AuthCheck, APIKeyHeader):
 
 
 @api.get("/multiple", auth=[QueryKey(), HeaderKey()])
-def multiple(request):
+def multiple(request: RequestDependency):
     return f"Token = {request.auth}"

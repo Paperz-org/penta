@@ -67,14 +67,4 @@ class _Depends(model.Depends):
         return self.dependency(*args, **kwargs)
 
 
-def Depends(
-    dependency: Callable[P, T],
-    *,
-    use_cache: bool = True,
-    cast: bool = True,
-) -> _Depends:
-    return _Depends(
-        dependency=dependency,
-        use_cache=use_cache,
-        cast=cast,
-    )
+class Depends(_Depends): ...

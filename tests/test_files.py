@@ -1,5 +1,6 @@
 from typing import List
 
+from penta.dependencies.request import RequestDependency
 import pytest
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.utils.datastructures import MultiValueDict
@@ -12,32 +13,32 @@ api = Penta()
 
 
 @api.post("/file1")
-def file1(request, file: UploadedFile = File(...)):
+def file1(request: RequestDependency, file: UploadedFile = File(...)):
     return {"name": file.name, "data": file.read().decode()}
 
 
 @api.post("/file2")
-def file_no_marker(request, file: UploadedFile):
+def file_no_marker(request: RequestDependency, file: UploadedFile):
     return {"name": file.name, "data": file.read().decode()}
 
 
 @api.post("/file3")
-def file_no_marker2(request, file: UploadedFile = None):
+def file_no_marker2(request: RequestDependency, file: UploadedFile = None):
     return {"data": file and file.read().decode() or None}
 
 
 @api.post("/file4")
-def file_no_marker4(request, files: List[UploadedFile]):
+def file_no_marker4(request: RequestDependency, files: List[UploadedFile]):
     return {"result": [f.read().decode() for f in files]}
 
 
 @api.post("/file5")
-def file_no_marker5(request, file1: UploadedFile, file2: UploadedFile):
+def file_no_marker5(request: RequestDependency, file1: UploadedFile, file2: UploadedFile):
     return {"result": [f.read().decode() for f in (file1, file2)]}
 
 
 @api.post("/file6")
-def file_no_marker6(request, file: UploadedFile, files: List[UploadedFile]):
+def file_no_marker6(request: RequestDependency, file: UploadedFile, files: List[UploadedFile]):
     return {"result": [f.read().decode() for f in [file] + files]}
 
 
@@ -142,5 +143,5 @@ def test_files_fix_middleware():
     with pytest.raises(ConfigError):
 
         @api.patch("/file1")
-        def patch_with_file(request, file: UploadedFile):
+        def patch_with_file(request: RequestDependency, file: UploadedFile):
             return {"name": file.name}

@@ -1,4 +1,4 @@
-from penta import Form, PentaAPI
+from penta import Form, Penta
 from penta.security import HttpBearer
 
 
@@ -8,7 +8,7 @@ class GlobalAuth(HttpBearer):
             return token
 
 
-api = PentaAPI(auth=GlobalAuth())
+api = Penta(auth=GlobalAuth())
 
 # @api.get(...)
 # def ...
@@ -16,7 +16,7 @@ api = PentaAPI(auth=GlobalAuth())
 # def ...
 
 
-@api.post("/token", auth=None)  # < overriding global auth
+@api.post("/token", auth=None)
 def get_token(request, username: str = Form(...), password: str = Form(...)):
     if username == "admin" and password == "giraffethinnknslong":
         return {"token": "supersecret"}
