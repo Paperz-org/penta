@@ -12,7 +12,7 @@ api_v2 = Penta(version="2.0.0")
 
 
 @api_v2.get("events")
-def newevents2(request):
+def newevents2():
     return "events are gone"
 
 
@@ -20,22 +20,22 @@ api_v3 = Penta(version="3.0.0")
 
 
 @api_v3.get("events")
-def newevents3(request):
+def newevents3():
     return "events are gone 3"
 
 
 @api_v3.get("foobar")
-def foobar(request):
+def foobar():
     return "foobar"
 
 
 @api_v3.post("foobar")
-def post_foobar(request):
+def post_foobar():
     return "foobar"
 
 
 @api_v3.put("foobar", url_name="foobar_put")
-def put_foobar(request):
+def put_foobar():
     return "foobar"
 
 

@@ -42,58 +42,57 @@ class Response(Schema):
 
 
 @api.post("/test", response=Response)
-def method(request, data: Payload):
+def method(data: Payload):
     return data.dict()
 
 
 @api.post("/test-alias", response=Response, by_alias=True)
-def method_alias(request, data: Payload):
+def method_alias(data: Payload):
     return data.dict()
 
 
 @api.post("/test_list", response=List[Response])
-def method_list_response(request, data: List[Payload]):
+def method_list_response(data: List[Payload]):
     return []
 
 
 @api.post("/test-body", response=Response)
-def method_body(request, i: int = Body(...), f: float = Body(...)):
+def method_body(i: int = Body(...), f: float = Body(...)):
     return dict(i=i, f=f)
 
 
 @api.post("/test-body-schema", response=Response)
-def method_body_schema(request, data: Payload):
+def method_body_schema(data: Payload):
     return dict(i=data.i, f=data.f)
 
 
 @api.get("/test-path/{int:i}/{f}", response=Response)
-def method_path(request, i: int, f: float):
+def method_path(i: int, f: float):
     return dict(i=i, f=f)
 
 
 @api.post("/test-form", response=Response)
-def method_form(request, data: Payload = Form(...)):
+def method_form(data: Payload = Form(...)):
     return dict(i=data.i, f=data.f)
 
 
 @api.post("/test-form-single", response=Response)
-def method_form_single(request, data: float = Form(...)):
+def method_form_single(data: float = Form(...)):
     return dict(i=int(data), f=data)
 
 
 @api.post("/test-form-body", response=Response)
-def method_form_body(request, i: int = Form(10), s: str = Body("10")):
+def method_form_body(i: int = Form(10), s: str = Body("10")):
     return dict(i=i, s=s)
 
 
 @api.post("/test-form-file", response=Response)
-def method_form_file(request, files: List[UploadedFile], data: Payload = Form(...)):
+def method_form_file(files: List[UploadedFile], data: Payload = Form(...)):
     return dict(i=data.i, f=data.f)
 
 
 @api.post("/test-body-file", response=Response)
 def method_body_file(
-    request,
     files: List[UploadedFile],
     body: Payload = Body(...),
 ):
@@ -101,12 +100,12 @@ def method_body_file(
 
 
 @api.post("/test-union-type", response=Response)
-def method_union_payload(request, data: Union[TypeA, TypeB]):
+def method_union_payload(data: Union[TypeA, TypeB]):
     return dict(i=data.i, f=data.f)
 
 
 @api.post("/test-union-type-with-simple", response=Response)
-def method_union_payload_and_simple(request, data: Union[int, TypeB]):
+def method_union_payload_and_simple(data: Union[int, TypeB]):
     return data.dict()
 
 
@@ -114,7 +113,7 @@ if sys.version_info >= (3, 10):
     # This requires Python 3.10 or higher (PEP 604), so we're using eval to
     # conditionally make it available
     @api.post("/test-new-union-type", response=Response)
-    def method_new_union_payload(request, data: "TypeA | TypeB"):
+    def method_new_union_payload(data: "TypeA | TypeB"):
         return dict(i=data.i, f=data.f)
 
 
@@ -125,7 +124,6 @@ if sys.version_info >= (3, 10):
     response=Response,
 )
 def method_test_title_description(
-    request,
     param1: int = Query(..., title="param 1 title"),
     param2: str = Query("A Default", description="param 2 desc"),
     file: UploadedFile = File(..., description="file param desc"),
@@ -135,7 +133,6 @@ def method_test_title_description(
 
 @api.post("/test-deprecated-example-examples/")
 def method_test_deprecated_example_examples(
-    request,
     param1: int = Query(None, deprecated=True),
     param2: str = Query(..., example="Example Value"),
     param3: str = Query(

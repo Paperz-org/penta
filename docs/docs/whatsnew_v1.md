@@ -1,38 +1,34 @@
-# Welcome to Django Ninja 1.0
-
+# Welcome to Penta 1.0
 
 To get started install latest version with
+
 ```
-pip install -U django-ninja
+pip install -U penta
 ```
 
-django-ninja v1 is compatible with Python 3.7 and above.
+penta v1 is compatible with Python 3.7 and above.
 
+Penta seres 0.x is still supported but will receive only security updates and critical bug fixes
 
-Django ninja seres 0.x is still supported but will receive only security updates and critical bug fixes
-
-
-
-# What's new in Django Ninja 1.0
+# What's new in Penta 1.0
 
 ## Support for Pydantic2
 
 Pydantic version 2 is re-written in Rust and includes a lot of improvements and features like:
 
- - Safer types.
- - Better extensibility.
- - Better performance 
+- Safer types.
+- Better extensibility.
+- Better performance
 
 By our tests average project can gain some 10% performance increase on average, while some edge parsing/serializing cases can give you 4x boost.
 
-On the other hand it introduces breaking changes and pydantic 1 and 2 are not very compatible - but we tried or best to make this transition easy as possible. So if you used 'Schema' class migration to ninja v1 should be easy. Otherwise follow [pydantic migration guide](https://docs.pydantic.dev/latest/migration/)
-
+On the other hand it introduces breaking changes and pydantic 1 and 2 are not very compatible - but we tried or best to make this transition easy as possible. So if you used 'Schema' class migration to penta v1 should be easy. Otherwise follow [pydantic migration guide](https://docs.pydantic.dev/latest/migration/)
 
 Some features that are made possible with pydantic2
 
 ### pydantic context
 
-Pydantic now supports context during validation and serialization and Django ninja passes "request" object during request and response work
+Pydantic now supports context during validation and serialization and Penta passes "request" object during request and response work
 
 ```Python hl_lines="6 7"
 class Payload(Schema):
@@ -51,7 +47,7 @@ During response a "response_code" is also passed to context
 
 ## Schema.Meta
 
-Pydantic now deprecates BaseModel.Config class.  But to keep things consistent with all other django parts we introduce "Meta" class for ModelSchema - which works in a similar way as django's ModelForms:
+Pydantic now deprecates BaseModel.Config class. But to keep things consistent with all other django parts we introduce "Meta" class for ModelSchema - which works in a similar way as django's ModelForms:
 
 ```Python hl_lines="2 4"
 class TxItem(ModelSchema):
@@ -62,7 +58,6 @@ class TxItem(ModelSchema):
 ```
 
 (The "Config" class is still supported, but deprecated)
-
 
 ## Shorter / cleaner parameters syntax
 
@@ -80,14 +75,13 @@ def some_form(request, username: str = Form(...), password: str = Form(...)):
     return True
 ```
 
-or 
+or
 
 ```python
 @api.post('/some')
 def some_form(request, data: Form[AuthSchema]):
     return True
 ```
-
 
 instead of
 
@@ -97,13 +91,9 @@ def some_form(request, data: AuthSchema = Form(...)):
     return True
 ```
 
-
-
 with all the autocompletion in editors
 
-
-On the other hand the **old syntax is still supported** so you can easily port your project to a newer django-ninja version without much haste 
-
+On the other hand the **old syntax is still supported** so you can easily port your project to a newer penta version without much haste
 
 #### + Annotated
 
@@ -115,7 +105,6 @@ def annotated(request, data: Annotated[SomeData, Form()]):
     return {"data": data.dict()}
 
 ```
-
 
 ## Async auth support
 
@@ -130,33 +119,30 @@ class Auth(HttpBearer):
 
 ```
 
-
 ## Changed CSRF Behavior
 
-
-`csrf=True` requirement is no longer required if you use cookie based authentication. Instead CSRF protection is enabled automatically. This also allow you to  mix csrf-protected authenticators and other methods that does not require cookies:
+`csrf=True` requirement is no longer required if you use cookie based authentication. Instead CSRF protection is enabled automatically. This also allow you to mix csrf-protected authenticators and other methods that does not require cookies:
 
 ```Python
-api = NinjaAPI(auth=[django_auth, Auth()])
+api = Penta(auth=[django_auth, Auth()])
 ```
-
 
 ## Docs
 
-Doc viewer are now configurable and plugable. By default django ninja comes with Swagger and Redoc:
+Doc viewer are now configurable and plugable. By default Penta comes with Swagger and Redoc:
 
 ```Python
-from ninja import NinjaAPI, Redoc, Swagger
+from penta import Penta, Redoc, Swagger
 
 
 # use redoc
-api = NinjaAPI(docs=Redoc()))
+api = Penta(docs=Redoc()))
 
 # use swagger:
-api = NinjaAPI(docs=Swagger())
+api = Penta(docs=Swagger())
 
 # set configuration for swagger:
-api = NinjaAPI(docs=Swagger({"persistAuthorization": True}))
+api = Penta(docs=Swagger({"persistAuthorization": True}))
 ```
 
 Users now able to create custom docs viewer by inheriting `DocsBase` class
@@ -166,7 +152,7 @@ Users now able to create custom docs viewer by inheriting `DocsBase` class
 add_router supports string paths:
 
 ```Python
-api = NinjaAPI()
+api = Penta()
 
 
 api.add_router('/app1', 'myproject.app1.router')
@@ -176,10 +162,9 @@ api.add_router('/app4', 'myproject.app4.router')
 api.add_router('/app5', 'myproject.app5.router')
 ```
 
-
 ## Decorators
 
-When django ninja decorates a view with .get/.post etc. - it wraps the result of the function (which in most cases are not HttpResponse - but some serializable object) so it's not really possible to use some built-in or 3rd-party decorators like:
+When Penta decorates a view with .get/.post etc. - it wraps the result of the function (which in most cases are not HttpResponse - but some serializable object) so it's not really possible to use some built-in or 3rd-party decorators like:
 
 ```python hl_lines="4"
 from django.views.decorators.cache import cache_page
@@ -189,9 +174,10 @@ from django.views.decorators.cache import cache_page
 def test_view(request):
     return {"some": "Complex data"}
 ```
+
 This example does not work.
 
-Now django ninja introduces a decorator decorate_view that allows inject decorators that work with http response:
+Now Penta introduces a decorator decorate_view that allows inject decorators that work with http response:
 
 ```python hl_lines="1 4"
 from penta.decorators import decorate_view
@@ -202,15 +188,14 @@ def test_view(request):
     return str(datetime.now())
 ```
 
-
 ## Paginations
 
 `paginate_queryset` method now takes `request` object
 
-
 #### Backwards incompatible stuff
- - resolve_xxx(self, ...) - support resolve with (self) is dropped in favor of pydantic build-in functionality
- - pydantic v1 is no longer supported
- - python 3.6 is no longer supported
+
+- resolve_xxx(self, ...) - support resolve with (self) is dropped in favor of pydantic build-in functionality
+- pydantic v1 is no longer supported
+- python 3.6 is no longer supported
 
 BTW - if you like this project and still did not give it a github start - please do so ![github star](img/github-star.png)

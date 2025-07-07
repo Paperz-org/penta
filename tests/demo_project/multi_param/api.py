@@ -59,7 +59,6 @@ test_data4_extra = dict(title="Data4 Title", description="Data4 Desc")
 
 @router.post("/test-multi-query", response=ResponseData, by_alias=True)
 def test_multi_query(
-    request,
     i: int = Query(...),
     s: str = Query("a-str"),
     data: TestData4 = Query(..., **test_data4_extra),
@@ -74,7 +73,6 @@ def test_multi_query(
     by_alias=True,
 )
 def test_multi_path(
-    request,
     i: int = Path(...),
     s: str = Path("a-str"),
     data: TestData4 = Path(..., **test_data4_extra),
@@ -85,7 +83,6 @@ def test_multi_path(
 
 @router.post("/test-multi-header", response=ResponseData, by_alias=True)
 def test_multi_header(
-    request,
     i: int = Header(...),
     s: str = Header("a-str"),
     data: TestData4 = Header(..., **test_data4_extra),
@@ -96,7 +93,6 @@ def test_multi_header(
 
 @router.post("/test-multi-cookie", response=ResponseData, by_alias=True)
 def test_multi_cookie(
-    request,
     i: int = Cookie(...),
     s: str = Cookie("a-str"),
     data: TestData4 = Cookie(..., **test_data4_extra),
@@ -108,7 +104,6 @@ def test_multi_cookie(
 
 @router.post("/test-multi-form", response=ResponseData, by_alias=True)
 def test_multi_form(
-    request,
     i: int = Form(...),
     s: str = Form("a-str"),
     data: TestData4 = Form(..., **test_data4_extra),
@@ -119,7 +114,6 @@ def test_multi_form(
 
 @router.post("/test-multi-body", response=ResponseData, by_alias=True)
 def test_multi_body(
-    request,
     i: int = Body(...),
     s: str = Body("a-str"),
     data: TestData4 = Body(..., **test_data4_extra),
@@ -130,7 +124,6 @@ def test_multi_body(
 
 @router.post("/test-multi-body-file", response=ResponseData, by_alias=True)
 def test_multi_body_file(
-    request,
     file: UploadedFile,
     i: int = Body(...),
     s: str = Body("a-str"),
@@ -142,7 +135,6 @@ def test_multi_body_file(
 
 @router.post("/test-multi-form-file", response=ResponseData, by_alias=True)
 def test_multi_form_file(
-    request,
     file: UploadedFile,
     i: int = Form(...),
     s: str = Form("a-str"),
@@ -154,7 +146,6 @@ def test_multi_form_file(
 
 @router.post("/test-multi-body-form", response=ResponseData, by_alias=True)
 def test_multi_body_form(
-    request,
     i: int = Body(...),
     s: str = Form("a-str"),
     data: TestData4 = Body(..., **test_data4_extra),
@@ -165,7 +156,6 @@ def test_multi_body_form(
 
 @router.post("/test-multi-form-body", response=ResponseData, by_alias=True)
 def test_multi_form_body(
-    request,
     i: int = Form(...),
     s: str = Body("a-str"),
     data: TestData4 = Form(..., **test_data4_extra),
@@ -176,7 +166,6 @@ def test_multi_form_body(
 
 @router.post("/test-multi-body-form-file", response=ResponseData, by_alias=True)
 def test_multi_body_form_file(
-    request,
     file: File[UploadedFile],
     i: int = Body(...),
     s: str = Form("a-str"),
@@ -188,7 +177,6 @@ def test_multi_body_form_file(
 
 @router.post("/test-multi-form-body-file", response=ResponseData, by_alias=True)
 def test_multi_form_body_file(
-    request,
     file: File[UploadedFile],
     i: int = Form(...),
     s: str = Body("a-str"),

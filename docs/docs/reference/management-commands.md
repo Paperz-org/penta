@@ -1,18 +1,17 @@
 # Management Commands
 
-Management commands require **Django Ninja** to be installed in Django's
+Management commands require **Penta** to be installed in Django's
 `INSTALLED_APPS` setting:
 
 ```python
 INSTALLED_APPS = [
     ...
-    'ninja',
+    'penta',
 ]
 ```
 
-::: ninja.management.commands
-    selection:
-      filters:
-        - "![A-Z]"
-    rendering:
-      show_root_toc_entry: False
+::: penta.management.commands
+selection:
+filters: - "![A-Z]"
+rendering:
+show_root_toc_entry: False

@@ -1,4 +1,4 @@
-weapons = ["Ninjato", "Shuriken", "Katana", "Kama", "Kunai", "Naginata", "Yari"]
+weapons = ["Pentato", "Shuriken", "Katana", "Kama", "Kunai", "Naginata", "Yari"]
 
 
 @api.get("/weapons")

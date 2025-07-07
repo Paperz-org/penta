@@ -2,12 +2,12 @@
 
 ## Define a response Schema
 
-**Django Ninja** allows you to define the schema of your responses both for validation and documentation purposes.
+**Penta** allows you to define the schema of your responses both for validation and documentation purposes.
 
 We'll create a third operation that will return information about the current Django user.
 
 ```python
-from ninja import Schema
+from penta import Schema
 
 class UserSchema(Schema):
     username: str
@@ -42,7 +42,7 @@ class Error(Schema):
 def me(request):
     if not request.user.is_authenticated:
         return 403, {"message": "Please sign in first"}
-    return request.user 
+    return request.user
 ```
 
 As you see, you can return a 2-part tuple which will be interpreted as the HTTP response code and the data.

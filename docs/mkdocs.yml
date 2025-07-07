@@ -1,8 +1,8 @@
-site_name: Django Ninja
-site_description: Django Ninja - Django REST framework with high performance, easy to learn, fast to code.
-site_url: https://django-ninja.dev
-repo_name: vitalik/django-ninja
-repo_url: https://github.com/vitalik/django-ninja
+site_name: Penta
+site_description: Penta - Django REST framework with high performance, easy to learn, fast to code.
+site_url: https://paperz-org.github.io/penta
+repo_name: paperz-org/penta
+repo_url: https://github.com/paperz-org/penta
 edit_uri: ""
 extra:
   analytics:
@@ -24,7 +24,7 @@ theme:
       toggle:
         icon: material/weather-night
         name: Switch to dark mode
-    - media: "(prefers-color-scheme: dark)" 
+    - media: "(prefers-color-scheme: dark)"
       scheme: slate
       primary: green
       toggle:
@@ -77,7 +77,7 @@ nav:
       - guides/async-support.md
       - guides/versioning.md
   - Reference:
-      - NinjaAPI class: reference/api.md
+      - Penta class: reference/api.md
       - reference/csrf.md
       - reference/operations-parameters.md
       - reference/management-commands.md

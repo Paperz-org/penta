@@ -1,12 +1,12 @@
 # Form data
 
-**Django Ninja** also allows you to parse and validate `request.POST` data
+**Penta** also allows you to parse and validate `request.POST` data
 (aka `application/x-www-form-urlencoded` or `multipart/form-data`).
 
-## Form Data as params 
+## Form Data as params
 
 ```python hl_lines="1 4"
-from ninja import NinjaAPI, Form
+from penta import Penta, Form
 
 @api.post("/login")
 def login(request, username: Form[str], password: Form[str]):
@@ -15,12 +15,14 @@ def login(request, username: Form[str], password: Form[str]):
 
 Note the following:
 
-1) You need to import the `Form` class from `ninja`
+1. You need to import the `Form` class from `penta`
+
 ```python
-from ninja import Form
+from penta import Form
 ```
 
-2) Use `Form` as default value for your parameter:
+2. Use `Form` as default value for your parameter:
+
 ```python
 username: Form[str]
 ```
@@ -41,13 +43,14 @@ Form data in combination with other parameter sources.
 
 You can declare query **and** path **and** form field, **and** etc... parameters at the same time.
 
-**Django Ninja** will recognize that the function parameters that match path
+**Penta** will recognize that the function parameters that match path
 parameters should be **taken from the path**, and that function parameters that
 are declared with `Form(...)` should be **taken from the request form fields**, etc.
 
 ```python hl_lines="12"
 {!./src/tutorial/form/code02.py!}
 ```
+
 ## Mapping Empty Form Field to Default
 
 Form fields that are optional, are often sent with an empty value. This value is

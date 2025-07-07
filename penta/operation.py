@@ -70,11 +70,10 @@ class Operation:
             need_to_fix_request_files,
         )
 
-        penta_contribute_to_operation = getattr(view_func, "_penta_contribute_to_operation", None)
+        penta_contribute_to_operation = getattr(
+            view_func, "_penta_contribute_to_operation", None
+        )
         penta_contribute_args = getattr(view_func, "_penta_contribute_args", None)
-
-        self.view_func: Callable = view_func
-
 
         self.is_async = False
         self.path: str = path
@@ -129,17 +128,18 @@ class Operation:
         self.exclude_unset = exclude_unset or False
         self.exclude_defaults = exclude_defaults or False
         self.exclude_none = exclude_none or False
-        self.view_func = inject(view_func)
 
         if hasattr(view_func, "_penta_contribute_to_operation"):
             # Allow 3rd party code to contribute to the operation behavior
             callbacks: List[Callable] = view_func._penta_contribute_to_operation
             for callback in callbacks:
                 callback(self)
-        
+
         self.view_func: Callable = inject(view_func)
         if penta_contribute_to_operation:
-            self.view_func._penta_contribute_to_operation = penta_contribute_to_operation
+            self.view_func._penta_contribute_to_operation = (
+                penta_contribute_to_operation
+            )
         if penta_contribute_args:
             self.view_func._penta_contribute_args = penta_contribute_args
 
@@ -158,6 +158,7 @@ class Operation:
         try:
             temporal_response = self.api.create_temporal_response(request)
             values = self._get_values(request, kw, temporal_response)
+
             result = self.view_func(**values)
             return self._result_to_response(request, result, temporal_response)
         except Exception as e:
@@ -469,7 +470,7 @@ class PathView:
         if is_async(view_func):
             self.is_async = True
             OperationClass = AsyncOperation
-
+        print(OperationClass)
 
         operation = OperationClass(
             path,

@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <link rel="shortcut icon" href="{% static 'ninja/favicon.png' %}">
+    <link rel="shortcut icon" href="{% static 'penta/favicon.png' %}">
     <title>{{ api.title }}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <style>
@@ -14,7 +14,7 @@
 <body>
     <div id="redoc-ui"></div>
 
-    <script src="{% static 'ninja/redoc.standalone.js' %}"></script>
+    <script src="{% static 'penta/redoc.standalone.js' %}"></script>
     <script type="application/json" id="redoc-settings">
         {{ redoc_settings | safe }}
     </script>

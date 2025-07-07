@@ -2,7 +2,7 @@
 
 ## Intro
 
-**Django Ninja** provides several tools to help you deal with authentication and authorization easily, rapidly, in a standard way, and without having to study and learn <a href="https://swagger.io/docs/specification/authentication/" target="_blank">all the security specifications</a>.
+**Penta** provides several tools to help you deal with authentication and authorization easily, rapidly, in a standard way, and without having to study and learn <a href="https://swagger.io/docs/specification/authentication/" target="_blank">all the security specifications</a>.
 
 The core concept is that when you describe an API operation, you can define an authentication object.
 
@@ -26,7 +26,6 @@ Here's an example where the client, in order to authenticate, needs to pass a he
 
 Now go to the docs at <a href="http://localhost:8000/api/docs" target="_blank">http://localhost:8000/api/docs</a>.
 
-
 ![Swagger UI Auth](../img/auth-swagger-ui.png)
 
 Now, when you click the **Authorize** button, you will get a prompt to input your authentication token.
@@ -35,14 +34,12 @@ Now, when you click the **Authorize** button, you will get a prompt to input you
 
 When you do test calls, the Authorization header will be passed for every request.
 
-
 ## Global authentication
 
-In case you need to secure **all** methods of your API, you can pass the `auth` argument to the `NinjaAPI` constructor:
-
+In case you need to secure **all** methods of your API, you can pass the `auth` argument to the `Penta` constructor:
 
 ```python hl_lines="11 19"
-from ninja import NinjaAPI, Form
+from penta import Penta, Form
 from penta.security import HttpBearer
 
 
@@ -52,7 +49,7 @@ class GlobalAuth(HttpBearer):
             return token
 
 
-api = NinjaAPI(auth=GlobalAuth())
+api = Penta(auth=GlobalAuth())
 
 # @api.get(...)
 # def ...
@@ -71,17 +68,16 @@ And, if you need to overrule some of those methods, you can do that on the opera
 
 ### Custom function
 
-
-The "`auth=`" argument accepts any Callable object. **NinjaAPI** passes authentication only if the callable object returns a value that can be **converted to boolean `True`**. This return value will be assigned to the `request.auth` attribute.
+The "`auth=`" argument accepts any Callable object. **Penta** passes authentication only if the callable object returns a value that can be **converted to boolean `True`**. This return value will be assigned to the `request.auth` attribute.
 
 ```python hl_lines="1 2 3 6"
 {!./src/tutorial/authentication/code002.py!}
 ```
 
-
 ### API Key
 
 Some API's use API keys for authorization. An API key is a token that a client provides when making API calls to identify itself. The key can be sent in the query string:
+
 ```
 GET /something?api_key=abcdef12345
 ```
@@ -100,8 +96,7 @@ GET /something HTTP/1.1
 Cookie: X-API-KEY=abcdef12345
 ```
 
-**Django Ninja** comes with built-in classes to help you handle these cases.
-
+**Penta** comes with built-in classes to help you handle these cases.
 
 #### in Query
 
@@ -112,7 +107,6 @@ Cookie: X-API-KEY=abcdef12345
 In this example we take a token from `GET['api_key']` and find a `Client` in the database that corresponds to this key. The Client instance will be set to the `request.auth` attribute.
 
 Note: **`param_name`** is the name of the GET parameter that will be checked for. If not set, the default of "`key`" will be used.
-
 
 #### in Header
 
@@ -128,7 +122,7 @@ Note: **`param_name`** is the name of the GET parameter that will be checked for
 
 ### Django Session Authentication
 
-**Django Ninja** provides built-in session authentication classes that leverage Django's existing session framework:
+**Penta** provides built-in session authentication classes that leverage Django's existing session framework:
 
 #### SessionAuth
 
@@ -168,8 +162,6 @@ def staff_view(request):
 
 These authentication classes automatically use Django's `SESSION_COOKIE_NAME` setting and check the user's authentication status through the standard Django session framework.
 
-
-
 ### HTTP Bearer
 
 ```python hl_lines="1 4 5 6 7"
@@ -182,7 +174,6 @@ These authentication classes automatically use Django's `SESSION_COOKIE_NAME` se
 {!./src/tutorial/authentication/basic01.py!}
 ```
 
-
 ## Multiple authenticators
 
 The **`auth`** argument also allows you to pass multiple authenticators:
@@ -191,9 +182,8 @@ The **`auth`** argument also allows you to pass multiple authenticators:
 {!./src/tutorial/authentication/multiple01.py!}
 ```
 
-In this case **Django Ninja** will first check the API key `GET`, and if not set or invalid will check the `header` key.
+In this case **Penta** will first check the API key `GET`, and if not set or invalid will check the `header` key.
 If both are invalid, it will raise an authentication error to the response.
-
 
 ## Router authentication
 
@@ -204,12 +194,12 @@ api.add_router("/events/", events_router, auth=BasicAuth())
 ```
 
 or using router constructor
+
 ```python
 router = Router(auth=BasicAuth())
 ```
 
 This overrides any API level authentication. To allow router operations to not use the API-level authentication by default, you can explicitly set the router's `auth=None`.
-
 
 ## Custom exceptions
 
@@ -220,10 +210,9 @@ the same way an operation would:
 {!./src/tutorial/authentication/bearer02.py!}
 ```
 
-
 ## Async authentication
 
-**Django Ninja** has basic support for asynchronous authentication. While the default authentication classes are not async-compatible, you can still define your custom asynchronous authentication callables and pass them in using `auth`.
+**Penta** has basic support for asynchronous authentication. While the default authentication classes are not async-compatible, you can still define your custom asynchronous authentication callables and pass them in using `auth`.
 
 ```python
 async def async_auth(request):
@@ -234,6 +223,5 @@ async def async_auth(request):
 def pets(request):
     ...
 ```
-
 
 See [Handling errors](errors.md) for more information.

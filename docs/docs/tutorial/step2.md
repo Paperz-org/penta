@@ -23,7 +23,7 @@ target="_blank">localhost:8000/api/hello?name=you</a>:
 
 Not providing the argument will return an HTTP 422 error response.
 
-*[HTTP 422]: Unprocessable Entity
+\*[HTTP 422]: Unprocessable Entity
 
 <a href="http://localhost:8000/api/hello"
 target="_blank">localhost:8000/api/hello</a>:
@@ -50,7 +50,7 @@ def hello(request, name="world"):
 
 ## Input types
 
-**Django Ninja** uses standard [Python type hints](https://docs.python.org/3/library/typing.html) to format the input types. If no type is provided then a string is assumed (but it is good practice to provide type hints for all your arguments).
+**Penta** uses standard [Python type hints](https://docs.python.org/3/library/typing.html) to format the input types. If no type is provided then a string is assumed (but it is good practice to provide type hints for all your arguments).
 
 Let's add a second operation that does some basic math with integers.
 
@@ -89,19 +89,18 @@ def math(request, a: int, b: int):
 Now we access the math operation from <a href="http://localhost:8000/api/math/2and3"
 target="_blank">localhost:8000/api/math/2and3</a>.
 
-
 ## Input from the request body
 
 We are going to change our `hello` operation to use HTTP `POST` instead, and take arguments from the request body.
 
 To specify that arguments come from the body, we need to declare a Schema.
 
-*[Schema]: An extension of a Pydantic "Model"
+\*[Schema]: An extension of a Pydantic "Model"
 
 ```python hl_lines="1 5-6 8-10"
-from ninja import NinjaAPI, Schema
+from penta import Penta, Schema
 
-api = NinjaAPI()
+api = Penta()
 
 class HelloSchema(Schema):
     name: str = "world"
@@ -115,15 +114,15 @@ def hello(request, data: HelloSchema):
 
 Accessing <a href="http://localhost:8000/api/hello" target="_blank">localhost:8000/api/hello</a> now results in a HTTP 405 error response, since we need to POST to this URL instead.
 
-*[HTTP 405]: Method Not Allowed
+\*[HTTP 405]: Method Not Allowed
 
 An easy way to do this is to use the Swagger documentation that is automatically created for us, at default URL of "/docs" (appended to our API url root).
 
 1. Visit <a href="http://localhost:8000/api/docs" target="_blank">localhost:8000/api/docs</a> to see the operations we have created
 1. Open the `/api/hello` operation
-2. Click "Try it out"
-3. Change the request body
-4. Click "Execute"
+1. Click "Try it out"
+1. Change the request body
+1. Click "Execute"
 
 !!! success
 

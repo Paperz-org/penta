@@ -36,14 +36,14 @@ class Parameter(inspect.Parameter):
             return isinstance(instance, Header)
         return issubclass(self.annotation, Header)
 
-    @property
-    def is_query_params(self) -> bool:
-        from penta.dependencies.query_params import QueryParams
+    # @property
+    # def is_query_params(self) -> bool:
+    #     from penta.dependencies.query_params import QueryParams
 
-        if self.is_annotated:
-            _, instance = get_args(self.annotation)
-            return isinstance(instance, QueryParams)
-        return issubclass(self.annotation, QueryParams)
+    #     if self.is_annotated:
+    #         _, instance = get_args(self.annotation)
+    #         return isinstance(instance, QueryParams)
+    #     return issubclass(self.annotation, QueryParams)
 
     @property
     def is_depends(self) -> bool:

@@ -3,6 +3,7 @@ from unittest.mock import Mock
 import pytest
 
 from penta import Penta
+from penta.dependencies.request import RequestDependency
 from penta.errors import AuthorizationError, ConfigError
 from penta.security import (
     APIKeyCookie,
@@ -78,7 +79,7 @@ class AsyncBearerAuth(HttpBearer):
             raise AuthorizationError
 
 
-def demo_operation(request):
+def demo_operation(request: RequestDependency):
     return {"auth": request.auth}
 
 

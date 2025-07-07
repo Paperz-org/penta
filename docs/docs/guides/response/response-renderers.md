@@ -1,14 +1,14 @@
 # Response renderers
 
 The most common response type for a REST API is usually JSON.
-**Django Ninja** also has support for defining your own custom renderers, which gives you the flexibility to design your own media types.
+**Penta** also has support for defining your own custom renderers, which gives you the flexibility to design your own media types.
 
 ## Create a renderer
 
-To create your own renderer, you need to inherit `ninja.renderers.BaseRenderer` and override the `render` method. Then you can pass an instance of your class to `NinjaAPI` as the `renderer` argument:
+To create your own renderer, you need to inherit `penta.renderers.BaseRenderer` and override the `render` method. Then you can pass an instance of your class to `Penta` as the `renderer` argument:
 
 ```python hl_lines="5 8 9"
-from ninja import NinjaAPI
+from penta import Penta
 from penta.renderers import BaseRenderer
 
 
@@ -18,17 +18,16 @@ class MyRenderer(BaseRenderer):
     def render(self, request, data, *, response_status):
         return ... # your serialization here
 
-api = NinjaAPI(renderer=MyRenderer())
+api = Penta(renderer=MyRenderer())
 ```
 
 The `render` method takes the following arguments:
 
- - request -> HttpRequest object 
- - data -> object that needs to be serialized
- - response_status as an `int` -> the HTTP status code that will be returned to the client
+- request -> HttpRequest object
+- data -> object that needs to be serialized
+- response_status as an `int` -> the HTTP status code that will be returned to the client
 
 You need also define the `media_type` attribute on the class to set the content-type header for the response.
-
 
 ## ORJSON renderer example:
 
@@ -36,10 +35,9 @@ You need also define the `media_type` attribute on the class to set the content-
 
 Here's an example renderer class that uses `orjson`:
 
-
 ```python hl_lines="9 10"
 import orjson
-from ninja import NinjaAPI
+from penta import Penta
 from penta.renderers import BaseRenderer
 
 
@@ -49,22 +47,18 @@ class ORJSONRenderer(BaseRenderer):
     def render(self, request, data, *, response_status):
         return orjson.dumps(data)
 
-api = NinjaAPI(renderer=ORJSONRenderer())
+api = Penta(renderer=ORJSONRenderer())
 ```
-
-
 
 ## XML renderer example:
 
-
 This is how you create a renderer that outputs all responses as XML:
-
 
 ```python hl_lines="8 11"
 from io import StringIO
 from django.utils.encoding import force_str
 from django.utils.xmlutils import SimplerXMLGenerator
-from ninja import NinjaAPI
+from penta import Penta
 from penta.renderers import BaseRenderer
 
 
@@ -102,6 +96,7 @@ class XMLRenderer(BaseRenderer):
             xml.characters(force_str(data))
 
 
-api = NinjaAPI(renderer=XMLRenderer())
+api = Penta(renderer=XMLRenderer())
 ```
-*(Copyright note: this code is basically copied from [DRF-xml](https://jpadilla.github.io/django-rest-framework-xml/))*
+
+_(Copyright note: this code is basically copied from [DRF-xml](https://jpadilla.github.io/django-rest-framework-xml/))_

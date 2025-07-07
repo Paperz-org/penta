@@ -5,7 +5,7 @@ This is a more advanced (and less safe) method - please use it carefully.
 
 ## `create_schema`
 
-**Django Ninja** comes with a helper function `create_schema`:
+**Penta** comes with a helper function `create_schema`:
 
 ```python
 def create_schema(
@@ -19,7 +19,6 @@ def create_schema(
 )
 ```
 
-
 Take this example:
 
 ```python hl_lines="2 4"
@@ -29,7 +28,7 @@ from penta.orm import create_schema
 UserSchema = create_schema(User)
 
 # Will create schema like this:
-# 
+#
 # class UserSchema(Schema):
 #     id: int
 #     username: str
@@ -44,10 +43,10 @@ UserSchema = create_schema(User)
 ```
 
 !!! Warning
-    By default `create_schema` builds a schema with ALL model fields.
-    This can lead to accidental unwanted data exposure (like hashed password, in the above example).
-    <br>
-    **Always** use `fields` or `exclude` arguments to explicitly define list of attributes.
+By default `create_schema` builds a schema with ALL model fields.
+This can lead to accidental unwanted data exposure (like hashed password, in the above example).
+<br>
+**Always** use `fields` or `exclude` arguments to explicitly define list of attributes.
 
 ### Using `fields`
 
@@ -55,7 +54,7 @@ UserSchema = create_schema(User)
 UserSchema = create_schema(User, fields=['id', 'username'])
 
 # Will create schema like this:
-# 
+#
 # class UserSchema(Schema):
 #     id: int
 #     username: str
@@ -70,7 +69,7 @@ UserSchema = create_schema(User, exclude=[
 )
 
 # Will create schema without excluded fields:
-# 
+#
 # class UserSchema(Schema):
 #    id: int
 #    username: str

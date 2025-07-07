@@ -100,6 +100,9 @@ class PentaClientBase:
                 **request_params.get("COOKIES", {}),
             }
         func, request, kwargs = self._resolve(method, path, data, request_params)
+        # import pdb
+
+        # pdb.set_trace()
         return self._call(func, request, kwargs)  # type: ignore
 
     @property

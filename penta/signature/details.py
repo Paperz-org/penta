@@ -4,7 +4,7 @@ from collections import defaultdict, namedtuple
 from typing import Any, Callable, Dict, Generator, List, Optional, Tuple
 
 import pydantic
-from django.http import HttpResponse
+from django.http import HttpRequest, HttpResponse
 from fast_depends.dependencies import model
 from pydantic.fields import FieldInfo
 from pydantic_core import PydanticUndefined
@@ -42,6 +42,7 @@ class ViewSignature:
     FLATTEN_PATH_SEP = (
         "\x1e"  # ASCII Record Separator.  IE: not generally used in query names
     )
+    request_arg: Optional[str] = None
     response_arg: Optional[str] = None
 
     def __init__(self, path: str, view_func: Callable[..., Any]) -> None:
@@ -56,7 +57,7 @@ class ViewSignature:
         for name, arg in self.signature.parameters.items():
             # This is useless for us
             # if name == "request":
-            # continue
+            #     continue
 
             if arg.kind == arg.VAR_KEYWORD:
                 # Skipping **kwargs
@@ -67,8 +68,21 @@ class ViewSignature:
                 # Skipping *args
                 continue
 
-            if arg.annotation is HttpResponse:
+            if inspect.isclass(arg.annotation) and issubclass(
+                arg.annotation, HttpResponse
+            ):
                 self.response_arg = name
+                continue
+
+            # if arg.name == "request":
+            #     import pdb
+
+            #     pdb.set_trace()
+
+            if inspect.isclass(arg.annotation) and issubclass(
+                arg.annotation, HttpRequest
+            ):
+                self.request_arg = name
                 continue
 
             # TODO:
@@ -90,6 +104,9 @@ class ViewSignature:
 
             func_param = self._get_param_type(name, arg)
             self.params.append(func_param)
+        # import pdb
+
+        # pdb.set_trace()
 
         if hasattr(view_func, "_penta_contribute_args"):
             # _penta_contribute_args is a special attribute
@@ -115,9 +132,9 @@ class ViewSignature:
                     annotation=param.annotation,
                 )
             )
-        
+
         self.signature = self.signature.replace(parameters=inspect_params)
-        self.view_func.__signature__ = self.signature
+        # self.view_func.__signature__ = self.signature
 
     def _validate_view_path_params(self) -> None:
         """verify all path params are present in the path model fields"""
@@ -199,6 +216,7 @@ class ViewSignature:
             )
 
             base_cls = param_cls._model
+
             model_cls = type(cls_name, (base_cls,), attrs)
             # TODO: https://pydantic-docs.helpmanual.io/usage/models/#dynamic-model-creation - check if anything special in create_model method that I did not use
             result.append(model_cls)

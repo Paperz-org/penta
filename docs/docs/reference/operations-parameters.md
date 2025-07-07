@@ -6,7 +6,8 @@ The following parameters interact with how the OpenAPI schema (and docs) are gen
 
 ### `tags`
 
-You can group your API operations using the `tags` argument (`list[str]`). 
+You can group your API operations using the `tags` argument (`list[str]`).
+
 ```python hl_lines="6"
 @api.get("/hello/")
 def hello(request, name: str):
@@ -29,11 +30,10 @@ You can use `tags` argument to apply tags to all operations declared by router:
 ```python
 api.add_router("/events/", events_router, tags=["events"])
 
-# or using constructor: 
+# or using constructor:
 
 router = Router(tags=["events"])
 ```
-
 
 ### `summary`
 
@@ -63,7 +63,6 @@ def hello(request, name: str):
 
 To provide more information about your operation, use either the `description` argument or normal Python docstrings:
 
-
 ```python hl_lines="1"
 @api.post("/orders/", description="Creates an order and updates stock")
 def create_order(request, order: Order):
@@ -89,12 +88,11 @@ def create_order(request, order: Order):
 
 ![Summary`](../img/operation_description_docstring.png)
 
-
 ### `operation_id`
 
 The OpenAPI `operationId` is an optional unique string used to identify an operation. If provided, these IDs must be unique among all operations described in your API.
 
-By default, **Django Ninja** sets it to `module name` + `function name`.
+By default, **Penta** sets it to `module name` + `function name`.
 
 If you want to set it individually for each operation, use the `operation_id` argument:
 
@@ -105,17 +103,17 @@ def new_task(request):
     ...
 ```
 
-If you want to override global behavior, you can inherit the NinjaAPI instance and override the `get_openapi_operation_id` method.
+If you want to override global behavior, you can inherit the Penta instance and override the `get_openapi_operation_id` method.
 
 It will be called for each operation that you defined, so you can set your custom naming logic like this:
 
 ```python hl_lines="5 6 7 9"
-from ninja import NinjaAPI
+from penta import Penta
 
-class MySuperApi(NinjaAPI):
+class MySuperApi(Penta):
 
     def get_openapi_operation_id(self, operation):
-        # here you can access operation ( .path , .view_func, etc) 
+        # here you can access operation ( .path , .view_func, etc)
         return ...
 
 api = MySuperApi()
@@ -149,7 +147,9 @@ def some_hidden_operation(request):
 ```
 
 ## openapi_extra
+
 You can customize your OpenAPI schema for specific endpoint (detail [OpenAPI Customize Options](https://swagger.io/docs/specification/about/))
+
 ```python hl_lines="1 26"
 # You can set requestBody from openapi_extra
 @api.get(
@@ -175,7 +175,7 @@ You can customize your OpenAPI schema for specific endpoint (detail [OpenAPI Cus
 )
 def some_operation(request):
     pass
-    
+
 # You can add additional responses to the automatically generated schema
 @api.post(
     "/tasks",
@@ -194,7 +194,6 @@ def some_operation_2(request):
     pass
 
 ```
-
 
 ## Response output options
 
@@ -216,9 +215,10 @@ Whether fields which are equal to their default values (whether set or otherwise
 
 Whether fields which are equal to `None` should be excluded from the response (defaults to `False`).
 
-
 ## url_name
+
 Allows you to set api endpoint url name (using [django path's naming](https://docs.djangoproject.com/en/stable/topics/http/urls/#reversing-namespaced-urls))
+
 ```python hl_lines="1 7"
 @api.post("/tasks", url_name='tasks')
 def some_operation(request):
@@ -231,18 +231,20 @@ reverse('api-1.0.0:tasks')
 
 See the [Reverse Resolution of URLs](../guides/urls.md) guide for more details.
 
-
 ## Specifying servers
-If you want to specify single or multiple servers for OpenAPI specification `servers` can be used when initializing NinjaAPI instance:
-```python hl_lines="4 5 6 7"
-from ninja import NinjaAPI
 
-api = NinjaAPI(
+If you want to specify single or multiple servers for OpenAPI specification `servers` can be used when initializing Penta instance:
+
+```python hl_lines="4 5 6 7"
+from penta import Penta
+
+api = Penta(
         servers=[
             {"url": "https://stag.example.com", "description": "Staging env"},
             {"url": "https://prod.example.com", "description": "Production env"},
         ]
 )
 ```
+
 This will allow switching between environments when using interactive OpenAPI docs:
 ![Servers](../img/servers.png)

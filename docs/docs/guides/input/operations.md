@@ -10,7 +10,7 @@ An `operation` can be one of the following [HTTP methods](https://developer.mozi
 - DELETE
 - PATCH
 
-**Django Ninja** comes with a decorator for each operation:
+**Penta** comes with a decorator for each operation:
 
 ```python hl_lines="1 5 9 13 17"
 @api.get("/path")
@@ -49,7 +49,7 @@ def mixed_operation(request):
 ```
 
 This feature can also be used to implement other HTTP methods that don't have
-corresponding **Django Ninja** methods, such as `HEAD` or `OPTIONS`.
+corresponding **Penta** methods, such as `HEAD` or `OPTIONS`.
 
 ```python hl_lines="1"
 @api.api_operation(["HEAD", "OPTIONS"], "/path")

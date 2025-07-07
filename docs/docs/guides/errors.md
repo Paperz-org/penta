@@ -1,6 +1,6 @@
 # Handling errors
 
-**Django Ninja** allows you to install custom exception handlers to deal with how you return responses when errors or handled exceptions occur.
+**Penta** allows you to install custom exception handlers to deal with how you return responses when errors or handled exceptions occur.
 
 ## Custom exception handlers
 
@@ -11,12 +11,10 @@ To achieve that you need:
 1. create some exception (or use existing one)
 2. use api.exception_handler decorator
 
-
 Example:
 
-
 ```python hl_lines="9 10"
-api = NinjaAPI()
+api = Penta()
 
 class ServiceUnavailableError(Exception):
     pass
@@ -45,50 +43,50 @@ def some_operation(request):
 
 Exception handler function takes 2 arguments:
 
- - **request** - Django http request
- - **exc** - actual exception
+- **request** - Django http request
+- **exc** - actual exception
 
 function must return http response
 
 ## Override the default exception handlers
 
-**Django Ninja** registers default exception handlers for the types shown below.
+**Penta** registers default exception handlers for the types shown below.
 You can register your own handlers with `@api.exception_handler` to override the default handlers.
 
-#### `ninja.errors.AuthenticationError`
+#### `penta.errors.AuthenticationError`
 
 Raised when authentication data is not valid
 
-#### `ninja.errors.AuthorizationError`
+#### `penta.errors.AuthorizationError`
 
 Raised when authentication data is valid, but doesn't allow you to access the resource
 
-#### `ninja.errors.ValidationError`
+#### `penta.errors.ValidationError`
 
 Raised when request data does not validate
 
-#### `ninja.errors.HttpError`
+#### `penta.errors.HttpError`
 
 Used to throw http error with status code from any place of the code
 
 #### `django.http.Http404`
- 
- Django's default 404 exception (can be returned f.e. with `get_object_or_404`)
+
+Django's default 404 exception (can be returned f.e. with `get_object_or_404`)
 
 #### `Exception`
- 
+
 Any other unhandled exception by application.
 
-Default behavior 
- 
-  - **if `settings.DEBUG` is `True`** - returns a traceback in plain text (useful when debugging in console or swagger UI)
-  - **else** - default django exception handler mechanism is used (error logging, email to ADMINS)
+Default behavior
 
+- **if `settings.DEBUG` is `True`** - returns a traceback in plain text (useful when debugging in console or swagger UI)
+- **else** - default django exception handler mechanism is used (error logging, email to ADMINS)
 
 ## Customizing request validation errors
 
-Requests that fail validation raise `ninja.errors.ValidationError` (not to be confused with `pydantic.ValidationError`).
+Requests that fail validation raise `penta.errors.ValidationError` (not to be confused with `pydantic.ValidationError`).
 `ValidationError`s have a default exception handler that returns a 422 (Unprocessable Content) JSON response of the form:
+
 ```json
 {
     "detail": [ ... ]
@@ -107,13 +105,13 @@ def validation_errors(request, exc):
 ```
 
 If you need even more control over validation errors (for example, if you need to reference the schema associated with
-the model that failed validation), you can supply your own `validation_error_from_error_contexts` in a `NinjaAPI` subclass:
+the model that failed validation), you can supply your own `validation_error_from_error_contexts` in a `Penta` subclass:
 
 ```python hl_lines="4"
 from penta.errors import ValidationError, ValidationErrorContext
 from typing import Any, Dict, List
 
-class CustomNinjaAPI(NinjaAPI):
+class CustomPenta(Penta):
     def validation_error_from_error_contexts(
         self, error_contexts: List[ValidationErrorContext],
     ) -> ValidationError:
@@ -121,7 +119,7 @@ class CustomNinjaAPI(NinjaAPI):
         for context in error_contexts:
             model = context.model
             pydantic_schema = model.__pydantic_core_schema__
-            param_source = model.__ninja_param_source__
+            param_source = model.__penta_param_source__
             for e in context.pydantic_validation_error.errors(
                 include_url=False, include_context=False, include_input=False
             ):
@@ -131,16 +129,14 @@ class CustomNinjaAPI(NinjaAPI):
                 custom_error_infos.append(custom_error_info)
         return ValidationError(custom_error_infos)
 
-api = CustomNinjaAPI()
+api = CustomPenta()
 ```
 
 Now each `ValidationError` raised during request validation will contain data from your `validation_error_from_error_contexts`.
 
-
 ## Throwing HTTP responses with exceptions
 
 As an alternative to custom exceptions and writing handlers for it - you can as well throw http exception that will lead to returning a http response with desired code
-
 
 ```python
 from penta.errors import HttpError

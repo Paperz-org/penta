@@ -1,7 +1,6 @@
 # Pagination
 
-**Django Ninja** comes with a pagination support. This allows you to split large result sets into individual pages.
-
+**Penta** comes with a pagination support. This allows you to split large result sets into individual pages.
 
 To apply pagination to a function - just apply `paginate` decorator:
 
@@ -14,7 +13,6 @@ def list_users(request):
     return User.objects.all()
 ```
 
-
 That's it!
 
 Now you can query users with `limit` and `offset` GET parameters
@@ -23,14 +21,13 @@ Now you can query users with `limit` and `offset` GET parameters
 /api/users?limit=10&offset=0
 ```
 
-by default limit is set to `100` (you can change it in your settings.py using `NINJA_PAGINATION_PER_PAGE`)
-
+by default limit is set to `100` (you can change it in your settings.py using `PENTA_PAGINATION_PER_PAGE`)
 
 ## Built in Pagination Classes
 
 ### LimitOffsetPagination (default)
 
-This is the default pagination class (You can change it in your settings.py using `NINJA_PAGINATION_CLASS` path to a class)
+This is the default pagination class (You can change it in your settings.py using `PENTA_PAGINATION_CLASS` path to a class)
 
 ```python hl_lines="1 4"
 from penta.pagination import paginate, LimitOffsetPagination
@@ -42,17 +39,18 @@ def list_users(request):
 ```
 
 Example query:
+
 ```
 /api/users?limit=10&offset=0
 ```
 
 this class has two input parameters:
 
- - `limit` - defines a number of queryset on the page (default = 100, change in NINJA_PAGINATION_PER_PAGE)
- - `offset` - set's the page window offset (default: 0, indexing starts with 0)
-
+- `limit` - defines a number of queryset on the page (default = 100, change in PENTA_PAGINATION_PER_PAGE)
+- `offset` - set's the page window offset (default: 0, indexing starts with 0)
 
 ### PageNumberPagination
+
 ```python hl_lines="1 4"
 from penta.pagination import paginate, PageNumberPagination
 
@@ -63,11 +61,12 @@ def list_users(request):
 ```
 
 Example query:
+
 ```
 /api/users?page=2
 ```
 
-this class has one parameter `page` and outputs 100 queryset per page by default  (can be changed with settings.py)
+this class has one parameter `page` and outputs 100 queryset per page by default (can be changed with settings.py)
 
 Page numbering start with 1
 
@@ -82,6 +81,7 @@ def list_users(...
 In addition to the `page` parameter, you can also use the `page_size` parameter to dynamically adjust the number of records displayed per page:
 
 Example query:
+
 ```
 /api/users?page=2&page_size=20
 ```
@@ -102,31 +102,29 @@ def someview(request, **kwargs):
     return ...
 ```
 
-
 ## Creating Custom Pagination Class
 
-To create a custom pagination class you should subclass `ninja.pagination.PaginationBase` and override the `Input` and `Output` schema classes and `paginate_queryset(self, queryset, request, **params)` method:
+To create a custom pagination class you should subclass `penta.pagination.PaginationBase` and override the `Input` and `Output` schema classes and `paginate_queryset(self, queryset, request, **params)` method:
 
- - The `Input` schema is a Schema class that describes parameters that should be passed to your paginator (f.e. page-number or limit/offset values).
- - The `Output` schema describes schema for page output (f.e. count/next-page/items/etc).
- - The `paginate_queryset` method is passed the initial queryset and should return an iterable object that contains only the data in the requested page. This method accepts the following arguments:
-    - `queryset`: a queryset (or iterable) returned by the api function
-    - `pagination` - the paginator.Input parameters (parsed and validated)
-    - `**params`: kwargs that will contain all the arguments that decorated function received 
-
+- The `Input` schema is a Schema class that describes parameters that should be passed to your paginator (f.e. page-number or limit/offset values).
+- The `Output` schema describes schema for page output (f.e. count/next-page/items/etc).
+- The `paginate_queryset` method is passed the initial queryset and should return an iterable object that contains only the data in the requested page. This method accepts the following arguments:
+  - `queryset`: a queryset (or iterable) returned by the api function
+  - `pagination` - the paginator.Input parameters (parsed and validated)
+  - `**params`: kwargs that will contain all the arguments that decorated function received
 
 Example:
 
 ```python hl_lines="7 11 16 26"
 from penta.pagination import paginate, PaginationBase
-from ninja import Schema
+from penta import Schema
 
 
 class CustomPagination(PaginationBase):
     # only `skip` param, defaults to 5 per page
     class Input(Schema):
         skip: int
-        
+
 
     class Output(Schema):
         items: List[Any] # `items` is a default attribute
@@ -157,7 +155,7 @@ def paginate_queryset(self, queryset, pagination: Input, **params):
 
 #### Async Pagination
 
-Standard **Django Ninja** pagination classes support async. If you wish to handle async requests with a custom pagination class, you should subclass `ninja.pagination.AsyncPaginationBase` and override the `apaginate_queryset(self, queryset, request, **params)` method.
+Standard **Penta** pagination classes support async. If you wish to handle async requests with a custom pagination class, you should subclass `penta.pagination.AsyncPaginationBase` and override the `apaginate_queryset(self, queryset, request, **params)` method.
 
 ### Output attribute
 
@@ -170,11 +168,10 @@ class CustomPagination(PaginationBase):
         results: List[Any]
         total: int
         per_page: int
-    
+
     items_attribute: str = "results"
 
 ```
-
 
 ## Apply pagination to multiple operations at once
 
@@ -202,9 +199,8 @@ In this example both operations will have pagination enabled
 
 to apply pagination to main `api` instance use `default_router` argument:
 
-
 ```python
-api = NinjaAPI(default_router=RouterPaginated())
+api = Penta(default_router=RouterPaginated())
 
 @api.get(...
 ```

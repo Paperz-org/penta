@@ -1,18 +1,16 @@
 # Schemas from Django models
 
-
 Schemas are very useful to define your validation rules and responses, but sometimes you need to reflect your database models into schemas and keep changes in sync.
 
-## ModelSchema 
+## ModelSchema
 
 `ModelSchema` is a special base class that can automatically generate schemas from your models.
 
 All you need is to set `model` and `fields` attributes on your schema `Meta`:
 
-
 ```python hl_lines="2 5 6 7"
 from django.contrib.auth.models import User
-from ninja import ModelSchema
+from penta import ModelSchema
 
 class UserSchema(ModelSchema):
     class Meta:
@@ -20,7 +18,7 @@ class UserSchema(ModelSchema):
         fields = ['id', 'username', 'first_name', 'last_name']
 
 # Will create schema like this:
-# 
+#
 # class UserSchema(Schema):
 #     id: int
 #     username: str
@@ -38,12 +36,13 @@ class UserSchema(ModelSchema):
         model = User
         fields = "__all__"
 ```
+
 !!! Warning
-    Using __all__ is not recommended.
-    <br>
-    This can lead to accidental unwanted data exposure (like hashed password, in the above example).
-    <br>
-    General advice - use `fields` to explicitly define list of fields that you want to be visible in API.
+Using **all** is not recommended.
+<br>
+This can lead to accidental unwanted data exposure (like hashed password, in the above example).
+<br>
+General advice - use `fields` to explicitly define list of fields that you want to be visible in API.
 
 ### Excluding model fields
 
@@ -56,7 +55,7 @@ class UserSchema(ModelSchema):
         exclude = ['password', 'last_login', 'user_permissions']
 
 # Will create schema like this:
-# 
+#
 # class UserSchema(Schema):
 #     id: int
 #     username: str
@@ -70,7 +69,7 @@ class UserSchema(ModelSchema):
 
 ### Overriding fields
 
-To change default annotation for some field, or to add a new field, just use annotated attributes as usual. 
+To change default annotation for some field, or to add a new field, just use annotated attributes as usual.
 
 ```python hl_lines="1 2 3 4 8"
 class GroupSchema(ModelSchema):
@@ -87,7 +86,6 @@ class UserSchema(ModelSchema):
         fields = ['id', 'username', 'first_name', 'last_name']
 
 ```
-
 
 ### Making fields optional
 
@@ -126,13 +124,12 @@ def patch(request, pk: int, payload: PatchGroupSchema):
 
 ```
 
-
 ### Custom fields types
 
 For each Django field it encounters, `ModelSchema` uses the default `Field.get_internal_type` method
 to find the correct representation in Pydantic schema (python type). This process works fine for the built-in field
 types, but there are cases where the user wants to create or use a custom field, with its own mapping to
-python type. In this case you should use `register_field` method to tell django-ninja which type should this django field represent:
+python type. In this case you should use `register_field` method to tell penta which type should this django field represent:
 
 ```python hl_lines="4 7 8 9"
 # models.py
@@ -149,11 +146,11 @@ register_field('VectorField', list[float])
 
 #### PatchDict
 
-Another way to work with patch request data is a `PatchDict` container which allows you to make 
+Another way to work with patch request data is a `PatchDict` container which allows you to make
 a schema with all optional fields and get a dict with **only** fields that was provide
 
 ```Python hl_lines="1 11"
-from ninja import PatchDict
+from penta import PatchDict
 
 class GroupSchema(Schema):
     # You do not have to make fields optional it will be converted by PatchDict
@@ -168,7 +165,7 @@ def modify_data(request, pk: int, payload: PatchDict[GroupSchema]):
 
     for attr, value in payload.items():
         setattr(obj, attr, value)
-    
+
     obj.save()
 
 ```

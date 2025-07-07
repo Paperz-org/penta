@@ -21,11 +21,11 @@ fmt format: ## Run code formatters
 
 .PHONY: test
 test: ## Run tests
-	pytest .
+	uv run pytest .
 
 .PHONY: test-cov
 test-cov: ## Run tests with coverage
-	pytest --cov=ninja --cov-report term-missing tests
+	uv runpytest --cov=ninja --cov-report term-missing tests
 
 .PHONY: docs
 docs: ## Serve documentation locally

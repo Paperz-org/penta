@@ -1,18 +1,18 @@
 # Tutorial - First Steps
 
-This tutorial shows you how to use **Django Ninja** with most of its features.
+This tutorial shows you how to use **Penta** with most of its features.
 
 This tutorial assumes that you know at least some basics of the <a href="https://www.djangoproject.com/" target="_blank">Django Framework</a>, like how to create a project and run it.
 
 ## Installation
 
 ```console
-pip install django-ninja
+pip install penta
 ```
 
 !!! note
 
-    It is not required, but you can also put `ninja` to `INSTALLED_APPS`.
+    It is not required, but you can also put `penta` to `INSTALLED_APPS`.
     In that case the OpenAPI/Swagger UI (or Redoc) will be loaded (faster) from the included JavaScript bundle (otherwise the JavaScript bundle comes from a CDN).
 
 ## Create a Django project
@@ -28,9 +28,9 @@ django-admin startproject myproject
 Let's create a module for our API. Create an `api.py` file in the same directory location as your Django project's root `urls.py`:
 
 ```python
-from ninja import NinjaAPI
+from penta import Penta
 
-api = NinjaAPI()
+api = Penta()
 ```
 
 Now go to `urls.py` and add the following:
@@ -48,14 +48,14 @@ urlpatterns = [
 
 ## Our first operation
 
-**Django Ninja** comes with a decorator for each HTTP method (`GET`, `POST`,
+**Penta** comes with a decorator for each HTTP method (`GET`, `POST`,
 `PUT`, etc). In our `api.py` file, let's add in a simple "hello world"
 operation.
 
 ```python hl_lines="5-7"
-from ninja import NinjaAPI
+from penta import Penta
 
-api = NinjaAPI()
+api = Penta()
 
 @api.get("/hello")
 def hello(request):
@@ -65,6 +65,7 @@ def hello(request):
 Now browsing to <a href="http://localhost:8000/api/hello"
 target="_blank">localhost:8000/api/hello</a> will return a simple JSON
 response:
+
 ```json
 "Hello world"
 ```

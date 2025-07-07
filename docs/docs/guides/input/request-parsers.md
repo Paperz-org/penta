@@ -1,14 +1,13 @@
 # Request parsers
 
 In most cases, the default content type for REST API's is JSON, but in case you need to work with
-other content types (like YAML, XML, CSV) or use faster JSON parsers, **Django Ninja** provides a `parser` configuration.
+other content types (like YAML, XML, CSV) or use faster JSON parsers, **Penta** provides a `parser` configuration.
 
 ```python
-api = NinjaAPI(parser=MyYamlParser())
+api = Penta(parser=MyYamlParser())
 ```
 
-To create your own parser, you need to extend the `ninja.parser.Parser` class, and override the `parse_body` method.
-
+To create your own parser, you need to extend the `penta.parser.Parser` class, and override the `parse_body` method.
 
 ## Example YAML Parser
 
@@ -17,7 +16,7 @@ Let's create our custom YAML parser:
 ```python hl_lines="4 8 9"
 import yaml
 from typing import List
-from ninja import NinjaAPI
+from penta import Penta
 from penta.parser import Parser
 
 
@@ -26,7 +25,7 @@ class MyYamlParser(Parser):
         return yaml.safe_load(request.body)
 
 
-api = NinjaAPI(parser=MyYamlParser())
+api = Penta(parser=MyYamlParser())
 
 
 class Payload(Schema):
@@ -54,7 +53,6 @@ f: 3.14
 
 it will be correctly parsed, and you should have JSON output like this:
 
-
 ```JSON
 {
   "ints": [
@@ -65,7 +63,6 @@ it will be correctly parsed, and you should have JSON output like this:
   "f": 3.14
 }
 ```
-
 
 ## Example ORJSON Parser
 
@@ -79,7 +76,7 @@ Parser code:
 
 ```python hl_lines="1 8 9"
 import orjson
-from ninja import NinjaAPI
+from penta import Penta
 from penta.parser import Parser
 
 
@@ -88,6 +85,5 @@ class ORJSONParser(Parser):
         return orjson.loads(request.body)
 
 
-api = NinjaAPI(parser=ORJSONParser())
+api = Penta(parser=ORJSONParser())
 ```
-

@@ -1,4 +1,4 @@
-from penta import Form, NinjaAPI
+from penta import Form, PentaAPI
 from penta.security import HttpBearer
 
 
@@ -8,7 +8,7 @@ class GlobalAuth(HttpBearer):
             return token
 
 
-api = NinjaAPI(auth=GlobalAuth())
+api = PentaAPI(auth=GlobalAuth())
 
 # @api.get(...)
 # def ...

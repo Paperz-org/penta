@@ -4,6 +4,7 @@ from unittest import mock
 import pytest
 
 from penta import Router
+from penta.dependencies.request import RequestDependency
 from penta.testing import TestClient
 
 router = Router()
@@ -57,7 +58,7 @@ def get_query_id(request, item_id, query: int):
 
 @router.get("/text-bad")
 @a_bad_test_wrapper
-def get_text_bad(request):
+def get_text_bad(request: RequestDependency):
     return "Hello World"
 
 

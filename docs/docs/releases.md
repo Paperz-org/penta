@@ -2,5 +2,4 @@
 
 Follow and subscribe for new releases on GitHub:
 
-<https://github.com/vitalik/django-ninja/releases>
-
+<https://github.com/paperz-org/penta/releases>
