@@ -2,12 +2,12 @@ import asyncio
 from typing import Any, List
 
 import django
-from penta.dependencies.request import RequestDependency
 import pytest
 from django.db.models import QuerySet
 from someapp.models import Category
 
 from penta import Penta, Schema
+from penta.dependencies.request import RequestDependency
 from penta.errors import ConfigError
 from penta.pagination import (
     AsyncPaginationBase,

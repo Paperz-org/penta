@@ -1,12 +1,12 @@
 import copy
 import uuid
 
-from penta.dependencies.request import RequestDependency
 import pytest
 from pydantic import BaseModel
 
 from penta import Penta
 from penta.constants import NOT_SET
+from penta.dependencies.request import RequestDependency
 from penta.signature.details import is_pydantic_model
 from penta.signature.utils import UUIDStrConverter
 from penta.testing import TestClient

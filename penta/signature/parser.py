@@ -1,5 +1,5 @@
 import inspect
-from typing import TYPE_CHECKING, Annotated, cast, get_args, get_origin
+from typing import TYPE_CHECKING, Annotated, get_args, get_origin
 
 if TYPE_CHECKING:
     from penta.dependencies.depends import _Depends

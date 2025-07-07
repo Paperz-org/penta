@@ -1,8 +1,8 @@
-from penta.dependencies.request import RequestDependency
 import pytest
 from pydantic import BaseModel
 
 from penta import Form, Query, Router
+from penta.dependencies.request import RequestDependency
 from penta.testing import TestClient
 
 

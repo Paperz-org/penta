@@ -1,10 +1,10 @@
 from datetime import datetime
 from enum import IntEnum
 
-from penta.dependencies.request import RequestDependency
 from pydantic import Field
 
 from penta import Penta, Query, Schema
+from penta.dependencies.request import RequestDependency
 
 
 class Range(IntEnum):

@@ -1,8 +1,8 @@
-from penta.dependencies.request import RequestDependency
 import pytest
 from django.http import Http404
 
 from penta import Penta, Schema
+from penta.dependencies.request import RequestDependency
 from penta.testing import TestAsyncClient, TestClient
 
 api = Penta()

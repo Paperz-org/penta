@@ -5,7 +5,6 @@ from math import inf
 from typing import Any, AsyncGenerator, Callable, List, Optional, Tuple, Type, Union
 
 from django.db.models import QuerySet
-from django.http import HttpRequest
 from django.utils.module_loading import import_string
 from typing_extensions import get_args as get_collection_args
 

@@ -1,8 +1,8 @@
-from penta.dependencies.request import RequestDependency
 import pytest
 from django.conf import settings
 
 from penta import Penta
+from penta.dependencies.request import RequestDependency
 from penta.testing import TestAsyncClient as BaseTestAsyncClient
 
 

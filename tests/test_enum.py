@@ -2,10 +2,10 @@ from datetime import date
 from enum import Enum
 from typing import List, Optional
 
-from penta.dependencies.request import RequestDependency
 from pydantic import BaseModel
 
 from penta import Penta, Query
+from penta.dependencies.request import RequestDependency
 from penta.testing import TestClient
 
 

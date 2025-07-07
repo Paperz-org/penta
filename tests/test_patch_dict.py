@@ -1,9 +1,9 @@
 from typing import Optional
 
-from penta.dependencies.request import RequestDependency
 import pytest
 
 from penta import Penta, Schema
+from penta.dependencies.request import RequestDependency
 from penta.patch_dict import PatchDict
 from penta.testing import TestClient
 

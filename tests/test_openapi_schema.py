@@ -2,12 +2,12 @@ import sys
 from typing import Any, List, Union
 from unittest.mock import Mock
 
-from penta.dependencies.request import RequestDependency
 import pytest
 from django.contrib.admin.views.decorators import staff_member_required
 from django.test import Client, override_settings
 
 from penta import Body, Field, File, Form, Penta, Query, Schema, UploadedFile
+from penta.dependencies.request import RequestDependency
 from penta.openapi.urls import get_openapi_urls
 from penta.pagination import PaginationBase, paginate
 from penta.renderers import JSONRenderer
@@ -795,11 +795,15 @@ def test_unique_operation_ids(capsys):
     api = Penta()
 
     @api.get("/1")
-    def same_name(request: RequestDependency,):
+    def same_name(
+        request: RequestDependency,
+    ):
         pass
 
     @api.get("/2")  # noqa: F811
-    def same_name(request: RequestDependency,):  # noqa: F811
+    def same_name(
+        request: RequestDependency,
+    ):  # noqa: F811
         pass
 
     api.get_openapi_schema()
@@ -933,7 +937,9 @@ def test_no_default_for_custom_items_attribute():
         response=List[EmployeeOut],
     )
     @paginate(CustomPagination)
-    def get_employees(request: RequestDependency,):
+    def get_employees(
+        request: RequestDependency,
+    ):
         pass
 
     schema = api.get_openapi_schema()

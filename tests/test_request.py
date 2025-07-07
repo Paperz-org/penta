@@ -1,10 +1,10 @@
 from typing import Optional
 
-from penta.dependencies.request import RequestDependency
 import pytest
 from pydantic import ConfigDict
 
 from penta import Body, Cookie, Header, Router, Schema
+from penta.dependencies.request import RequestDependency
 from penta.testing import TestClient
 
 
@@ -38,7 +38,9 @@ def headers3(request: RequestDependency, content_length: int = Header(...)):
 
 
 @router.get("/headers4")
-def headers4(request: RequestDependency, c_len: int = Header(..., alias="Content-length")):
+def headers4(
+    request: RequestDependency, c_len: int = Header(..., alias="Content-length")
+):
     return c_len
 
 

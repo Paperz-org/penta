@@ -1,7 +1,7 @@
-from penta.dependencies.request import RequestDependency
 import pytest
 
 from penta import Penta, Router
+from penta.dependencies.request import RequestDependency
 from penta.testing import TestClient
 
 api = Penta()
@@ -9,7 +9,9 @@ api = Penta()
 
 @api.get("/endpoint")
 # view->api
-def global_op(request: RequestDependency,):
+def global_op(
+    request: RequestDependency,
+):
     return "global"
 
 
@@ -18,7 +20,9 @@ first_router = Router()
 
 @first_router.get("/endpoint_1")
 # view->router, router->api
-def router_op1(request: RequestDependency,):
+def router_op1(
+    request: RequestDependency,
+):
     return "first 1"
 
 
@@ -27,7 +31,9 @@ second_router_one = Router()
 
 @second_router_one.get("endpoint_1")
 # view->router2, router2->router1, router1->api
-def router_op2(request: RequestDependency,):
+def router_op2(
+    request: RequestDependency,
+):
     return "second 1"
 
 
@@ -36,7 +42,9 @@ second_router_two = Router()
 
 @second_router_two.get("endpoint_2")
 # view->router2, router2->router1, router1->api
-def router2_op3(request: RequestDependency,):
+def router2_op3(
+    request: RequestDependency,
+):
     return "second 2"
 
 
@@ -47,7 +55,9 @@ api.add_router("/first", first_router, tags=["global"])
 
 @first_router.get("endpoint_2")
 # router->api, view->router
-def router1_op1(request: RequestDependency,):
+def router1_op1(
+    request: RequestDependency,
+):
     return "first 2"
 
 

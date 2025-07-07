@@ -1,5 +1,5 @@
 from inspect import _empty, signature
-from typing import Any, Callable, TypeVar
+from typing import Callable, TypeVar
 
 from fast_depends.dependencies import model
 from typing_extensions import ParamSpec

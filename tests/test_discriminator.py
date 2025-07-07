@@ -1,10 +1,10 @@
 from typing import Union
 
-from penta.dependencies.request import RequestDependency
 from pydantic import Field
 from typing_extensions import Annotated, Literal
 
 from penta import Penta, Schema
+from penta.dependencies.request import RequestDependency
 from penta.testing import TestClient
 
 

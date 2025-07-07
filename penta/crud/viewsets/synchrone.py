@@ -88,7 +88,9 @@ class SyncViewSet(
         """List items."""
 
         @paginate
-        def _list_items(filters: self.filter_schema = Query(...)) -> QuerySet[ModelType]:  # noqa: B008
+        def _list_items(
+            filters: self.filter_schema = Query(...),
+        ) -> QuerySet[ModelType]:  # noqa: B008
             """List items."""
             return cast(QuerySet[ModelType], filters.filter(self.queryset))
 
@@ -141,7 +143,9 @@ class SyncViewSet(
         """Update item."""
 
         @rename(pk_name=self.pk_name)
-        def _update_item(pk_name: self.pk_type, payload: self.update_schema) -> ModelType:  # type: ignore[E0611]
+        def _update_item(
+            pk_name: self.pk_type, payload: self.update_schema
+        ) -> ModelType:  # type: ignore[E0611]
             """Update item."""
             try:
                 obj = self._get_object(pk_name)

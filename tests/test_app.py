@@ -3,11 +3,11 @@ import os
 from pathlib import Path
 from tempfile import NamedTemporaryFile
 
-from penta.dependencies.request import RequestDependency
 import pytest
 from django.http import FileResponse, HttpResponse
 
 from penta import Penta
+from penta.dependencies.request import RequestDependency
 from penta.main import ConfigError
 from penta.testing import TestClient
 

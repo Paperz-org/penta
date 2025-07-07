@@ -1,11 +1,11 @@
 from typing import List
 
-from penta.dependencies.request import RequestDependency
 import pytest
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.utils.datastructures import MultiValueDict
 
 from penta import File, Penta, UploadedFile
+from penta.dependencies.request import RequestDependency
 from penta.errors import ConfigError
 from penta.testing import TestClient
 
@@ -33,12 +33,16 @@ def file_no_marker4(request: RequestDependency, files: List[UploadedFile]):
 
 
 @api.post("/file5")
-def file_no_marker5(request: RequestDependency, file1: UploadedFile, file2: UploadedFile):
+def file_no_marker5(
+    request: RequestDependency, file1: UploadedFile, file2: UploadedFile
+):
     return {"result": [f.read().decode() for f in (file1, file2)]}
 
 
 @api.post("/file6")
-def file_no_marker6(request: RequestDependency, file: UploadedFile, files: List[UploadedFile]):
+def file_no_marker6(
+    request: RequestDependency, file: UploadedFile, files: List[UploadedFile]
+):
     return {"result": [f.read().decode() for f in [file] + files]}
 
 

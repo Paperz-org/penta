@@ -1,11 +1,11 @@
 from io import StringIO
 
-from penta.dependencies.request import RequestDependency
 import pytest
 from django.utils.encoding import force_str
 from django.utils.xmlutils import SimplerXMLGenerator
 
 from penta import Penta
+from penta.dependencies.request import RequestDependency
 from penta.renderers import BaseRenderer
 from penta.testing import TestClient
 

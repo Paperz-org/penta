@@ -24,15 +24,9 @@ from .base import BaseViewSet
 
 ListItemsReturnType = Callable[[Query], QuerySet[ModelType]]
 GetItemReturnType = Callable[[PKType], Coroutine[Any, Any, ModelType]]
-CreateItemReturnType = Callable[
-    [CreateSchemaType], Coroutine[Any, Any, Any]
-]
-UpdateItemReturnType = Callable[
-    [PKType, UpdateSchemaType], Coroutine[Any, Any, Any]
-]
-DeleteItemReturnType = Callable[
-    [PKType], Coroutine[Any, Any, tuple[int, None]]
-]
+CreateItemReturnType = Callable[[CreateSchemaType], Coroutine[Any, Any, Any]]
+UpdateItemReturnType = Callable[[PKType, UpdateSchemaType], Coroutine[Any, Any, Any]]
+DeleteItemReturnType = Callable[[PKType], Coroutine[Any, Any, tuple[int, None]]]
 
 
 class AsyncViewSet(
@@ -70,7 +64,9 @@ class AsyncViewSet(
         """List items."""
 
         @paginate
-        def _list_items(filters: self.filter_schema = Query(...)) -> QuerySet[ModelType]:  # noqa: B008
+        def _list_items(
+            filters: self.filter_schema = Query(...),
+        ) -> QuerySet[ModelType]:  # noqa: B008
             return cast(QuerySet[ModelType], filters.filter(self.queryset))
 
         return _list_items
@@ -114,7 +110,8 @@ class AsyncViewSet(
         """Update item."""
 
         @rename(pk_name=self.pk_name)
-        async def _update_item(pk_name: self.pk_type, payload: self.update_schema
+        async def _update_item(
+            pk_name: self.pk_type, payload: self.update_schema
         ) -> self.read_schema:  # type: ignore[E0611]
             try:
                 obj = await self._get_object(pk_name)
@@ -146,8 +143,7 @@ class AsyncViewSet(
         """Delete item."""
 
         @rename(pk_name=self.pk_name)
-        async def _delete_item(pk_name: self.pk_type
-        ) -> tuple[int, None]:
+        async def _delete_item(pk_name: self.pk_type) -> tuple[int, None]:
             try:
                 obj = await self._get_object(pk_name)
                 await self._delete_object(obj)

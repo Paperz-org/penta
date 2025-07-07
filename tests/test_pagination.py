@@ -2,12 +2,12 @@ import importlib
 from sys import version_info
 from typing import Any, List
 
-from penta.dependencies.request import RequestDependency
 import pytest
 from django.test import override_settings
 from pydantic.errors import PydanticSchemaGenerationError
 
 from penta import Penta, Schema
+from penta.dependencies.request import RequestDependency
 from penta.errors import ConfigError
 from penta.operation import Operation
 from penta.pagination import (

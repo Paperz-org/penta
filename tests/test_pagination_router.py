@@ -1,9 +1,9 @@
 from typing import List
 
-from penta.dependencies.request import RequestDependency
 import pytest
 
 from penta import Penta, Schema
+from penta.dependencies.request import RequestDependency
 from penta.pagination import RouterPaginated
 from penta.testing import TestAsyncClient, TestClient
 

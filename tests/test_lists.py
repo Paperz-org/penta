@@ -1,11 +1,11 @@
 from typing import List
 
-from penta.dependencies.request import RequestDependency
 import pytest
 from django.http import QueryDict  # noqa
 from pydantic import BaseModel, Field, conlist
 
 from penta import Body, Form, Query, Router, Schema
+from penta.dependencies.request import RequestDependency
 from penta.testing import TestClient
 
 router = Router()

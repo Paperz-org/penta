@@ -5,14 +5,14 @@ from typing import Any, Callable, Dict, Generator, List, Optional, Tuple
 
 import pydantic
 from django.http import HttpRequest, HttpResponse
+from fast_depends.dependencies import model
 from pydantic.fields import FieldInfo
 from pydantic_core import PydanticUndefined
 from typing_extensions import Annotated, get_args, get_origin
-from fast_depends.dependencies import model
 
-from penta.files import UploadedFile
 from penta.compatibility.util import UNION_TYPES
 from penta.errors import ConfigError
+from penta.files import UploadedFile
 from penta.params.models import (
     Body,
     File,

@@ -1,9 +1,9 @@
 import asyncio
 
-from penta.dependencies.request import RequestDependency
 import pytest
 
 from penta import Penta
+from penta.dependencies.request import RequestDependency
 from penta.security import APIKeyQuery, HttpBearer
 from penta.testing import TestAsyncClient, TestClient
 

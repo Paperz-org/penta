@@ -1,7 +1,7 @@
-from penta.dependencies.request import RequestDependency
 import pytest
 
 from penta import Penta, Router
+from penta.dependencies.request import RequestDependency
 from penta.security import APIKeyQuery
 from penta.testing import TestClient
 

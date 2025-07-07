@@ -1,4 +1,3 @@
-from penta.dependencies.request import RequestDependency
 import pytest
 from django.core.cache import cache
 from django.core.exceptions import ImproperlyConfigured

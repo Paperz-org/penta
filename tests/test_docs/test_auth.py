@@ -1,9 +1,9 @@
 from unittest.mock import Mock, patch
 
-from penta.dependencies.request import RequestDependency
 import pytest
 
 from penta import Penta
+from penta.dependencies.request import RequestDependency
 from penta.testing import TestClient
 
 

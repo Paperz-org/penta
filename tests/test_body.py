@@ -1,10 +1,10 @@
 from typing import Any, Dict, List
 
-from penta.dependencies.request import RequestDependency
 import pytest
 from pydantic import field_validator
 
 from penta import Body, Form, Penta, Schema
+from penta.dependencies.request import RequestDependency
 from penta.errors import ConfigError, ValidationError, ValidationErrorContext
 from penta.testing import TestClient
 
@@ -14,7 +14,9 @@ api = Penta()
 
 
 @api.post("/task")
-def create_task(request: RequestDependency, start: int = Body(...), end: int = Body(...)):
+def create_task(
+    request: RequestDependency, start: int = Body(...), end: int = Body(...)
+):
     return [start, end]
 
 
