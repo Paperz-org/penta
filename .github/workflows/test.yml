@@ -5,28 +5,37 @@ on:
 
 jobs:
   pytest:
-    name: Python ${{ matrix.python-version }} / Django ${{ matrix.django-version || 'locked' }}
+    name: Python ${{ matrix.python-version }} / ${{ matrix.packages || 'locked' }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        # every python version penta supports, against the locked Django
+        # every python version penta supports, against the latest release of each of
+        # its dependencies: this is what a new install gets, so penta breaking on one
+        # of them has to turn the CI red
         python-version: ['3.10', '3.11', '3.12', '3.13']
-        django-version: ['']
+        packages: ['']
         include:
-          # and the edges of the Django range, on the python versions supporting them
+          # the floors penta declares: the oldest version of each dependency
           - python-version: '3.10'
-            django-version: '~=3.2.0'
+            packages: 'django~=3.2.0'
+          - python-version: '3.11'
+            packages: 'pydantic==2.4.2'
+          - python-version: '3.11'
+            packages: 'fast-depends==2.4.12'
+          # and the versions in between that people actually run
           - python-version: '3.10'
-            django-version: '~=4.2.0'
-          - python-version: '3.13'
-            django-version: '~=5.1.0'
+            packages: 'django~=4.2.0'
+          - python-version: '3.12'
+            packages: 'django~=5.2.0'
+          - python-version: '3.12'
+            packages: 'pydantic~=2.11.0'
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Run the test suite
         uses: ./.github/actions/pytest
         with:
           python-version: ${{ matrix.python-version }}
-          django-version: ${{ matrix.django-version }}
+          packages: ${{ matrix.packages }}

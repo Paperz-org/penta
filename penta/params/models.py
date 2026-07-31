@@ -206,7 +206,12 @@ class _MultiPartBodyModel(BodyModel):
         return results
 
 
-class Param(FieldInfo):
+# `FieldInfo` is marked as final since pydantic 2.12, to discourage new subclasses.
+# A param has to *be* one: it is what a view declares as the default of an argument
+# (`q: int = Query(...)`), and what penta gives pydantic to build its models from.
+# Pydantic keeps that path working for the frameworks doing it (see "HACK 2" in
+# `pydantic.fields.FieldInfo.from_annotated_attribute`), the restriction is about typing.
+class Param(FieldInfo):  # type: ignore[misc]
     def __init__(
         self,
         default: Any,
@@ -269,35 +274,35 @@ class Param(FieldInfo):
         return cls.__name__.lower()
 
 
-class Path(Param):
+class Path(Param):  # type: ignore[misc]
     _model = PathModel
 
 
-class Query(Param):
+class Query(Param):  # type: ignore[misc]
     _model = QueryModel
 
 
-class Header(Param):
+class Header(Param):  # type: ignore[misc]
     _model = HeaderModel
 
 
-class Cookie(Param):
+class Cookie(Param):  # type: ignore[misc]
     _model = CookieModel
 
 
-class Body(Param):
+class Body(Param):  # type: ignore[misc]
     _model = BodyModel
 
 
-class Form(Param):
+class Form(Param):  # type: ignore[misc]
     _model = FormModel
 
 
-class File(Param):
+class File(Param):  # type: ignore[misc]
     _model = FileModel
 
 
-class _MultiPartBody(Param):
+class _MultiPartBody(Param):  # type: ignore[misc]
     _model = _MultiPartBodyModel
 
     @classmethod

@@ -5,8 +5,8 @@ inputs:
     description: 'Python version to run the tests with'
     required: false
     default: '3.11'
-  django-version:
-    description: 'Django specifier to test against, e.g. `~=4.2.0` (default: the locked one)'
+  packages:
+    description: 'Package specifiers to install over the locked ones, e.g. `django~=4.2.0`'
     required: false
     default: ''
 runs:
@@ -17,12 +17,12 @@ runs:
       with:
         python-version: ${{ inputs.python-version }}
 
-    - name: Install Django ${{ inputs.django-version }}
-      if: inputs.django-version != ''
+    - name: Install ${{ inputs.packages }}
+      if: inputs.packages != ''
       shell: bash
-      run: uv pip install "django${{ inputs.django-version }}"
+      run: uv pip install ${{ inputs.packages }}
 
     - name: Test with pytest
       shell: bash
-      # --no-sync: keep the Django installed above, whatever the lock file says
+      # --no-sync: keep the packages installed above, whatever the lock file says
       run: uv run --no-sync pytest tests

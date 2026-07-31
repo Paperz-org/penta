@@ -10,14 +10,14 @@ install: ## Install dependencies
 
 .PHONY: lint
 lint: ## Run code linters
-	ruff format --preview --check .
-	ruff check --preview .
-	mypy
+	uv run ruff format --preview --check .
+	uv run ruff check --preview .
+	uv run mypy
 
 .PHONY: fmt format
 fmt format: ## Run code formatters
-	ruff format --preview .
-	ruff check --preview --fix .
+	uv run ruff format --preview .
+	uv run ruff check --preview --fix .
 
 .PHONY: test
 test: ## Run tests

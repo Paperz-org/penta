@@ -61,13 +61,6 @@ test = [
 doc = ["mkdocs", "mkdocs-material", "markdown-include", "mkdocstrings"]
 dev = ["pre-commit"]
 
-[tool.uv]
-# pydantic 2.12 marks `FieldInfo` as final, and penta's params (`Query`, `Body`, ...)
-# have to *be* FieldInfo instances for pydantic to read them as field definitions.
-# It runs fine — the test matrix covers up to 2.13 — but the type checker rejects the
-# inheritance, so the environment penta is type checked in stays below 2.12.
-constraint-dependencies = ["pydantic<2.12"]
-
 [build-system]
 requires = ["setuptools>=64", "setuptools-scm>=8"]
 build-backend = "setuptools.build_meta"
