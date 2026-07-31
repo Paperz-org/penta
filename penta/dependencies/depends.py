@@ -1,16 +1,16 @@
 from inspect import Parameter as InspectParameter
 from typing import Callable, Generic, List, TypeVar
 
-from fast_depends.dependencies import model
 from typing_extensions import ParamSpec
 
+from penta.compatibility.fast_depends import Dependency, dependency_options
 from penta.signature.parser import Parameter, Signature, _resolve_duplicate_parameters
 
 T = TypeVar("T")
 P = ParamSpec("P")
 
 
-class _Depends(model.Depends, Generic[P, T]):
+class _Depends(Dependency, Generic[P, T]):
     """
     A dependency, parameterized by the signature and the return type of the callable it
     resolves: `Depends(get_user)` is a `_Depends[[Request], User]`.
@@ -25,7 +25,9 @@ class _Depends(model.Depends, Generic[P, T]):
         use_cache: bool = True,
         cast: bool = True,
     ) -> None:
-        super().__init__(dependency, use_cache=use_cache, cast=cast)
+        super().__init__(
+            dependency, **dependency_options(use_cache=use_cache, cast=cast)
+        )
 
     @property
     def __signature__(self) -> Signature:

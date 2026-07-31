@@ -20,31 +20,30 @@ classifiers = [
     "Intended Audience :: Developers",
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.7",
-    "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: 3 :: Only",
     "Framework :: Django",
-    "Framework :: Django :: 3.1",
     "Framework :: Django :: 3.2",
     "Framework :: Django :: 4.1",
     "Framework :: Django :: 4.2",
     "Framework :: Django :: 5.0",
     "Framework :: Django :: 5.1",
     "Framework :: Django :: 5.2",
+    "Framework :: Django :: 6.0",
     "Framework :: AsyncIO",
     "Topic :: Internet :: WWW/HTTP :: HTTP Servers",
     "Topic :: Internet :: WWW/HTTP",
 ]
 dependencies = [
-    "Django >=3.1, <6.0",
-    "fast-depends>=2.4.12",
-    "pydantic >=2.0,<3.0.0",
-    "ruff>=0.5.7",
+    # 3.1 does not support python 3.10, and 6.0 is the last version tested
+    "Django >=3.2, <7.0",
+    # 3.0 renamed the class describing a dependency, see penta.compatibility
+    "fast-depends >=2.4.12, <4.0",
+    # 2.4 is the first version having `with_info_plain_validator_function`
+    "pydantic >=2.4, <3.0.0",
 ]
 urls = { Documentation = "https://paperz-org.github.io/penta", Repository = "https://github.com/paperz-org/penta" }
 
@@ -56,11 +55,18 @@ test = [
     "pytest-asyncio",
     "psycopg2-binary",
     "mypy==2.3.0",
-    "ruff==0.5.7",
+    "ruff==0.16.1",
     "django-stubs",
 ]
 doc = ["mkdocs", "mkdocs-material", "markdown-include", "mkdocstrings"]
 dev = ["pre-commit"]
+
+[tool.uv]
+# pydantic 2.12 marks `FieldInfo` as final, and penta's params (`Query`, `Body`, ...)
+# have to *be* FieldInfo instances for pydantic to read them as field definitions.
+# It runs fine — the test matrix covers up to 2.13 — but the type checker rejects the
+# inheritance, so the environment penta is type checked in stays below 2.12.
+constraint-dependencies = ["pydantic<2.12"]
 
 [build-system]
 requires = ["setuptools>=64", "setuptools-scm>=8"]
@@ -86,9 +92,11 @@ select = [
     "W",    # pycodestyle warnings
 ]
 ignore = [
-    "E501", # line too long, handled by black
-    "B008", # do not perform function calls in argument defaults
-    "C901", # too complex
+    "E501",    # line too long, handled by the formatter
+    "B008",    # do not perform function calls in argument defaults
+    "C901",    # too complex
+    "B903",    # class could be a dataclass or a namedtuple
+    "FURB189", # subclassing dict/str: penta does it on purpose, to stay one
 ]
 
 [tool.ruff.lint.per-file-ignores]

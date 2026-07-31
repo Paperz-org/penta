@@ -24,6 +24,7 @@ from typing import (
     Callable,
     Dict,
     Iterable,
+    Mapping,
     Type,
     TypeVar,
     Union,
@@ -34,7 +35,7 @@ from typing import (
 import pydantic
 from django.db.models import Manager, QuerySet
 from django.db.models.fields.files import FieldFile
-from django.template import Variable, VariableDoesNotExist
+from django.template import TemplateSyntaxError, Variable, VariableDoesNotExist
 from pydantic import BaseModel, Field, ValidationInfo, model_validator, validator
 from pydantic._internal._model_construction import ModelMetaclass
 from pydantic.functional_validators import ModelWrapValidatorHandler
@@ -76,13 +77,18 @@ class DjangoGetter:
                 try:
                     value = getattr(self._obj, key)
                 except AttributeError:
-                    try:
-                        # value = attrgetter(key)(self._obj)
-                        value = Variable(key).resolve(self._obj)
-                        # TODO: Variable(key) __init__ is actually slower than
-                        #       Variable.resolve - so it better be cached
-                    except VariableDoesNotExist as e:
-                        raise AttributeError(key) from e
+                    if isinstance(self._obj, Mapping) and key in self._obj:
+                        # a mapping is read as a mapping: `Variable` below parses the
+                        # key as a template expression, which rejects `X-Token` & co
+                        value = self._obj[key]
+                    else:
+                        try:
+                            # value = attrgetter(key)(self._obj)
+                            value = Variable(key).resolve(self._obj)
+                            # TODO: Variable(key) __init__ is actually slower than
+                            #       Variable.resolve - so it better be cached
+                        except (VariableDoesNotExist, TemplateSyntaxError) as e:
+                            raise AttributeError(key) from e
         return self._convert_result(value)
 
     # def get(self, key: Any, default: Any = None) -> Any:

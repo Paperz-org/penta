@@ -20,7 +20,8 @@ if TYPE_CHECKING:
     from penta.dependencies.custom import BaseCustom
 
 from django.http import HttpRequest, HttpResponse
-from fast_depends.dependencies import model as fast_depends_model
+
+from penta.compatibility.fast_depends import Dependency
 
 TMetadata = TypeVar("TMetadata")
 
@@ -87,18 +88,18 @@ class Parameter(inspect.Parameter):
         """Check if the parameter is resolved by the dependency injection."""
         return self._get_dependency() is not None
 
-    def _get_dependency(self) -> Optional[fast_depends_model.Depends]:
-        # `fast_depends_model.Depends` is the base class of penta's own `_Depends`,
-        # so both `penta.dependencies.Depends` and `fast_depends.Depends` are detected.
-        dependency = self._annotated_instance_of(fast_depends_model.Depends)
+    def _get_dependency(self) -> Optional[Dependency]:
+        # `Dependency` is the base class of penta's own `_Depends`, so both
+        # `penta.dependencies.Depends` and `fast_depends.Depends` are detected.
+        dependency = self._annotated_instance_of(Dependency)
         if dependency is not None:
             return dependency
-        if isinstance(self.default, fast_depends_model.Depends):
+        if isinstance(self.default, Dependency):
             return self.default
         return None
 
     @property
-    def dependency(self) -> fast_depends_model.Depends:
+    def dependency(self) -> Dependency:
         dependency = self._get_dependency()
         if dependency is None:
             raise ValueError(

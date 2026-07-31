@@ -20,9 +20,9 @@ import pydantic
 from asgiref.sync import async_to_sync
 from django.http import HttpRequest, HttpResponse, HttpResponseNotAllowed
 from django.http.response import HttpResponseBase
-from fast_depends import inject
 
 from penta import context
+from penta.compatibility.fast_depends import inject
 from penta.constants import NOT_SET, NOT_SET_TYPE
 from penta.errors import (
     AuthenticationError,
