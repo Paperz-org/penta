@@ -1,5 +1,17 @@
 import itertools
-from typing import Any, Dict, Iterator, List, Optional, Set, Tuple, Type, Union, cast
+from typing import (
+    Any,
+    Dict,
+    Iterator,
+    List,
+    Literal,
+    Optional,
+    Set,
+    Tuple,
+    Type,
+    Union,
+    cast,
+)
 
 from django.db.models import Field as DjangoField
 from django.db.models import ManyToManyRel, ManyToOneRel, Model
@@ -40,7 +52,7 @@ class SchemaFactory:
         depth: int = 0,
         fields: Optional[List[str]] = None,
         exclude: Optional[List[str]] = None,
-        optional_fields: Optional[List[str]] = None,
+        optional_fields: Optional[Union[List[str], Literal["__all__"]]] = None,
         custom_fields: Optional[List[Tuple[str, Any, Any]]] = None,
         base_class: Type[Schema] = Schema,
     ) -> Type[Schema]:

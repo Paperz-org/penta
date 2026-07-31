@@ -427,9 +427,9 @@ class Router:
 
     def build_routers(self, prefix: str) -> List[Tuple[str, "Router"]]:
         if self.api is not None:
-            from penta.utils import is_debug_server
+            from penta.main import debug_server_url_reimport
 
-            if is_debug_server():
+            if not debug_server_url_reimport():
                 raise ConfigError(
                     f"Router@'{prefix}' has already been attached to API"
                     f" {self.api.title}:{self.api.version} "

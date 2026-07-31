@@ -23,9 +23,11 @@ from typing import (
     Any,
     Callable,
     Dict,
+    Iterable,
     Type,
     TypeVar,
     Union,
+    cast,
     no_type_check,
 )
 
@@ -94,7 +96,7 @@ class DjangoGetter:
             return list(result.all())
 
         elif isinstance(result, getattr(QuerySet, "__origin__", QuerySet)):
-            return list(result)
+            return list(cast(Iterable[Any], result))
 
         if callable(result):
             return result()

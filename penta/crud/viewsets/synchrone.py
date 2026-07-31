@@ -7,6 +7,7 @@ from django.db.models import QuerySet
 from penta import Query
 from penta.pagination import paginate
 
+from ..decorators import bind_annotations
 from ..decorators import rename_parameter as rename
 from ..exceptions import BadRequest, EntryNotFound
 from ..types import (
@@ -19,7 +20,6 @@ from ..types import (
 )
 from .base import BaseViewSet
 
-ListItemsReturnType = Callable[[Query], QuerySet[ModelType]]
 GetItemReturnType = Callable[[PKType], ModelType]
 CreateItemReturnType = Callable[[CreateSchemaType], ModelType]
 UpdateItemReturnType = Callable[[PKType, UpdateSchemaType], ModelType]
@@ -40,7 +40,7 @@ class SyncViewSet(
 
     def _get_object(self, id: PKType) -> ModelType:  # noqa: A002
         """Get object by ID synchronously."""
-        return cast(ModelType, self.queryset.get(pk=id))
+        return self.queryset.get(pk=id)
 
     def _save_object(self, obj: ModelType) -> None:
         """Save object synchronously."""
@@ -84,36 +84,34 @@ class SyncViewSet(
                     field.clear()
 
     @property
-    def list_items(self) -> ListItemsReturnType:
+    def list_items(self) -> Callable[..., QuerySet[ModelType]]:
         """List items."""
 
-        @paginate
-        def _list_items(
-            filters: self.filter_schema = Query(...),
-        ) -> QuerySet[ModelType]:  # noqa: B008
+        def _list_items(filters: FilterSchemaType = Query(...)) -> QuerySet[ModelType]:  # noqa: B008
             """List items."""
-            return cast(QuerySet[ModelType], filters.filter(self.queryset))
+            return filters.filter(self.queryset)
 
-        return _list_items
+        return paginate(bind_annotations(_list_items, filters=self.filter_schema))
 
     @property
-    def get_item(self) -> GetItemReturnType:
+    def get_item(self) -> GetItemReturnType[PKType, ModelType]:
         """Get item."""
 
-        @rename(pk_name=self.pk_name)
-        def _get_item(pk_name: self.pk_type) -> ModelType:
+        def _get_item(pk_name: PKType) -> ModelType:
             try:
                 return self._get_object(pk_name)
             except self.model.DoesNotExist as e:
                 raise EntryNotFound(self.model, pk_name) from e
 
-        return _get_item
+        return rename(pk_name=self.pk_name)(
+            bind_annotations(_get_item, pk_name=self.pk_type)
+        )
 
     @property
-    def create_item(self) -> CreateItemReturnType:
+    def create_item(self) -> CreateItemReturnType[CreateSchemaType, ModelType]:
         """Create item."""
 
-        def _create_item(payload: self.create_schema) -> ModelType:  # type: ignore[E0611]
+        def _create_item(payload: CreateSchemaType) -> ModelType:
             """Create item."""
             try:
                 data = payload.dict()
@@ -136,16 +134,13 @@ class SyncViewSet(
             else:
                 return obj
 
-        return _create_item
+        return bind_annotations(_create_item, payload=self.create_schema)
 
     @property
-    def update_item(self) -> UpdateItemReturnType:
+    def update_item(self) -> UpdateItemReturnType[PKType, UpdateSchemaType, ModelType]:
         """Update item."""
 
-        @rename(pk_name=self.pk_name)
-        def _update_item(
-            pk_name: self.pk_type, payload: self.update_schema
-        ) -> ModelType:  # type: ignore[E0611]
+        def _update_item(pk_name: PKType, payload: UpdateSchemaType) -> ModelType:
             """Update item."""
             try:
                 obj = self._get_object(pk_name)
@@ -191,14 +186,17 @@ class SyncViewSet(
             else:
                 return obj
 
-        return _update_item
+        return rename(pk_name=self.pk_name)(
+            bind_annotations(
+                _update_item, pk_name=self.pk_type, payload=self.update_schema
+            )
+        )
 
     @property
-    def delete_item(self) -> DeleteItemReturnType:
+    def delete_item(self) -> DeleteItemReturnType[PKType]:
         """Delete item."""
 
-        @rename(pk_name=self.pk_name)
-        def _delete_item(pk_name: self.pk_type) -> tuple[int, None]:
+        def _delete_item(pk_name: PKType) -> tuple[int, None]:
             """Delete item."""
             try:
                 obj = self._get_object(pk_name)
@@ -210,7 +208,9 @@ class SyncViewSet(
             else:
                 return 204, None
 
-        return _delete_item
+        return rename(pk_name=self.pk_name)(
+            bind_annotations(_delete_item, pk_name=self.pk_type)
+        )
 
     def _handle_foreign_keys(self, data: dict) -> dict:
         """Handle foreign key relations by converting IDs to model instances (sync version)."""

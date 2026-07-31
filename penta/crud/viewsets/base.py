@@ -1,4 +1,3 @@
-op_id
 """Base ViewSet for sync and async implementations."""
 
 from abc import ABC, abstractmethod
@@ -37,8 +36,8 @@ class BaseViewSet(
         read_schema: type[ReadSchemaType],
         update_schema: type[UpdateSchemaType],
         filter_schema: type[FilterSchemaType],
-        queryset: QuerySet,
-        pk_type: PKType,
+        queryset: QuerySet[ModelType],
+        pk_type: type[PKType],
         pk_name: str,
     ) -> None:
         """Initialize the ViewSet."""

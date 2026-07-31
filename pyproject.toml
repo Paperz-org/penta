@@ -56,7 +56,7 @@ test = [
     "pytest-django",
     "pytest-asyncio",
     "psycopg2-binary",
-    "mypy==1.7.1",
+    "mypy==2.3.0",
     "ruff==0.5.7",
     "django-stubs",
 ]

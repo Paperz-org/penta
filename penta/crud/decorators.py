@@ -1,14 +1,29 @@
 """
-Decorators for renaming parameters.
+Decorators adapting the views a ViewSet builds to the model it serves.
 
-This module provides decorators for renaming parameters in functions.
-This is useful for example to rename the `pk_field` parameter to real pk field name.
-It's used to populate the swagger documentation with the correct parameter name.
+Renaming parameters is used for example to give the `pk_field` parameter the real pk
+field name, so that the path and the swagger documentation use it.
 """
 
 import inspect
 from functools import wraps
-from typing import Any, Callable
+from typing import Any, Callable, TypeVar
+
+from penta.signature.utils import with_signature
+
+TCallable = TypeVar("TCallable", bound=Callable[..., object])
+
+
+def bind_annotations(func: TCallable, **annotations: type) -> TCallable:
+    """
+    Give the parameters of a view the concrete types penta builds its schemas from.
+
+    A ViewSet is written against the type variables of its class (`payload:
+    CreateSchemaType`); the schemas they stand for are only known once the ViewSet is
+    instantiated, so the views are annotated with them here, at build time.
+    """
+    func.__annotations__.update(annotations)
+    return func
 
 
 def _rename_parameter(
@@ -50,7 +65,7 @@ def _rename_parameter(
         ]
         new_sig = sig.replace(parameters=new_params)
 
-        func.__signature__ = new_sig  # type: ignore
+        with_signature(func, new_sig)
 
         @wraps(func)
         def wrapper(*args, **kwargs) -> Any:  # type: ignore

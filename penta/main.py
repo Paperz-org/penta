@@ -550,7 +550,7 @@ class Penta:
         if (
             not skip_registry
             and self.urls_namespace in Penta._registry
-            and is_debug_server()
+            and not debug_server_url_reimport()
         ):
             msg = f"""
 Looks like you created multiple Pentas or TestClients
@@ -561,3 +561,25 @@ Already registered: {Penta._registry}
 """
             raise ConfigError(msg.strip())
         Penta._registry.append(self.urls_namespace)
+
+
+_imported_while_running_in_debug_server = is_debug_server()
+
+
+def debug_server_url_reimport() -> bool:
+    """
+    Detect reimport of URL module to allow error to propagate to developer.
+
+    When Django loads urls it uses: ``django.urls.resolvers.urlconf_module()``, which is
+    a ``@cached_property``, so URLs are generally imported only once. But if that import
+    throws an error while running the development server, ``django.utils.autoreload``
+    swallows it and accesses ``urlconf_module`` again. Penta guards against reusing items
+    that cannot be reused, so on that second import it would raise its own error, hiding
+    the real one from the developer.
+
+    Returns:
+
+        True if this module was originally imported during Django dev-server
+        init but the caller is not being running during Django dev-server init.
+    """
+    return _imported_while_running_in_debug_server and not is_debug_server()

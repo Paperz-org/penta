@@ -1,13 +1,13 @@
 import asyncio
 import inspect
 import re
-from typing import Any, Callable, ForwardRef, List, Set
+from typing import Any, Callable, ForwardRef, List, Protocol, Set, TypeVar, cast
 
 from django.urls import register_converter
 from django.urls.converters import UUIDConverter
 from pydantic._internal._typing_extra import eval_type_lenient as evaluate_forwardref
 
-from penta.signature.parser import Signature
+from penta.signature.parser import Parameter, Signature
 from penta.types import DictStrAny
 
 __all__ = [
@@ -16,15 +16,36 @@ __all__ = [
     "make_forwardref",
     "get_path_param_names",
     "is_async",
+    "with_signature",
 ]
 
+TCallable = TypeVar("TCallable", bound=Callable[..., Any])
 
-def get_typed_signature(call: Callable[..., Any]) -> inspect.Signature:
+
+class _HasSignature(Protocol):
+    """A callable `inspect.signature()` reports a signature of its own for."""
+
+    __signature__: inspect.Signature
+
+
+def with_signature(func: TCallable, signature: inspect.Signature) -> TCallable:
+    """
+    Make `func` report `signature` instead of the one it was defined with.
+
+    This is the documented hook `inspect.signature()` (and everything built on it, from
+    penta to fast-depends) reads, which is how a view built at runtime advertises the
+    parameters it really takes.
+    """
+    cast(_HasSignature, func).__signature__ = signature
+    return func
+
+
+def get_typed_signature(call: Callable[..., Any]) -> Signature:
     "Finds call signature and resolves all forwardrefs"
     signature = Signature.from_callable(call)
     globalns = getattr(call, "__globals__", {})
     typed_params = [
-        inspect.Parameter(
+        Parameter(
             name=param.name,
             kind=param.kind,
             default=param.default,
@@ -32,8 +53,7 @@ def get_typed_signature(call: Callable[..., Any]) -> inspect.Signature:
         )
         for param in signature.parameters.values()
     ]
-    typed_signature = inspect.Signature(typed_params)
-    return typed_signature
+    return Signature(typed_params)
 
 
 def get_typed_annotation(param: inspect.Parameter, globalns: DictStrAny) -> Any:

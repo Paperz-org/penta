@@ -1,4 +1,6 @@
 import inspect
+from contextvars import Token
+from functools import wraps
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -9,6 +11,7 @@ from typing import (
     List,
     Optional,
     Sequence,
+    Tuple,
     Type,
     Union,
     cast,
@@ -32,6 +35,7 @@ from penta.params.models import TModels
 from penta.request import Request
 from penta.schema import Schema, pydantic_version
 from penta.signature import ViewSignature, is_async
+from penta.signature.utils import with_signature
 from penta.throttling import BaseThrottle
 from penta.types import DictStrAny
 from penta.utils import check_csrf, is_async_callable
@@ -135,38 +139,86 @@ class Operation:
             for callback in callbacks:
                 callback(self)
 
-        self.view_func: Callable = inject(view_func)
+        # `inject` returns a new function: the attributes 3rd party code contributed to
+        # the view have to be carried over to it.
+        injected_view_func: Any = inject(self._injectable(view_func))
         if penta_contribute_to_operation:
-            self.view_func._penta_contribute_to_operation = (
+            injected_view_func._penta_contribute_to_operation = (
                 penta_contribute_to_operation
             )
         if penta_contribute_args:
-            self.view_func._penta_contribute_args = penta_contribute_args
+            injected_view_func._penta_contribute_args = penta_contribute_args
+        self.view_func = injected_view_func
+
+    def _injectable(self, view_func: Callable) -> Callable:
+        """
+        Wrap the view in a function carrying the signature fast-depends needs.
+
+        fast-depends builds its dependency graph out of the signature of what it
+        decorates, and the signature of the view is not usable as is: penta params carry
+        `Param` defaults (aliases, constraints, ...) that pydantic would apply a second
+        time, and the request is not an argument the caller provides but a dependency.
+
+        The wrapper is needed because the view itself must not be touched: the same view
+        function can be registered on several operations, each with its own signature.
+        """
+        if is_async(view_func):
+
+            @wraps(view_func)
+            async def wrapper(*args: Any, **kwargs: Any) -> Any:
+                return await view_func(*args, **kwargs)
+
+        else:
+
+            @wraps(view_func)
+            def wrapper(*args: Any, **kwargs: Any) -> Any:
+                return view_func(*args, **kwargs)
+
+        # after `wraps`, which copies the `__dict__` of the view (and so its signature)
+        return with_signature(wrapper, self.signature.injection_signature)
 
     def run(self, request: HttpRequest, **kw: Any) -> HttpResponseBase:
+        token = self._enter_request_context(request)
+        try:
+            error = self._run_checks(request)
+            if error:
+                return error
+            try:
+                temporal_response = self.api.create_temporal_response(request)
+                values = self._get_values(request, kw, temporal_response)
+                result = self.view_func(*self._positional_args(request), **values)
+                return self._result_to_response(request, result, temporal_response)
+            except Exception as e:
+                if isinstance(e, TypeError) and "required positional argument" in str(
+                    e
+                ):
+                    msg = "Did you fail to use functools.wraps() in a decorator?"
+                    msg = f"{e.args[0]}: {msg}" if e.args else msg
+                    e.args = (msg,) + e.args[1:]
+                return self.api.on_exception(request, e)
+        finally:
+            context.request.reset(token)
+
+    @staticmethod
+    def _enter_request_context(request: HttpRequest) -> Token:
+        """
+        Make the request available to the dependency injection for the time of the call.
+        """
         # This is a trick to override the class of the request ... After the instanciation
         # `request` is an ASGIRequest instance from Django.
         # `Request` is our custom class, that inherit from ASGIRequest.
         # With this trick, we are changing the type of the instance
         # It like ... inheritence in the future ¯\_(ツ)_/¯
         request.__class__ = Request
-        context.request.set(request)
+        return context.request.set(cast(Request, request))
 
-        error = self._run_checks(request)
-        if error:
-            return error
-        try:
-            temporal_response = self.api.create_temporal_response(request)
-            values = self._get_values(request, kw, temporal_response)
-
-            result = self.view_func(**values)
-            return self._result_to_response(request, result, temporal_response)
-        except Exception as e:
-            if isinstance(e, TypeError) and "required positional argument" in str(e):
-                msg = "Did you fail to use functools.wraps() in a decorator?"
-                msg = f"{e.args[0]}: {msg}" if e.args else msg
-                e.args = (msg,) + e.args[1:]
-            return self.api.on_exception(request, e)
+    def _positional_args(self, request: HttpRequest) -> Tuple[Any, ...]:
+        """
+        Arguments passed positionally to the view (see `pass_request_positionally`).
+        """
+        if self.signature.pass_request_positionally:
+            return (request,)
+        return ()
 
     def set_api_instance(self, api: "Penta", router: "Router") -> None:
         self.api = api
@@ -373,23 +425,20 @@ class AsyncOperation(Operation):
         self.is_async = True
 
     async def run(self, request: HttpRequest, **kw: Any) -> HttpResponseBase:  # type: ignore
-        # This is a trick to override the class of the request ... After the instanciation
-        # `request` is an ASGIRequest instance from Django.
-        # `Request` is our custom class, that inherit from ASGIRequest.
-        # With this trick, we are changing the type of the instance
-        # It like ... inheritence in the future ¯\_(ツ)_/¯
-        request.__class__ = Request
-        context.request.set(request)
-        error = await self._run_checks(request)
-        if error:
-            return error
+        token = self._enter_request_context(request)
         try:
-            temporal_response = self.api.create_temporal_response(request)
-            values = self._get_values(request, kw, temporal_response)
-            result = await self.view_func(**values)
-            return self._result_to_response(request, result, temporal_response)
-        except Exception as e:
-            return self.api.on_exception(request, e)
+            error = await self._run_checks(request)
+            if error:
+                return error
+            try:
+                temporal_response = self.api.create_temporal_response(request)
+                values = self._get_values(request, kw, temporal_response)
+                result = await self.view_func(*self._positional_args(request), **values)
+                return self._result_to_response(request, result, temporal_response)
+            except Exception as e:
+                return self.api.on_exception(request, e)
+        finally:
+            context.request.reset(token)
 
     async def _run_checks(self, request: HttpRequest) -> Optional[HttpResponse]:  # type: ignore
         "Runs security checks for each operation"
