@@ -173,8 +173,17 @@ class FileModel(ParamModel):
         return api.parser.parse_querydict(request.FILES, list_fields, request)
 
 
-class _HttpRequest(HttpRequest):
-    body: bytes = b""
+class _BodyRequest(HttpRequest):
+    """
+    A request carrying the given body, to parse one part of a multipart request as one.
+
+    `HttpRequest.body` reads the stream of the request once and keeps it in `_body`,
+    which is exactly what is provided here.
+    """
+
+    def __init__(self, body: bytes) -> None:
+        super().__init__()
+        self._body = body
 
 
 class _MultiPartBodyModel(BodyModel):
@@ -184,7 +193,6 @@ class _MultiPartBodyModel(BodyModel):
     def get_request_data(
         cls, request: HttpRequest, api: "Penta", path_params: DictStrAny
     ) -> Optional[DictStrAny]:
-        req = _HttpRequest()
         get_request_data = super().get_request_data
         results: DictStrAny = {}
         for name, annotation in cls.__penta_body_params__.items():
@@ -192,8 +200,9 @@ class _MultiPartBodyModel(BodyModel):
                 data = request.POST[name]
                 if annotation is str and data[0] != '"' and data[-1] != '"':
                     data = f'"{data}"'
-                req.body = data.encode()
-                results[name] = get_request_data(req, api, path_params)
+                results[name] = get_request_data(
+                    _BodyRequest(data.encode()), api, path_params
+                )
         return results
 
 

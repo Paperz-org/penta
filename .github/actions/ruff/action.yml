@@ -8,4 +8,8 @@ runs:
 
     - name: Lint with Ruff
       shell: bash
-      run: uv run ruff check .
+      run: uv run ruff check --preview .
+
+    - name: Check formatting with Ruff
+      shell: bash
+      run: uv run ruff format --preview --check .

@@ -95,6 +95,9 @@ ignore = [
 "penta/compatibility/datastructures.py" = ["C416"]
 "penta/utils.py" = ["B004"]
 "tests/*" = ["C408"]
+# the tutorial snippets are fragments: the `api` they hang the views on is built by
+# the surrounding page (and injected by the tests exercising them)
+"docs/src/*" = ["F821"]
 
 
 [tool.coverage.run]
