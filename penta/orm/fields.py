@@ -7,8 +7,9 @@ from django.db.models import ManyToManyField
 from django.db.models.fields import Field as DjangoField
 from pydantic import IPvAnyAddress
 from pydantic.fields import FieldInfo
-from pydantic_core import PydanticUndefined, core_schema
+from pydantic_core import PydanticUndefined
 
+from penta.compatibility.pydantic import with_info_plain_validator_function
 from penta.errors import ConfigError
 from penta.openapi.schema import OpenAPISchema
 from penta.types import DictStrAny
@@ -30,7 +31,7 @@ class AnyObject:
     def __get_pydantic_core_schema__(
         cls, source: Any, handler: Callable[..., Any]
     ) -> Any:
-        return core_schema.with_info_plain_validator_function(cls.validate)
+        return with_info_plain_validator_function(cls.validate)
 
     @classmethod
     def __get_pydantic_json_schema__(
@@ -91,7 +92,7 @@ def create_m2m_link_type(type_: Type[TModel]) -> Type[TModel]:
     class M2MLink(type_):  # type: ignore
         @classmethod
         def __get_pydantic_core_schema__(cls, source, handler):
-            return core_schema.with_info_plain_validator_function(cls._validate)
+            return with_info_plain_validator_function(cls._validate)
 
         @classmethod
         def __get_pydantic_json_schema__(cls, schema, handler):

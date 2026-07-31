@@ -2,6 +2,7 @@ from typing import Any, Dict, List
 
 import pytest
 from pydantic import field_validator
+from util import PYDANTIC_VERSION
 
 from penta import Body, Form, Penta, Schema
 from penta.dependencies.request import RequestDependency
@@ -89,6 +90,10 @@ def test_incorrect_annotation():
             return 42
 
 
+# pydantic 2.4 added `include_input`
+INCLUDE_INPUT = {"include_input": False} if PYDANTIC_VERSION >= (2, 4) else {}
+
+
 class CustomErrorAPI(Penta):
     def validation_error_from_error_contexts(
         self,
@@ -98,7 +103,7 @@ class CustomErrorAPI(Penta):
         for context in error_contexts:
             model = context.model
             for e in context.pydantic_validation_error.errors(
-                include_url=False, include_context=False, include_input=False
+                include_url=False, include_context=False, **INCLUDE_INPUT
             ):
                 errors.append({
                     "source": model.__penta_param_source__,
