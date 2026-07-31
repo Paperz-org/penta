@@ -800,10 +800,10 @@ def test_unique_operation_ids(capsys):
     ):
         pass
 
-    @api.get("/2")  # noqa: F811
-    def same_name(
+    @api.get("/2")
+    def same_name(  # noqa: F811
         request: RequestDependency,
-    ):  # noqa: F811
+    ):
         pass
 
     api.get_openapi_schema()

@@ -30,7 +30,6 @@ def test_api_instance():
                 assert op.api is api
 
 
-@pytest.mark.skip(reason="We removed this in penta")
 def test_reuse_router_error():
     test_api = Penta()
     test_router = Router()

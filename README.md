@@ -12,38 +12,20 @@
 
 # Penta - Fast Django REST Framework
 
-<<<<<<< Updated upstream
-# Penta - Fast Django REST Framework
-
-**Penta** is a web framework for building APIs with **Django** and Python 3.10+ **type hints**.
-=======
-**Penta** is a fork of [Django Ninja](https://github.com/vitalik/django-ninja) web framework for building APIs with **Django** and Python 3.6+ **type hints** focused on opinionated integrations.
+**Penta** is a web framework for building APIs with **Django** and Python 3.10+ **type hints**, forked from [Django Ninja](https://github.com/vitalik/django-ninja) to focus on opinionated integrations.
 
 Please have a look at the original [Django Ninja](https://github.com/vitalik/django-ninja) and leave a star as the job done by the original author is great.
->>>>>>> Stashed changes
 
 **Key features:**
 
 - **Easy**: Designed to be easy to use and intuitive.
 - **FAST execution**: Very high performance thanks to **<a href="https://pydantic-docs.helpmanual.io" target="_blank">Pydantic</a>** and **<a href="/docs/docs/guides/async-support.md">async support</a>**.
 - **Fast to code**: Type hints and automatic docs lets you focus only on business logic.
+- **Dependency injection**: the views declare what they need, penta resolves it.
 - **Standards-based**: Based on the open standards for APIs: **OpenAPI** (previously known as Swagger) and **JSON Schema**.
 - **Django friendly**: (obviously) has good integration with the Django core and ORM.
 
-<<<<<<< Updated upstream
-  - **Easy**: Designed to be easy to use and intuitive.
-  - **FAST execution**: Very high performance thanks to **<a href="https://pydantic-docs.helpmanual.io" target="_blank">Pydantic</a>** and **<a href="/docs/docs/guides/async-support.md">async support</a>**.
-  - **Fast to code**: Type hints and automatic docs lets you focus only on business logic.
-  - **Dependency injection**
-  - **Standards-based**: Based on the open standards for APIs: **OpenAPI** (previously known as Swagger) and **JSON Schema**.
-  - **Django friendly**: (obviously) has good integration with the Django core and ORM.
-
-
-
-**Documentation**: As Penta is a fork of django ninja, you can start [here](https://django-ninja.dev). We will create a dedicated documentation for Penta soon !
-=======
-**Documentation**: https://paperz-org.github.io/penta/
->>>>>>> Stashed changes
+**Documentation**: As Penta is a fork of django ninja, you can start [here](https://django-ninja.dev). We will create a dedicated documentation for Penta soon!
 
 ---
 

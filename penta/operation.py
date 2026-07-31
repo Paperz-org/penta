@@ -11,7 +11,6 @@ from typing import (
     List,
     Optional,
     Sequence,
-    Tuple,
     Type,
     Union,
     cast,
@@ -186,7 +185,7 @@ class Operation:
             try:
                 temporal_response = self.api.create_temporal_response(request)
                 values = self._get_values(request, kw, temporal_response)
-                result = self.view_func(*self._positional_args(request), **values)
+                result = self.view_func(**values)
                 return self._result_to_response(request, result, temporal_response)
             except Exception as e:
                 if isinstance(e, TypeError) and "required positional argument" in str(
@@ -211,14 +210,6 @@ class Operation:
         # It like ... inheritence in the future ¯\_(ツ)_/¯
         request.__class__ = Request
         return context.request.set(cast(Request, request))
-
-    def _positional_args(self, request: HttpRequest) -> Tuple[Any, ...]:
-        """
-        Arguments passed positionally to the view (see `pass_request_positionally`).
-        """
-        if self.signature.pass_request_positionally:
-            return (request,)
-        return ()
 
     def set_api_instance(self, api: "Penta", router: "Router") -> None:
         self.api = api
@@ -433,7 +424,7 @@ class AsyncOperation(Operation):
             try:
                 temporal_response = self.api.create_temporal_response(request)
                 values = self._get_values(request, kw, temporal_response)
-                result = await self.view_func(*self._positional_args(request), **values)
+                result = await self.view_func(**values)
                 return self._result_to_response(request, result, temporal_response)
             except Exception as e:
                 return self.api.on_exception(request, e)

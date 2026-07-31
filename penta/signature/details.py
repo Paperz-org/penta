@@ -124,16 +124,6 @@ class ViewSignature:
 
         self.injection_signature = self._create_injection_signature()
 
-    @property
-    def pass_request_positionally(self) -> bool:
-        """
-        django-ninja compatibility: a decorator that does not preserve the signature of
-        the view (`def wrapper(*args, **kwargs)`) hides the `request` parameter, so it
-        cannot be injected by name. In that case the request is passed positionally,
-        exactly like django-ninja does.
-        """
-        return self.request_arg is None and self.has_args
-
     def _create_injection_signature(self) -> Signature:
         """
         The signature given to fast-depends.
