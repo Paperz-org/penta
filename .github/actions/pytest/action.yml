@@ -1,0 +1,28 @@
+name: 'Run the test suite'
+description: 'Sets up the environment and runs pytest.'
+inputs:
+  python-version:
+    description: 'Python version to run the tests with'
+    required: false
+    default: '3.11'
+  django-version:
+    description: 'Django specifier to test against, e.g. `~=4.2.0` (default: the locked one)'
+    required: false
+    default: ''
+runs:
+  using: "composite"
+  steps:
+    - name: Setup Test Environment
+      uses: ./.github/actions/setup-dev
+      with:
+        python-version: ${{ inputs.python-version }}
+
+    - name: Install Django ${{ inputs.django-version }}
+      if: inputs.django-version != ''
+      shell: bash
+      run: uv pip install "django${{ inputs.django-version }}"
+
+    - name: Test with pytest
+      shell: bash
+      # --no-sync: keep the Django installed above, whatever the lock file says
+      run: uv run --no-sync pytest tests

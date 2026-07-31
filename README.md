@@ -5,7 +5,7 @@
     <em>Fast to learn, fast to code, fast to run</em>
 </p>
 
-![Test](https://github.com/Paperz-org/penta/actions/workflows/test_full.yml/badge.svg)
+![CI](https://github.com/Paperz-org/penta/actions/workflows/ci.yml/badge.svg)
 ![Coverage](https://img.shields.io/codecov/c/github/Paperz-org/penta)
 [![PyPI version](https://badge.fury.io/py/penta.svg)](https://badge.fury.io/py/penta)
 [![Downloads](https://static.pepy.tech/personalized-badge/penta?period=month&units=international_system&left_color=black&right_color=brightgreen&left_text=downloads/month)](https://pepy.tech/project/penta)

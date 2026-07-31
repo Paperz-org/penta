@@ -1,0 +1,32 @@
+name: Test
+
+on:
+  workflow_call:
+
+jobs:
+  pytest:
+    name: Python ${{ matrix.python-version }} / Django ${{ matrix.django-version || 'locked' }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # every python version penta supports, against the locked Django
+        python-version: ['3.10', '3.11', '3.12', '3.13']
+        django-version: ['']
+        include:
+          # and the edges of the Django range, on the python versions supporting them
+          - python-version: '3.10'
+            django-version: '~=3.2.0'
+          - python-version: '3.10'
+            django-version: '~=4.2.0'
+          - python-version: '3.13'
+            django-version: '~=5.1.0'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run the test suite
+        uses: ./.github/actions/pytest
+        with:
+          python-version: ${{ matrix.python-version }}
+          django-version: ${{ matrix.django-version }}
