@@ -19,8 +19,9 @@ from penta import Schema
 
 
 def to_camel(string: str) -> str:
-    words = string.split('_')
-    return words[0].lower() + ''.join(word.capitalize() for word in words[1:])
+    words = string.split("_")
+    return words[0].lower() + "".join(word.capitalize() for word in words[1:])
+
 
 class CamelModelSchema(Schema):
     str_field_name: str
@@ -44,10 +45,11 @@ class UserSchema(ModelSchema):
         populate_by_name = True  # !!!!!! <--------
 
 
-@api.get("/users", response=list[UserSchema], by_alias=True) # !!!!!! <-------- by_alias
+@api.get(
+    "/users", response=list[UserSchema], by_alias=True
+)  # !!!!!! <-------- by_alias
 def get_users(request):
     return User.objects.all()
-
 ```
 
 results:
@@ -83,7 +85,5 @@ BaseUserSchema = create_schema(User)
 
 
 class UserSchema(BaseUserSchema):
-
-    class Config(BaseUserSchema.Config):
-        ...
+    class Config(BaseUserSchema.Config): ...
 ```

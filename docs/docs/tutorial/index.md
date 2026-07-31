@@ -57,6 +57,7 @@ from penta import Penta
 
 api = Penta()
 
+
 @api.get("/hello")
 def hello(request):
     return "Hello world"

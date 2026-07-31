@@ -12,12 +12,12 @@ All you have to do is create two or more Penta instances with different `version
 from penta import Penta
 
 
-api = Penta(version='1.0.0')
+api = Penta(version="1.0.0")
 
-@api.get('/hello')
+
+@api.get("/hello")
 def hello(request):
-    return {'message': 'Hello from V1'}
-
+    return {"message": "Hello from V1"}
 ```
 
 api\_**v2**.py:
@@ -26,11 +26,12 @@ api\_**v2**.py:
 from penta import Penta
 
 
-api = Penta(version='2.0.0')
+api = Penta(version="2.0.0")
 
-@api.get('/hello')
+
+@api.get("/hello")
 def hello(request):
-    return {'message': 'Hello from V2'}
+    return {"message": "Hello from V2"}
 ```
 
 and then in **urls.py**:

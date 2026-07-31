@@ -49,14 +49,13 @@ from .models import Event
 
 router = Router()
 
-@router.get('/')
-def list_events(request):
-    return [
-        {"id": e.id, "title": e.title}
-        for e in Event.objects.all()
-    ]
 
-@router.get('/{event_id}')
+@router.get("/")
+def list_events(request):
+    return [{"id": e.id, "title": e.title} for e in Event.objects.all()]
+
+
+@router.get("/{event_id}")
 def event_details(request, event_id: int):
     event = Event.objects.get(id=event_id)
     return {"title": event.title, "details": event.details}
@@ -70,13 +69,13 @@ from .models import News
 
 router = Router()
 
-@router.get('/')
-def list_news(request):
-    ...
 
-@router.get('/{news_id}')
-def news_details(request, news_id: int):
-    ...
+@router.get("/")
+def list_news(request): ...
+
+
+@router.get("/{news_id}")
+def news_details(request, news_id: int): ...
 ```
 
 and then also `blogs/api.py`.
@@ -103,7 +102,6 @@ It should look like this:
 from penta import Penta
 
 api = Penta()
-
 ```
 
 Now we import all the routers from the various apps, and include them into the main API instance:
@@ -114,7 +112,7 @@ from events.api import router as events_router
 
 api = Penta()
 
-api.add_router("/events/", events_router)    # You can add a router as an object
+api.add_router("/events/", events_router)  # You can add a router as an object
 api.add_router("/news/", "news.api.router")  #   or by Python path
 api.add_router("/blogs/", "blogs.api.router")
 ```
@@ -225,13 +223,16 @@ from penta import Penta, Path, Router
 api = Penta()
 router = Router()
 
+
 @api.get("/add/{a}/{b}")
 def add(request, a: int, b: int):
     return {"result": a + b}
 
+
 @router.get("/multiply/{c}")
 def multiply(request, c: int, a: int = Path(...), b: int = Path(...)):
     return {"result": (a + b) * c}
+
 
 api.add_router("add/{a}/{b}", router)
 

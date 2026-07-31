@@ -7,6 +7,7 @@ To do this, simply declare a function parameter with a type of `HttpResponse`:
 ```python
 from django.http import HttpRequest, HttpResponse
 
+
 @api.get("/cookie/")
 def feed_cookiemonster(request: HttpRequest, response: HttpResponse):
     # Set a cookie.

@@ -39,7 +39,6 @@ UserSchema = create_schema(User)
 #     is_superuser: bool
 #     email: str
 #     ... and the rest
-
 ```
 
 !!! Warning
@@ -51,21 +50,28 @@ This can lead to accidental unwanted data exposure (like hashed password, in the
 ### Using `fields`
 
 ```python hl_lines="1"
-UserSchema = create_schema(User, fields=['id', 'username'])
+UserSchema = create_schema(User, fields=["id", "username"])
 
 # Will create schema like this:
 #
 # class UserSchema(Schema):
 #     id: int
 #     username: str
-
 ```
 
 ### Using `exclude`
 
 ```python hl_lines="1 2"
-UserSchema = create_schema(User, exclude=[
-    'password', 'last_login', 'is_superuser', 'is_staff', 'groups', 'user_permissions']
+UserSchema = create_schema(
+    User,
+    exclude=[
+        "password",
+        "last_login",
+        "is_superuser",
+        "is_staff",
+        "groups",
+        "user_permissions",
+    ],
 )
 
 # Will create schema without excluded fields:
@@ -85,7 +91,7 @@ UserSchema = create_schema(User, exclude=[
 The `depth` argument allows you to introspect the Django model into the Related fields(ForeignKey, OneToOne, ManyToMany).
 
 ```python hl_lines="1 7"
-UserSchema = create_schema(User, depth=1, fields=['username', 'groups'])
+UserSchema = create_schema(User, depth=1, fields=["username", "groups"])
 
 # Will create the following schema:
 #

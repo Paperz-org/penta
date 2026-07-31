@@ -80,22 +80,24 @@ When your database lookups are more complicated than that, you can explicitly sp
 
 ```python hl_lines="2"
 class BookFilterSchema(FilterSchema):
-    name: Optional[str] = Field(None, q='name__icontains')
+    name: Optional[str] = Field(None, q="name__icontains")
 ```
 
 You can even specify multiple lookup keyword argument names as a list:
 
 ```python hl_lines="2 3 4"
 class BookFilterSchema(FilterSchema):
-    search: Optional[str] = Field(None, q=['name__icontains',
-                                     'author__name__icontains',
-                                     'publisher__name__icontains'])
+    search: Optional[str] = Field(
+        None,
+        q=["name__icontains", "author__name__icontains", "publisher__name__icontains"],
+    )
 ```
 
 And to make generic fields, you can make the field name implicit by skipping it:
 
 ```python hl_lines="2"
-IContainsField = Annotated[Optional[str], Field(None, q='__icontains')]
+IContainsField = Annotated[Optional[str], Field(None, q="__icontains")]
+
 
 class BookFilterSchema(FilterSchema):
     name: IContainsField
@@ -114,7 +116,9 @@ So, with the following `FilterSchema`...
 
 ```python
 class BookFilterSchema(FilterSchema):
-    search: Optional[str] = Field(None, q=['name__icontains', 'author__name__icontains'])
+    search: Optional[str] = Field(
+        None, q=["name__icontains", "author__name__icontains"]
+    )
     popular: Optional[bool] = None
 ```
 
@@ -130,12 +134,13 @@ You can customize this behavior using an `expression_connector` argument in fiel
 
 ```python hl_lines="3 7"
 class BookFilterSchema(FilterSchema):
-    active: Optional[bool] = Field(None, q=['is_active', 'publisher__is_active'],
-                                   expression_connector='AND')
-    name: Optional[str] = Field(None, q='name__icontains')
+    active: Optional[bool] = Field(
+        None, q=["is_active", "publisher__is_active"], expression_connector="AND"
+    )
+    name: Optional[str] = Field(None, q="name__icontains")
 
     class Config:
-        expression_connector = 'OR'
+        expression_connector = "OR"
 ```
 
 An expression connector can take the values of `"OR"`, `"AND"` and `"XOR"`, but the latter is only [supported](https://docs.djangoproject.com/en/4.1/ref/models/querysets/#xor) in Django starting with 4.1.
@@ -156,8 +161,8 @@ This can be done on a field level with a `ignore_none` kwarg:
 
 ```python hl_lines="3"
 class BookFilterSchema(FilterSchema):
-    name: Optional[str] = Field(None, q='name__icontains')
-    tag: Optional[str] = Field(None, q='tag', ignore_none=False)
+    name: Optional[str] = Field(None, q="name__icontains")
+    tag: Optional[str] = Field(None, q="tag", ignore_none=False)
 ```
 
 This way when no other value for `"tag"` is provided by the user, the filtering will always include a condition `tag=None`.
@@ -166,8 +171,8 @@ You can also specify this settings for all fields at the same time in the Config
 
 ```python hl_lines="6"
 class BookFilterSchema(FilterSchema):
-    name: Optional[str] = Field(None, q='name__icontains')
-    tag: Optional[str] = Field(None, q='tag', ignore_none=False)
+    name: Optional[str] = Field(None, q="name__icontains")
+    tag: Optional[str] = Field(None, q="tag", ignore_none=False)
 
     class Config:
         ignore_none = False
@@ -201,11 +206,7 @@ class BookFilterSchema(FilterSchema):
         if self.name:
             q &= Q(name__icontains=self.name)
         if self.popular:
-            q &= (
-                Q(view_count__gt=1000) |
-                Q(downloads__gt=100) |
-                Q(tag='popular')
-            )
+            q &= Q(view_count__gt=1000) | Q(downloads__gt=100) | Q(tag="popular")
         return q
 ```
 

@@ -23,6 +23,7 @@ Let's take an example. We have an API operation that does some work (currently j
 ```python hl_lines="5"
 import time
 
+
 @api.get("/say-after")
 def say_after(request, delay: int, word: str):
     time.sleep(delay)
@@ -33,6 +34,7 @@ To make this code asynchronous, all you have to do is add the **`async`** keywor
 
 ```python hl_lines="1 4 5"
 import asyncio
+
 
 @api.get("/say-after")
 async def say_after(request, delay: int, word: str):
@@ -106,11 +108,11 @@ To achieve the same concurrency with WSGI and sync operations you would need to 
 Keep in mind that you can use **both sync and async operations** in your project, and **Penta** will route it automatically:
 
 ```python hl_lines="2 7"
-
 @api.get("/say-sync")
 def say_after_sync(request, delay: int, word: str):
     time.sleep(delay)
     return {"saying": word}
+
 
 @api.get("/say-async")
 async def say_after_async(request, delay: int, word: str):
@@ -168,9 +170,11 @@ it throws an error. Until the async ORM is implemented, you can use the `sync_to
 ```python hl_lines="1 3 9"
 from asgiref.sync import sync_to_async
 
+
 @sync_to_async
 def get_blog(post_id):
     return Blog.objects.get(pk=post_id)
+
 
 @api.get("/blog/{post_id}")
 async def search(request, post_id: int):

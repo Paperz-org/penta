@@ -9,6 +9,7 @@ Let's create the input schema:
 ```python hl_lines="3 5"
 from penta import Schema
 
+
 class UserIn(Schema):
     username: str
     password: str
@@ -16,7 +17,7 @@ class UserIn(Schema):
 
 @api.post("/users/")
 def create_user(request, data: UserIn):
-    user = User(username=data.username) # User is django auth.User
+    user = User(username=data.username)  # User is django auth.User
     user.set_password(data.password)
     user.save()
     # ... return ?
@@ -26,6 +27,7 @@ Now let's define the output schema, and pass it as a `response` argument to the 
 
 ```python hl_lines="8 9 10 13 18"
 from penta import Schema
+
 
 class UserIn(Schema):
     username: str
@@ -62,6 +64,7 @@ Imagine we have a `Task` Django model with a `User` ForeignKey:
 ```python hl_lines="6"
 from django.db import models
 
+
 class Task(models.Model):
     title = models.CharField(max_length=200)
     is_completed = models.BooleanField(default=False)
@@ -74,10 +77,12 @@ Now let's output all tasks, and for each task, output some fields about the user
 from typing import List
 from penta import Schema
 
+
 class UserSchema(Schema):
     id: int
     first_name: str
     last_name: str
+
 
 class TaskSchema(Schema):
     id: int
@@ -146,7 +151,9 @@ class TaskSchema(Schema):
 ```python hl_lines="3"
 class TaskSchema(Schema):
     type: str = Field(None)
-    type_display: str = Field(None, alias="get_type_display") # callable will be executed
+    type_display: str = Field(
+        None, alias="get_type_display"
+    )  # callable will be executed
 ```
 
 ## Resolvers
@@ -198,7 +205,7 @@ if you use this schema for incoming requests - the `request` object will be auto
 You can as well pass your own context:
 
 ```python
-data = Data.model_validate({'some': 1}, context={'request': MyRequest()})
+data = Data.model_validate({"some": 1}, context={"request": MyRequest()})
 ```
 
 ## Returning querysets
@@ -234,7 +241,7 @@ An example:
 ```python hl_lines="3"
 class Picture(models.Model):
     title = models.CharField(max_length=100)
-    image = models.ImageField(upload_to='images')
+    image = models.ImageField(upload_to="images")
 ```
 
 If you need to output to response image field, declare a schema for it as follows:
@@ -333,9 +340,9 @@ You can also create your own range using a `frozenset`:
 ```python
 my_codes = frozenset({416, 418, 425, 429, 451})
 
-@api.post('/login', response={200: Token, my_codes: Message})
-def login(request, payload: Auth):
-    ...
+
+@api.post("/login", response={200: Token, my_codes: Message})
+def login(request, payload: Auth): ...
 ```
 
 ## Empty responses
@@ -365,15 +372,14 @@ To do that you need:
 ```python hl_lines="3 6"
 class Organization(Schema):
     title: str
-    part_of: 'Organization' = None     #!! note the type in quotes here !!
+    part_of: "Organization" = None  #!! note the type in quotes here !!
 
 
 Organization.model_rebuild()  # !!! this is important
 
 
-@api.get('/organizations', response=List[Organization])
-def list_organizations(request):
-    ...
+@api.get("/organizations", response=List[Organization])
+def list_organizations(request): ...
 ```
 
 ## Self-referencing schemes from `create_schema()`
@@ -448,7 +454,7 @@ from django.shortcuts import redirect
 
 @api.get("/http")
 def result_django(request):
-    return HttpResponse('some data')   # !!!!
+    return HttpResponse("some data")  # !!!!
 
 
 @api.get("/something")

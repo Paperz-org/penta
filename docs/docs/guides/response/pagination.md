@@ -7,7 +7,8 @@ To apply pagination to a function - just apply `paginate` decorator:
 ```python hl_lines="1 4"
 from penta.pagination import paginate
 
-@api.get('/users', response=List[UserSchema])
+
+@api.get("/users", response=List[UserSchema])
 @paginate
 def list_users(request):
     return User.objects.all()
@@ -32,7 +33,8 @@ This is the default pagination class (You can change it in your settings.py usin
 ```python hl_lines="1 4"
 from penta.pagination import paginate, LimitOffsetPagination
 
-@api.get('/users', response=List[UserSchema])
+
+@api.get("/users", response=List[UserSchema])
 @paginate(LimitOffsetPagination)
 def list_users(request):
     return User.objects.all()
@@ -54,7 +56,8 @@ this class has two input parameters:
 ```python hl_lines="1 4"
 from penta.pagination import paginate, PageNumberPagination
 
-@api.get('/users', response=List[UserSchema])
+
+@api.get("/users", response=List[UserSchema])
 @paginate(PageNumberPagination)
 def list_users(request):
     return User.objects.all()
@@ -125,22 +128,21 @@ class CustomPagination(PaginationBase):
     class Input(Schema):
         skip: int
 
-
     class Output(Schema):
-        items: List[Any] # `items` is a default attribute
+        items: List[Any]  # `items` is a default attribute
         total: int
         per_page: int
 
     def paginate_queryset(self, queryset, pagination: Input, **params):
         skip = pagination.skip
         return {
-            'items': queryset[skip : skip + 5],
-            'total': queryset.count(),
-            'per_page': 5,
+            "items": queryset[skip : skip + 5],
+            "total": queryset.count(),
+            "per_page": 5,
         }
 
 
-@api.get('/users', response=List[UserSchema])
+@api.get("/users", response=List[UserSchema])
 @paginate(CustomPagination)
 def list_users(request):
     return User.objects.all()
@@ -164,13 +166,13 @@ By default page items are placed to `'items'` attribute. To override this behavi
 ```python hl_lines="4 8"
 class CustomPagination(PaginationBase):
     ...
+
     class Output(Schema):
         results: List[Any]
         total: int
         per_page: int
 
     items_attribute: str = "results"
-
 ```
 
 ## Apply pagination to multiple operations at once
@@ -189,10 +191,10 @@ router = RouterPaginated()
 def items(request):
     return MyModel.objects.all()
 
+
 @router.get("/other-items", response=List[OtherSchema])
 def other_items(request):
     return OtherModel.objects.all()
-
 ```
 
 In this example both operations will have pagination enabled

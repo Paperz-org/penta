@@ -18,7 +18,6 @@ To host docs (Js/css) from your own server - just put "penta" to INSTALLED_APPS 
 from penta import Redoc
 
 api = Penta(docs=Redoc())
-
 ```
 
 Then you will see the alternative automatic documentation (provided by <a href="https://github.com/Redocly/redoc" target="_blank">Redoc</a>).
@@ -33,7 +32,6 @@ from penta import Redoc, Swagger
 api = Penta(docs=Swagger(settings={"persistAuthorization": True}))
 ...
 api = Penta(docs=Redoc(settings={"disableSearch": True}))
-
 ```
 
 Settings reference:
@@ -65,13 +63,13 @@ You can extend OpenAPI spec with custom attributes, for example to add `termsOfS
 
 ```python
 api = Penta(
-   openapi_extra={
-       "info": {
-           "termsOfService": "https://example.com/terms/",
-       }
-   },
-   title="Demo API",
-   description="This is a demo API with dynamic OpenAPI info section"
+    openapi_extra={
+        "info": {
+            "termsOfService": "https://example.com/terms/",
+        }
+    },
+    title="Demo API",
+    description="This is a demo API with dynamic OpenAPI info section",
 )
 ```
 

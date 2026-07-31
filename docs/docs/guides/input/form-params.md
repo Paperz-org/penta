@@ -8,9 +8,10 @@
 ```python hl_lines="1 4"
 from penta import Penta, Form
 
+
 @api.post("/login")
 def login(request, username: Form[str], password: Form[str]):
-    return {'username': username, 'password': '*****'}
+    return {"username": username, "password": "*****"}
 ```
 
 Note the following:

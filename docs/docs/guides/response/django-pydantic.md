@@ -12,10 +12,12 @@ All you need is to set `model` and `fields` attributes on your schema `Meta`:
 from django.contrib.auth.models import User
 from penta import ModelSchema
 
+
 class UserSchema(ModelSchema):
     class Meta:
         model = User
-        fields = ['id', 'username', 'first_name', 'last_name']
+        fields = ["id", "username", "first_name", "last_name"]
+
 
 # Will create schema like this:
 #
@@ -52,7 +54,8 @@ To use all fields **except** a few, you can use `exclude` configuration:
 class UserSchema(ModelSchema):
     class Meta:
         model = User
-        exclude = ['password', 'last_login', 'user_permissions']
+        exclude = ["password", "last_login", "user_permissions"]
+
 
 # Will create schema like this:
 #
@@ -64,7 +67,6 @@ class UserSchema(ModelSchema):
 #     email: str
 #     is_superuser: bool
 #     ... and the rest
-
 ```
 
 ### Overriding fields
@@ -75,7 +77,7 @@ To change default annotation for some field, or to add a new field, just use ann
 class GroupSchema(ModelSchema):
     class Meta:
         model = Group
-        fields = ['id', 'name']
+        fields = ["id", "name"]
 
 
 class UserSchema(ModelSchema):
@@ -83,8 +85,7 @@ class UserSchema(ModelSchema):
 
     class Meta:
         model = User
-        fields = ['id', 'username', 'first_name', 'last_name']
-
+        fields = ["id", "username", "first_name", "last_name"]
 ```
 
 ### Making fields optional
@@ -95,14 +96,18 @@ Pretty often for PATCH API operations you need to make all fields of your schema
 class PatchGroupSchema(ModelSchema):
     class Meta:
         model = Group
-        fields = ['id', 'name', 'description'] # Note: all these fields are required on model level
-        fields_optional = '__all__'
+        fields = [
+            "id",
+            "name",
+            "description",
+        ]  # Note: all these fields are required on model level
+        fields_optional = "__all__"
 ```
 
 Also, you can define a subset of optional fields instead of `__all__`:
 
 ```python
-     fields_optional = ['description']
+fields_optional = ["description"]
 ```
 
 When you process input data, you need to tell Pydantic to avoid setting undefined fields to `None`:
@@ -120,8 +125,6 @@ def patch(request, pk: int, payload: PatchGroupSchema):
         setattr(obj, attr, value)
 
     obj.save()
-
-
 ```
 
 ### Custom fields types
@@ -134,14 +137,15 @@ python type. In this case you should use `register_field` method to tell penta w
 ```python hl_lines="4 7 8 9"
 # models.py
 
+
 class MyModel(models.Modle):
     embedding = pgvector.VectorField()
+
 
 # schemas.py
 from penta.orm import register_field
 
-register_field('VectorField', list[float])
-
+register_field("VectorField", list[float])
 ```
 
 #### PatchDict
@@ -151,6 +155,7 @@ a schema with all optional fields and get a dict with **only** fields that was p
 
 ```Python hl_lines="1 11"
 from penta import PatchDict
+
 
 class GroupSchema(Schema):
     # You do not have to make fields optional it will be converted by PatchDict
@@ -167,7 +172,6 @@ def modify_data(request, pk: int, payload: PatchDict[GroupSchema]):
         setattr(obj, attr, value)
 
     obj.save()
-
 ```
 
 in this example the `payload` argument will be a type of `dict` only fields that were passed in request and validated using `GroupSchema`

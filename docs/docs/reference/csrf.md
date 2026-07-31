@@ -32,12 +32,13 @@ api = Penta(csrf=True)
 from penta import Penta
 from penta.security import APIKeyCookie
 
+
 class CookieAuth(APIKeyCookie):
     def authenticate(self, request, key):
         return key == "test"
 
-api = Penta(auth=CookieAuth())
 
+api = Penta(auth=CookieAuth())
 ```
 
 or django-auth based (which is inherited from cookie based auth):
@@ -61,6 +62,7 @@ You can use the Django [ensure_csrf_cookie](https://docs.djangoproject.com/en/4.
 ```python hl_lines="4"
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
+
 
 @api.post("/csrf")
 @ensure_csrf_cookie

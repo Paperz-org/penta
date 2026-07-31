@@ -606,7 +606,7 @@ def test_schema_title_description(schema):
                 "schema": {
                     "properties": {
                         "file": {
-                            "description": "file " "param " "desc",
+                            "description": "file param desc",
                             "format": "binary",
                             "title": "File",
                             "type": "string",

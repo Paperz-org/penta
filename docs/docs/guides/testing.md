@@ -10,12 +10,15 @@ from penta import Penta, Schema
 api = Penta()
 router = Router()
 
+
 class HelloResponse(Schema):
     msg: str
+
 
 @router.get("/hello", response=HelloResponse)
 def hello(request):
     return {"msg": "Hello World"}
+
 
 api.add_router("", router)
 ```
@@ -25,6 +28,7 @@ You can use the Django test class:
 ```python
 from django.test import TestCase
 from penta.testing import TestClient
+
 
 class HelloTest(TestCase):
     def test_hello(self):
@@ -94,5 +98,4 @@ from penta.testing import TestAsyncClient
 
 client = TestAsyncClient(router)
 response = await client.post("/test/")
-
 ```

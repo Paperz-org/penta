@@ -7,9 +7,9 @@ This example will show you how to implement these functions with **Penta**.
 Let's say you have the following Django models that you need to perform these operations on:
 
 ```python
-
 class Department(models.Model):
     title = models.CharField(max_length=100)
+
 
 class Employee(models.Model):
     first_name = models.CharField(max_length=100)
@@ -29,12 +29,12 @@ To create an employee lets define an INPUT schema:
 from datetime import date
 from penta import Schema
 
+
 class EmployeeIn(Schema):
     first_name: str
     last_name: str
     department_id: int = None
     birthdate: date = None
-
 ```
 
 This schema will be our input payload:
@@ -56,11 +56,12 @@ See the recipe below for handling the file upload (when using Django models):
 ```python hl_lines="2"
 from penta import UploadedFile, File
 
+
 @api.post("/employees")
 def create_employee(request, payload: EmployeeIn, cv: File[UploadedFile]):
     payload_dict = payload.dict()
     employee = Employee(**payload_dict)
-    employee.cv.save(cv.name, cv) # will save model instance as well
+    employee.cv.save(cv.name, cv)  # will save model instance as well
     return {"id": employee.id}
 ```
 
@@ -71,6 +72,7 @@ from django.core.files.storage import FileSystemStorage
 from penta import UploadedFile, File
 
 STORAGE = FileSystemStorage()
+
 
 @api.post("/upload")
 def create_upload(request, cv: File[UploadedFile]):
@@ -120,6 +122,7 @@ To output a list of employees, we can reuse the same `EmployeeOut` schema. We wi
 
 ```python hl_lines="3"
 from typing import List
+
 
 @api.get("/employees", response=List[EmployeeOut])
 def list_employees(request):

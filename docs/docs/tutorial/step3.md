@@ -9,6 +9,7 @@ We'll create a third operation that will return information about the current Dj
 ```python
 from penta import Schema
 
+
 class UserSchema(Schema):
     username: str
     is_authenticated: bool
@@ -16,6 +17,7 @@ class UserSchema(Schema):
     email: str = None
     first_name: str = None
     last_name: str = None
+
 
 @api.get("/me", response=UserSchema)
 def me(request):
@@ -35,8 +37,10 @@ class UserSchema(Schema):
     first_name: str
     last_name: str
 
+
 class Error(Schema):
     message: str
+
 
 @api.get("/me", response={200: UserSchema, 403: Error})
 def me(request):

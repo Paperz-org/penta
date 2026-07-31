@@ -83,7 +83,6 @@ def create_order(request, order: Order):
      - and **list of Items** *(product + amount)*
     """
     return {"success": True}
-
 ```
 
 ![Summary`](../img/operation_description_docstring.png)
@@ -98,9 +97,10 @@ If you want to set it individually for each operation, use the `operation_id` ar
 
 ```python hl_lines="2"
 ...
+
+
 @api.post("/tasks", operation_id="create_task")
-def new_task(request):
-    ...
+def new_task(request): ...
 ```
 
 If you want to override global behavior, you can inherit the Penta instance and override the `get_openapi_operation_id` method.
@@ -176,6 +176,7 @@ You can customize your OpenAPI schema for specific endpoint (detail [OpenAPI Cus
 def some_operation(request):
     pass
 
+
 # You can add additional responses to the automatically generated schema
 @api.post(
     "/tasks",
@@ -192,7 +193,6 @@ def some_operation(request):
 )
 def some_operation_2(request):
     pass
-
 ```
 
 ## Response output options
@@ -220,13 +220,14 @@ Whether fields which are equal to `None` should be excluded from the response (d
 Allows you to set api endpoint url name (using [django path's naming](https://docs.djangoproject.com/en/stable/topics/http/urls/#reversing-namespaced-urls))
 
 ```python hl_lines="1 7"
-@api.post("/tasks", url_name='tasks')
+@api.post("/tasks", url_name="tasks")
 def some_operation(request):
     pass
 
+
 # then you can get the url with
 
-reverse('api-1.0.0:tasks')
+reverse("api-1.0.0:tasks")
 ```
 
 See the [Reverse Resolution of URLs](../guides/urls.md) guide for more details.
@@ -239,10 +240,10 @@ If you want to specify single or multiple servers for OpenAPI specification `ser
 from penta import Penta
 
 api = Penta(
-        servers=[
-            {"url": "https://stag.example.com", "description": "Staging env"},
-            {"url": "https://prod.example.com", "description": "Production env"},
-        ]
+    servers=[
+        {"url": "https://stag.example.com", "description": "Staging env"},
+        {"url": "https://prod.example.com", "description": "Production env"},
+    ]
 )
 ```
 

@@ -31,8 +31,8 @@ from penta.throttling import AnonRateThrottle, AuthRateThrottle
 
 api = Penta(
     throttle=[
-        AnonRateThrottle('10/s'),
-        AuthRateThrottle('100/s'),
+        AnonRateThrottle("10/s"),
+        AuthRateThrottle("100/s"),
     ],
 )
 ```
@@ -48,13 +48,13 @@ Pass `throttle` argument either to `add_router` function
 api = Penta()
 ...
 
-api.add_router('/sensitive', 'myapp.api.router', throttle=AnonRateThrottle('100/m'))
+api.add_router("/sensitive", "myapp.api.router", throttle=AnonRateThrottle("100/m"))
 ```
 
 or directly to init of the Router class:
 
 ```Python
-router = Router(..., throttle=[AnonRateThrottle('1000/h')])
+router = Router(..., throttle=[AnonRateThrottle("1000/h")])
 ```
 
 ### Operation level
@@ -64,9 +64,9 @@ If `throttle` argument is passed to operation - it will overrule all global and 
 ```Python
 from penta.throttling import UserRateThrottle
 
-@api.get('/some', throttle=[UserRateThrottle('10000/d')])
-def some(request):
-    ...
+
+@api.get("/some", throttle=[UserRateThrottle("10000/d")])
+def some(request): ...
 ```
 
 ## Builtin throttlers
@@ -93,6 +93,7 @@ Example
 
 ```Python
 from penta.throttling import AnonRateThrottle
+
 
 class NoReadsThrottle(AnonRateThrottle):
     """Do not throttle GET requests"""

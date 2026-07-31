@@ -16,7 +16,8 @@ class MyRenderer(BaseRenderer):
     media_type = "text/plain"
 
     def render(self, request, data, *, response_status):
-        return ... # your serialization here
+        return ...  # your serialization here
+
 
 api = Penta(renderer=MyRenderer())
 ```
@@ -46,6 +47,7 @@ class ORJSONRenderer(BaseRenderer):
 
     def render(self, request, data, *, response_status):
         return orjson.dumps(data)
+
 
 api = Penta(renderer=ORJSONRenderer())
 ```

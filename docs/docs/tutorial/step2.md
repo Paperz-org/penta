@@ -59,6 +59,7 @@ Let's add a second operation that does some basic math with integers.
 def hello(request, name: str = "world"):
     return f"Hello {name}"
 
+
 @api.get("/math")
 def math(request, a: int, b: int):
     return {"add": a + b, "multiply": a * b}
@@ -102,8 +103,10 @@ from penta import Penta, Schema
 
 api = Penta()
 
+
 class HelloSchema(Schema):
     name: str = "world"
+
 
 @api.post("/hello")
 def hello(request, data: HelloSchema):

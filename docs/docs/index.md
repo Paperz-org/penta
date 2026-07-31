@@ -97,8 +97,8 @@ class Item(Schema):
     foo: str
     bar: float
 
-def operation(a: Item):
-    ...
+
+def operation(a: Item): ...
 ```
 
 ... and with that single declaration you get:

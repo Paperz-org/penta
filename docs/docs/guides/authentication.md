@@ -131,6 +131,7 @@ Uses Django's default session authentication - authenticates any logged-in user:
 ```python
 from penta.security import SessionAuth
 
+
 @api.get("/protected", auth=SessionAuth())
 def protected_view(request):
     return {"user": request.auth.username}
@@ -143,6 +144,7 @@ Authenticates only users with superuser privileges:
 ```python
 from penta.security import SessionAuthSuperUser
 
+
 @api.get("/admin-only", auth=SessionAuthSuperUser())
 def admin_view(request):
     return {"message": "Hello superuser!"}
@@ -154,6 +156,7 @@ Authenticates users who are either superusers or staff members:
 
 ```python
 from penta.security import SessionAuthIsStaff
+
 
 @api.get("/staff-area", auth=SessionAuthIsStaff())
 def staff_view(request):
@@ -215,13 +218,11 @@ the same way an operation would:
 **Penta** has basic support for asynchronous authentication. While the default authentication classes are not async-compatible, you can still define your custom asynchronous authentication callables and pass them in using `auth`.
 
 ```python
-async def async_auth(request):
-    ...
+async def async_auth(request): ...
 
 
 @api.get("/pets", auth=async_auth)
-def pets(request):
-    ...
+def pets(request): ...
 ```
 
 See [Handling errors](errors.md) for more information.

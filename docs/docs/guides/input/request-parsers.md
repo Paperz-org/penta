@@ -34,11 +34,9 @@ class Payload(Schema):
     f: float
 
 
-@api.post('/yaml')
+@api.post("/yaml")
 def operation(request, payload: Payload):
     return payload.dict()
-
-
 ```
 
 If you now send YAML like this as the request body:

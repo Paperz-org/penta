@@ -16,11 +16,13 @@ Example:
 ```python hl_lines="9 10"
 api = Penta()
 
+
 class ServiceUnavailableError(Exception):
     pass
 
 
 # initializing handler
+
 
 @api.exception_handler(ServiceUnavailableError)
 def service_unavailable(request, exc):
@@ -33,12 +35,12 @@ def service_unavailable(request, exc):
 
 # some logic that throws exception
 
+
 @api.get("/service")
 def some_operation(request):
     if random.choice([True, False]):
         raise ServiceUnavailableError()
     return {"message": "Hello"}
-
 ```
 
 Exception handler function takes 2 arguments:
@@ -97,7 +99,9 @@ You can change this behavior by overriding the default handler for `ValidationEr
 
 ```python hl_lines="1 4"
 from penta.errors import ValidationError
+
 ...
+
 
 @api.exception_handler(ValidationError)
 def validation_errors(request, exc):
@@ -111,9 +115,11 @@ the model that failed validation), you can supply your own `validation_error_fro
 from penta.errors import ValidationError, ValidationErrorContext
 from typing import Any, Dict, List
 
+
 class CustomPenta(Penta):
     def validation_error_from_error_contexts(
-        self, error_contexts: List[ValidationErrorContext],
+        self,
+        error_contexts: List[ValidationErrorContext],
     ) -> ValidationError:
         custom_error_infos: List[Dict[str, Any]] = []
         for context in error_contexts:
@@ -124,10 +130,11 @@ class CustomPenta(Penta):
                 include_url=False, include_context=False, include_input=False
             ):
                 custom_error_info = {
-                # TODO: use `e`, `param_source`, and `pydantic_schema` as desired
+                    # TODO: use `e`, `param_source`, and `pydantic_schema` as desired
                 }
                 custom_error_infos.append(custom_error_info)
         return ValidationError(custom_error_infos)
+
 
 api = CustomPenta()
 ```
@@ -141,9 +148,9 @@ As an alternative to custom exceptions and writing handlers for it - you can as 
 ```python
 from penta.errors import HttpError
 
+
 @api.get("/some/resource")
 def some_operation(request):
     if True:
         raise HttpError(503, "Service Unavailable. Please retry later.")
-
 ```

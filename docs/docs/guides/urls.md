@@ -11,9 +11,10 @@ For example:
 ```python
 api = Penta()
 
+
 @api.get("/")
-def index(request):
-    ...
+def index(request): ...
+
 
 index_url = reverse_lazy("api-1.0.0:index")
 ```
@@ -26,8 +27,8 @@ Rather than using the default URL name, you can specify it explicitly as a prope
 
 ```python
 @api.get("/users", url_name="user_list")
-def users(request):
-    ...
+def users(request): ...
+
 
 users_url = reverse_lazy("api-1.0.0:user_list")
 ```
@@ -41,7 +42,8 @@ You can also override implicit url naming by overwriting the `get_operation_url_
 ```python
 class MyAPI(Penta):
     def get_operation_url_name(self, operation, router):
-        return operation.view_func.__name__ + '_my_extra_suffix'
+        return operation.view_func.__name__ + "_my_extra_suffix"
+
 
 api = MyAPI()
 ```
@@ -51,9 +53,8 @@ api = MyAPI()
 The default URL namespace is built by prepending the Schema's version with `"api-"`, however you can explicitly specify the namespace by overriding the `urls_namespace` attribute of the `Penta` Schema class.
 
 ```python
-
-api = Penta(auth=token_auth, version='2')
-api_private = Penta(auth=session_auth, urls_namespace='private_api')
+api = Penta(auth=token_auth, version="2")
+api_private = Penta(auth=session_auth, urls_namespace="private_api")
 
 api_users_url = reverse_lazy("api-2:users")
 private_api_admins_url = reverse_lazy("private_api:admins")

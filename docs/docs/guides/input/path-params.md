@@ -74,7 +74,7 @@ an `int`, simply declare `item_id` as an `int` type annotation in the function d
 
     ```python hl_lines="2"
     @api.get("/items/{int:item_id}")
-    def read_item(request, item_id:int):
+    def read_item(request, item_id: int):
         return {"item_id": item_id}
     ```
 
@@ -83,7 +83,7 @@ an `int`, simply declare `item_id` as an `int` type annotation in the function d
 Django's `path` converter allows you to handle path-like parameters:
 
 ```python hl_lines="1"
-@api.get('/dir/{path:value}')
+@api.get("/dir/{path:value}")
 def someview(request, value: str):
     return value
 ```

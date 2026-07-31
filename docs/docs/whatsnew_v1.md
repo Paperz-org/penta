@@ -40,7 +40,6 @@ class Payload(Schema):
     def resolve_request_path(data, context):
         request = context["request"]
         return request.get_full_path()
-
 ```
 
 During response a "response_code" is also passed to context
@@ -54,7 +53,6 @@ class TxItem(ModelSchema):
     class Meta:
         model = Transaction
         fields = ["id", "account", "amount", "timestamp"]
-
 ```
 
 (The "Config" class is still supported, but deprecated)
@@ -62,7 +60,7 @@ class TxItem(ModelSchema):
 ## Shorter / cleaner parameters syntax
 
 ```python
-@api.post('/some')
+@api.post("/some")
 def some_form(request, username: Form[str], password: Form[str]):
     return True
 ```
@@ -70,7 +68,7 @@ def some_form(request, username: Form[str], password: Form[str]):
 instead of
 
 ```python
-@api.post('/some')
+@api.post("/some")
 def some_form(request, username: str = Form(...), password: str = Form(...)):
     return True
 ```
@@ -78,7 +76,7 @@ def some_form(request, username: str = Form(...), password: str = Form(...)):
 or
 
 ```python
-@api.post('/some')
+@api.post("/some")
 def some_form(request, data: Form[AuthSchema]):
     return True
 ```
@@ -86,7 +84,7 @@ def some_form(request, data: Form[AuthSchema]):
 instead of
 
 ```python
-@api.post('/some')
+@api.post("/some")
 def some_form(request, data: AuthSchema = Form(...)):
     return True
 ```
@@ -103,7 +101,6 @@ typing.Annotated is also supported:
 @api.get("/annotated")
 def annotated(request, data: Annotated[SomeData, Form()]):
     return {"data": data.dict()}
-
 ```
 
 ## Async auth support
@@ -116,7 +113,6 @@ class Auth(HttpBearer):
         await asyncio.sleep(1)
         if token == "secret":
             return token
-
 ```
 
 ## Changed CSRF Behavior
@@ -155,11 +151,11 @@ add_router supports string paths:
 api = Penta()
 
 
-api.add_router('/app1', 'myproject.app1.router')
-api.add_router('/app2', 'myproject.app2.router')
-api.add_router('/app3', 'myproject.app3.router')
-api.add_router('/app4', 'myproject.app4.router')
-api.add_router('/app5', 'myproject.app5.router')
+api.add_router("/app1", "myproject.app1.router")
+api.add_router("/app2", "myproject.app2.router")
+api.add_router("/app3", "myproject.app3.router")
+api.add_router("/app4", "myproject.app4.router")
+api.add_router("/app5", "myproject.app5.router")
 ```
 
 ## Decorators
@@ -169,8 +165,9 @@ When Penta decorates a view with .get/.post etc. - it wraps the result of the fu
 ```python hl_lines="4"
 from django.views.decorators.cache import cache_page
 
+
 @api.get("/test")
-@cache_page(5) # <----- will not work
+@cache_page(5)  # <----- will not work
 def test_view(request):
     return {"some": "Complex data"}
 ```
@@ -181,6 +178,7 @@ Now Penta introduces a decorator decorate_view that allows inject decorators tha
 
 ```python hl_lines="1 4"
 from penta.decorators import decorate_view
+
 
 @api.get("/test")
 @decorate_view(cache_page(5))
