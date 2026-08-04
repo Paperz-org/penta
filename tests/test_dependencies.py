@@ -411,6 +411,48 @@ def test_query_params_dependency(path, expected_status, expected):
     assert response.json() == expected
 
 
+@pytest.mark.xfail(
+    strict=True,
+    reason=(
+        "fast-depends resolves a nested dependency by calling `CallModel.solve()` with"
+        " the arguments of its parent, so a parameter named after one of the keyword"
+        " arguments of `solve()` itself (`nested`, `stack`, `cache_dependencies`,"
+        " `dependency_overrides`) collides with it. Reproducible without penta."
+    ),
+)
+def test_dependency_param_named_after_a_fast_depends_keyword():
+    "https://github.com/Lancetnik/FastDepends - `solve()` leaks its own argument names"
+
+    def first() -> str:
+        return "one"
+
+    def second() -> str:
+        return "two"
+
+    def a_dependency(
+        one: Annotated[str, Depends(first)], two: Annotated[str, Depends(second)]
+    ) -> str:
+        return f"{one}_{two}"
+
+    def a_dependency_of_dependencies(
+        # `nested` is also the name of a keyword argument of `CallModel.solve()`
+        nested: Annotated[str, Depends(a_dependency)],
+        one: Annotated[str, Depends(first)],
+    ) -> str:
+        return f"{nested}_{one}"
+
+    colliding_router = Router()
+
+    @colliding_router.get("/collide")
+    def collide(result: Annotated[str, Depends(a_dependency_of_dependencies)]):
+        return {"result": result}
+
+    response = TestClient(colliding_router).get("/collide")
+
+    assert response.status_code == 200, response.content
+    assert response.json() == {"result": "one_two_one"}
+
+
 def test_depends_param_clashing_with_a_dependency():
     "the same name cannot be both a dependency result and something a dependency reads"
 
