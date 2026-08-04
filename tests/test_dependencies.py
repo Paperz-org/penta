@@ -16,6 +16,7 @@ from penta.context import get_request
 from penta.dependencies import Depends, RequestDependency
 from penta.dependencies.header import Header as HeaderDependency
 from penta.dependencies.query_params import QueryParams as QueryParamsDependency
+from penta.errors import ConfigError
 from penta.request import Request
 from penta.testing import TestAsyncClient, TestClient
 
@@ -83,6 +84,61 @@ def depends_default(user=Depends(get_user)):
     return {"user": user}
 
 
+# a dependency declares the request the way a view does, and can be nested
+def get_method(request: Request) -> str:
+    return request.method
+
+
+def get_described_method(method: Annotated[str, Depends(get_method)]) -> str:
+    return f"method:{method}"
+
+
+@router.get("/depends/request")
+def depends_on_request(info: Annotated[str, Depends(get_method)]):
+    return {"info": info}
+
+
+@router.get("/depends/request-and-view")
+def depends_on_request_and_view(
+    request: Request, info: Annotated[str, Depends(get_method)]
+):
+    return {"has_request": request is not None, "info": info}
+
+
+@router.get("/depends/request-nested")
+def depends_on_request_nested(info: Annotated[str, Depends(get_described_method)]):
+    return {"info": info}
+
+
+def get_prefixed_method(prefix: str = "m", method=Depends(get_method)) -> str:
+    "a dependency declared as a default, after a parameter having one"
+    return f"{prefix}:{method}"
+
+
+@router.get("/depends/request-as-default")
+def depends_on_request_as_default(info: Annotated[str, Depends(get_prefixed_method)]):
+    return {"info": info}
+
+
+# a dependency can read from the request the way a view does
+def get_page(page: int = 1) -> int:
+    return page
+
+
+def get_item(item_id: str) -> str:
+    return f"item:{item_id}"
+
+
+@router.get("/depends/param-with-default")
+def depends_param_with_default(current_page: Annotated[int, Depends(get_page)]):
+    return {"page": current_page}
+
+
+@router.get("/depends/path-param/{item_id}")
+def depends_path_param(item: Annotated[str, Depends(get_item)]):
+    return {"item": item}
+
+
 class SomePayload(Schema):
     name: str
 
@@ -123,6 +179,12 @@ def header_optional(
 
 class HeadersSchema(Schema):
     x_token: str = Field(alias="X-Token")
+
+
+@router.get("/header/implicit-name")
+def header_implicit_name(x_api_key: Annotated[str, HeaderDependency()]):
+    "without an explicit name, the header is the one the parameter is named after"
+    return {"key": x_api_key}
 
 
 @router.get("/header/model")
@@ -220,6 +282,50 @@ def test_depends(path, headers, expected):
     assert response.json() == expected
 
 
+@pytest.mark.parametrize(
+    "path, expected",
+    [
+        ("/depends/request", {"info": "GET"}),
+        ("/depends/request-and-view", {"has_request": True, "info": "GET"}),
+        ("/depends/request-nested", {"info": "method:GET"}),
+        ("/depends/request-as-default", {"info": "m:GET"}),
+    ],
+)
+def test_depends_on_the_request(path, expected):
+    "a dependency asks for the request the way a view does"
+    response = client.get(path)
+    assert response.status_code == 200, response.content
+    assert response.json() == expected
+
+
+@pytest.mark.parametrize(
+    "path, expected",
+    [
+        ("/depends/param-with-default", {"page": 1}),
+        ("/depends/param-with-default?page=3", {"page": 3}),
+        ("/depends/path-param/abc", {"item": "item:abc"}),
+    ],
+)
+def test_depends_on_penta_params(path, expected):
+    "what a dependency reads from the request is parsed by penta, like a view param"
+    response = client.get(path)
+    assert response.status_code == 200, response.content
+    assert response.json() == expected
+
+
+def test_depends_params_are_documented():
+    "and it is documented, since it is part of the contract of the endpoint"
+    schema = api.get_openapi_schema(path_prefix="")
+    assert schema["paths"]["/depends/param-with-default"]["get"]["parameters"] == [
+        {
+            "in": "query",
+            "name": "page",
+            "schema": {"default": 1, "title": "Page", "type": "integer"},
+            "required": False,
+        }
+    ]
+
+
 def test_depends_with_penta_params():
     response = client.post(
         "/depends/with-body/1",
@@ -266,6 +372,7 @@ def test_depends_with_penta_params():
         ("/header/optional", {}, 200, {"token": "fallback"}),
         ("/header/optional", {"X-Token": "abc"}, 200, {"token": "abc"}),
         ("/header/model", {"X-Token": "abc"}, 200, {"token": "abc"}),
+        ("/header/implicit-name", {"X-API-Key": "secret"}, 200, {"key": "secret"}),
     ],
 )
 def test_header_dependency(path, headers, expected_status, expected):
@@ -302,6 +409,21 @@ def test_query_params_dependency(path, expected_status, expected):
     response = client.get(path)
     assert response.status_code == expected_status, response.content
     assert response.json() == expected
+
+
+def test_depends_param_clashing_with_a_dependency():
+    "the same name cannot be both a dependency result and something a dependency reads"
+
+    def get_page(page: int = 1) -> int:
+        return page
+
+    clashing_router = Router()
+
+    with pytest.raises(ConfigError, match="'page' is both resolved by a dependency"):
+
+        @clashing_router.get("/clash")
+        def clash(page: Annotated[int, Depends(get_page)]):
+            return page
 
 
 def test_get_request_outside_of_a_request():
@@ -357,6 +479,15 @@ async def async_depends(request, user: Annotated[str, Depends(get_user)]):
     return {"user": user}
 
 
+async def get_method_async(request: Request) -> str:
+    return request.method
+
+
+@async_router.get("/depends-on-request")
+async def async_depends_on_request(info: Annotated[str, Depends(get_method_async)]):
+    return {"info": info}
+
+
 async_api = Penta(urls_namespace="test_dependencies_async")
 async_api.add_router("", async_router)
 async_client = TestAsyncClient(async_api)
@@ -374,3 +505,10 @@ async def test_async_depends():
     response = await async_client.get("/depends", headers={"X-Token": "abc"})
     assert response.status_code == 200, response.content
     assert response.json() == {"user": "user:abc"}
+
+
+@pytest.mark.asyncio
+async def test_async_depends_on_the_request():
+    response = await async_client.get("/depends-on-request")
+    assert response.status_code == 200, response.content
+    assert response.json() == {"info": "GET"}

@@ -953,7 +953,7 @@ requires-dist = [
     { name = "mypy", marker = "extra == 'test'", specifier = "==2.3.0" },
     { name = "pre-commit", marker = "extra == 'dev'" },
     { name = "psycopg2-binary", marker = "extra == 'test'" },
-    { name = "pydantic", specifier = ">=2.4,<3.0.0" },
+    { name = "pydantic", specifier = ">=2.0,<3.0.0" },
     { name = "pytest", marker = "extra == 'test'" },
     { name = "pytest-asyncio", marker = "extra == 'test'" },
     { name = "pytest-cov", marker = "extra == 'test'" },

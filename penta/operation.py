@@ -1,6 +1,5 @@
 import inspect
 from contextvars import Token
-from functools import wraps
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -34,7 +33,7 @@ from penta.params.models import TModels
 from penta.request import Request
 from penta.schema import Schema, pydantic_version
 from penta.signature import ViewSignature, is_async
-from penta.signature.utils import with_signature
+from penta.signature.utils import wrap_with_signature
 from penta.throttling import BaseThrottle
 from penta.types import DictStrAny
 from penta.utils import check_csrf, is_async_callable
@@ -157,24 +156,12 @@ class Operation:
         decorates, and the signature of the view is not usable as is: penta params carry
         `Param` defaults (aliases, constraints, ...) that pydantic would apply a second
         time, and the request is not an argument the caller provides but a dependency.
-
-        The wrapper is needed because the view itself must not be touched: the same view
-        function can be registered on several operations, each with its own signature.
         """
-        if is_async(view_func):
-
-            @wraps(view_func)
-            async def wrapper(*args: Any, **kwargs: Any) -> Any:
-                return await view_func(*args, **kwargs)
-
-        else:
-
-            @wraps(view_func)
-            def wrapper(*args: Any, **kwargs: Any) -> Any:
-                return view_func(*args, **kwargs)
-
-        # after `wraps`, which copies the `__dict__` of the view (and so its signature)
-        return with_signature(wrapper, self.signature.injection_signature)
+        return wrap_with_signature(
+            view_func,
+            self.signature.injection_signature,
+            consumed=self.signature.dependency_only_params,
+        )
 
     def run(self, request: HttpRequest, **kw: Any) -> HttpResponseBase:
         token = self._enter_request_context(request)

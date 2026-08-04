@@ -1,7 +1,7 @@
 import inspect
 import warnings
 from collections import defaultdict, namedtuple
-from typing import Any, Callable, Dict, Generator, List, Optional, Tuple
+from typing import Any, Callable, Dict, Generator, List, Optional, Set, Tuple
 
 import pydantic
 from pydantic.fields import FieldInfo
@@ -22,9 +22,15 @@ from penta.params.models import (
     TModels,
     _MultiPartBody,
 )
-from penta.signature.parser import Parameter, Signature
+from penta.signature.parser import (
+    Parameter,
+    Signature,
+    _resolve_duplicate_parameters,
+)
 from penta.signature.transformers import (
     custom_dependency_parameter,
+    dependency_parameter,
+    dependency_parameters,
     is_request_parameter,
     request_parameter,
 )
@@ -62,6 +68,10 @@ class ViewSignature:
         # Parameters that are resolved by the dependency injection (fast-depends)
         # instead of being parsed out of the request by penta itself.
         self.injected_params: List[Parameter] = []
+        # What the dependencies read from the request: penta parses those the way it
+        # parses the ones of the view, but the view itself never sees them.
+        self.dependency_params: List[Parameter] = []
+        self.dependency_only_params: Set[str] = set()
         self.var_params: List[Parameter] = []
         for name, arg in self.signature.parameters.items():
             if arg.kind == arg.VAR_KEYWORD:
@@ -81,13 +91,16 @@ class ViewSignature:
                 continue
 
             if arg.is_depends:
-                # Explicit `Depends(...)`: fully handled by fast-depends.
-                # Everything is passed by keyword to the view, hence the KEYWORD_ONLY.
+                # Explicit `Depends(...)`: resolved by fast-depends, once penta has
+                # given the dependencies what they ask it for (the request, and the
+                # parameters they read from it).
                 self.injected_params.append(
                     custom_dependency_parameter(arg)
                     if arg.is_custom_depends
-                    else arg.replace(kind=Parameter.KEYWORD_ONLY)
+                    else dependency_parameter(arg)
                 )
+                if not arg.is_custom_depends:
+                    self.dependency_params.extend(dependency_parameters(arg.dependency))
                 continue
 
             if is_request_parameter(arg):
@@ -109,6 +122,8 @@ class ViewSignature:
             func_param = self._get_param_type(name, arg)
             self.params.append(func_param)
 
+        self._add_dependency_params()
+
         if hasattr(view_func, "_penta_contribute_args"):
             # _penta_contribute_args is a special attribute
             # which allows developers to create custom function params
@@ -123,6 +138,27 @@ class ViewSignature:
         self._validate_view_path_params()
 
         self.injection_signature = self._create_injection_signature()
+
+    def _add_dependency_params(self) -> None:
+        """
+        Parse what the dependencies read from the request, along the view own params.
+
+        A name the view declares too is parsed once and given to both. A name already
+        resolved by the injection is ambiguous: it would designate two different values.
+        """
+        injected = {param.name for param in self.injected_params}
+        parsed_for_the_view = {param.name for param in self.params}
+
+        for arg in _resolve_duplicate_parameters(self.dependency_params):
+            if arg.name in injected:
+                raise ConfigError(
+                    f"'{arg.name}' is both resolved by a dependency and asked for by"
+                    " one: rename one of them, they are two different values."
+                )
+            if arg.name in parsed_for_the_view:
+                continue
+            self.dependency_only_params.add(arg.name)
+            self.params.append(self._get_param_type(arg.name, arg))
 
     def _create_injection_signature(self) -> Signature:
         """

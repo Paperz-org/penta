@@ -1,7 +1,18 @@
 import asyncio
 import inspect
 import re
-from typing import Any, Callable, ForwardRef, List, Protocol, Set, TypeVar, cast
+from functools import wraps
+from typing import (
+    Any,
+    Callable,
+    Collection,
+    ForwardRef,
+    List,
+    Protocol,
+    Set,
+    TypeVar,
+    cast,
+)
 
 from django.urls import register_converter
 from django.urls.converters import UUIDConverter
@@ -17,6 +28,7 @@ __all__ = [
     "get_path_param_names",
     "is_async",
     "with_signature",
+    "wrap_with_signature",
 ]
 
 TCallable = TypeVar("TCallable", bound=Callable[..., Any])
@@ -38,6 +50,44 @@ def with_signature(func: TCallable, signature: inspect.Signature) -> TCallable:
     """
     cast(_HasSignature, func).__signature__ = signature
     return func
+
+
+def wrap_with_signature(
+    func: Callable[..., Any],
+    signature: inspect.Signature,
+    consumed: Collection[str] = (),
+) -> Callable[..., Any]:
+    """
+    A copy of `func` reporting `signature`, leaving `func` untouched.
+
+    Penta rewrites the signature of what it injects into (the views, and the
+    dependencies they pull in), and those callables are the user's: the same function
+    can serve several operations, each with a signature of its own.
+
+    `consumed` names the arguments the signature asks for but `func` does not take:
+    what penta parses out of the request for the dependencies of a view.
+    """
+    if is_async(func):
+
+        @wraps(func)
+        async def wrapper(*args: Any, **kwargs: Any) -> Any:
+            return await func(*args, **_forwarded(kwargs, consumed))
+
+    else:
+
+        @wraps(func)
+        def wrapper(*args: Any, **kwargs: Any) -> Any:
+            return func(*args, **_forwarded(kwargs, consumed))
+
+    # after `wraps`, which copies the `__dict__` of `func` (and so its signature)
+    return with_signature(wrapper, signature)
+
+
+def _forwarded(kwargs: DictStrAny, consumed: Collection[str]) -> DictStrAny:
+    "The arguments meant for the wrapped callable"
+    if not consumed:
+        return kwargs
+    return {name: value for name, value in kwargs.items() if name not in consumed}
 
 
 def get_typed_signature(call: Callable[..., Any]) -> Signature:

@@ -40,7 +40,13 @@ def is_debug_server() -> bool:
     """Check if running under the Django Debug Server"""
     from django.conf import settings
 
-    return settings.DEBUG and os.environ.get("RUN_MAIN") == "true"
+    if not settings.configured:
+        # penta can be imported before the settings are configured - it is even
+        # imported *by* some settings modules - and reading them here would load them
+        # too early. Nothing is running at that point, let alone a debug server.
+        return False
+
+    return bool(settings.DEBUG) and os.environ.get("RUN_MAIN") == "true"
 
 
 def is_async_callable(f: Callable[..., Any]) -> bool:
