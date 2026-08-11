@@ -6,6 +6,7 @@
 htmlcov
 /coverage.xml
 
+build
 dist
 test.py
 
