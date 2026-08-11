@@ -1,9 +1,9 @@
 from django.contrib import admin
 from django.urls import path
 
-from penta import NinjaAPI
+from penta import Penta
 
-api = NinjaAPI()
+api = Penta()
 
 
 @api.get("/add")

@@ -1,18 +1,16 @@
 import inspect
 import warnings
 from collections import defaultdict, namedtuple
-from typing import Any, Callable, Dict, Generator, List, Optional, Tuple
+from typing import Any, Callable, Dict, Generator, List, Optional, Set, Tuple
 
 import pydantic
-from django.http import HttpResponse
-from fast_depends.dependencies import model
 from pydantic.fields import FieldInfo
 from pydantic_core import PydanticUndefined
 from typing_extensions import Annotated, get_args, get_origin
 
-from penta import UploadedFile
 from penta.compatibility.util import UNION_TYPES
 from penta.errors import ConfigError
+from penta.files import UploadedFile
 from penta.params.models import (
     Body,
     File,
@@ -23,6 +21,18 @@ from penta.params.models import (
     TModel,
     TModels,
     _MultiPartBody,
+)
+from penta.signature.parser import (
+    Parameter,
+    Signature,
+    _resolve_duplicate_parameters,
+)
+from penta.signature.transformers import (
+    custom_dependency_parameter,
+    dependency_parameter,
+    dependency_parameters,
+    is_request_parameter,
+    request_parameter,
 )
 from penta.signature.utils import get_path_param_names, get_typed_signature
 
@@ -42,6 +52,7 @@ class ViewSignature:
     FLATTEN_PATH_SEP = (
         "\x1e"  # ASCII Record Separator.  IE: not generally used in query names
     )
+    request_arg: Optional[str] = None
     response_arg: Optional[str] = None
 
     def __init__(self, path: str, view_func: Callable[..., Any]) -> None:
@@ -51,33 +62,53 @@ class ViewSignature:
         self.path_params_names = get_path_param_names(path)
         self.docstring = inspect.cleandoc(view_func.__doc__ or "")
         self.has_kwargs = False
+        self.has_args = False
 
         self.params = []
+        # Parameters that are resolved by the dependency injection (fast-depends)
+        # instead of being parsed out of the request by penta itself.
+        self.injected_params: List[Parameter] = []
+        # What the dependencies read from the request: penta parses those the way it
+        # parses the ones of the view, but the view itself never sees them.
+        self.dependency_params: List[Parameter] = []
+        self.dependency_only_params: Set[str] = set()
+        self.var_params: List[Parameter] = []
         for name, arg in self.signature.parameters.items():
-            # This is useless for us
-            # if name == "request":
-            # continue
-
             if arg.kind == arg.VAR_KEYWORD:
                 # Skipping **kwargs
                 self.has_kwargs = True
+                self.var_params.append(arg)
                 continue
 
             if arg.kind == arg.VAR_POSITIONAL:
                 # Skipping *args
+                self.has_args = True
+                self.var_params.append(arg)
                 continue
 
-            if arg.annotation is HttpResponse:
+            if arg.is_response:
                 self.response_arg = name
                 continue
 
-            # TODO:
-            # Ceci permet d'éviter de rajouter dans la signature les injections.
-            # Maintenant on doit vérifier qu'il n'y a pas de type a rajouter dans la signature qui dependent d'injection de dependances (query params par exemple)
-            if arg.annotation and get_origin(arg.annotation) is Annotated:
-                _, instance = get_args(arg.annotation)
-                if isinstance(instance, model.Depends):
-                    continue
+            if arg.is_depends:
+                # Explicit `Depends(...)`: resolved by fast-depends, once penta has
+                # given the dependencies what they ask it for (the request, and the
+                # parameters they read from it).
+                self.injected_params.append(
+                    custom_dependency_parameter(arg)
+                    if arg.is_custom_depends
+                    else dependency_parameter(arg)
+                )
+                if not arg.is_custom_depends:
+                    self.dependency_params.extend(dependency_parameters(arg.dependency))
+                continue
+
+            if is_request_parameter(arg):
+                # `request` is not parsed from the request payload: it *is* the request.
+                # It is injected as a dependency (see penta.dependencies.request).
+                self.request_arg = name
+                self.injected_params.append(request_parameter(name))
+                continue
 
             if (
                 arg.annotation is inspect.Parameter.empty
@@ -91,6 +122,8 @@ class ViewSignature:
             func_param = self._get_param_type(name, arg)
             self.params.append(func_param)
 
+        self._add_dependency_params()
+
         if hasattr(view_func, "_penta_contribute_args"):
             # _penta_contribute_args is a special attribute
             # which allows developers to create custom function params
@@ -103,6 +136,60 @@ class ViewSignature:
         self.models: TModels = self._create_models()
 
         self._validate_view_path_params()
+
+        self.injection_signature = self._create_injection_signature()
+
+    def _add_dependency_params(self) -> None:
+        """
+        Parse what the dependencies read from the request, along the view own params.
+
+        A name the view declares too is parsed once and given to both. A name already
+        resolved by the injection is ambiguous: it would designate two different values.
+        """
+        injected = {param.name for param in self.injected_params}
+        parsed_for_the_view = {param.name for param in self.params}
+
+        for arg in _resolve_duplicate_parameters(self.dependency_params):
+            if arg.name in injected:
+                raise ConfigError(
+                    f"'{arg.name}' is both resolved by a dependency and asked for by"
+                    " one: rename one of them, they are two different values."
+                )
+            if arg.name in parsed_for_the_view:
+                continue
+            self.dependency_only_params.add(arg.name)
+            self.params.append(self._get_param_type(arg.name, arg))
+
+    def _create_injection_signature(self) -> Signature:
+        """
+        The signature given to fast-depends.
+
+        It contains the dependencies (which fast-depends resolves) plus one parameter per
+        value penta resolves itself (query/path/body/... params, and the temporal
+        response). Those are annotated as `Any` on purpose: they have already been
+        validated by penta and must be passed through untouched.
+        """
+        parameters: List[Parameter] = []
+
+        parameters.extend(
+            param for param in self.var_params if param.kind == Parameter.VAR_POSITIONAL
+        )
+        parameters.extend(self.injected_params)
+        parameters.extend(
+            Parameter(param.name, kind=Parameter.KEYWORD_ONLY, annotation=Any)
+            for param in self.params
+        )
+        if self.response_arg:
+            parameters.append(
+                Parameter(
+                    self.response_arg, kind=Parameter.KEYWORD_ONLY, annotation=Any
+                )
+            )
+        parameters.extend(
+            param for param in self.var_params if param.kind == Parameter.VAR_KEYWORD
+        )
+
+        return Signature(parameters)
 
     def _validate_view_path_params(self) -> None:
         """verify all path params are present in the path model fields"""
@@ -184,6 +271,7 @@ class ViewSignature:
             )
 
             base_cls = param_cls._model
+
             model_cls = type(cls_name, (base_cls,), attrs)
             # TODO: https://pydantic-docs.helpmanual.io/usage/models/#dynamic-model-creation - check if anything special in create_model method that I did not use
             result.append(model_cls)
@@ -269,9 +357,9 @@ class ViewSignature:
 
         # 2) if param name is a part of the path parameter
         elif name in self.path_params_names:
-            assert (
-                default == self.signature.empty
-            ), f"'{name}' is a path param, default not allowed"
+            assert default == self.signature.empty, (
+                f"'{name}' is a path param, default not allowed"
+            )
             param_source = Path(...)
 
         # 3) if param is a collection, or annotation is part of pydantic model:

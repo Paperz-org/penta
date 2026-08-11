@@ -3,6 +3,7 @@ from unittest.mock import Mock, patch
 import pytest
 
 from penta import Penta
+from penta.dependencies.request import RequestDependency
 from penta.testing import TestClient
 
 
@@ -93,7 +94,7 @@ def test_global():
     from docs.src.tutorial.authentication.global01 import api
 
     @api.get("/somemethod")
-    def mustbeauthed(request):
+    def mustbeauthed(request: RequestDependency):
         return {"auth": request.auth}
 
     client = TestClient(api)

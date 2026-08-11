@@ -1,17 +1,23 @@
-from inspect import _empty, signature
-from typing import Any, Callable, TypeVar
+from inspect import Parameter as InspectParameter
+from typing import Callable, Generic, List, TypeVar
 
-from fast_depends.dependencies import model
 from typing_extensions import ParamSpec
 
-from penta.signature import Signature
-from penta.signature.parser import Parameter
+from penta.compatibility.fast_depends import Dependency, dependency_options
+from penta.signature.parser import Parameter, Signature, _resolve_duplicate_parameters
 
 T = TypeVar("T")
 P = ParamSpec("P")
 
 
-class _Depends(model.Depends):
+class _Depends(Dependency, Generic[P, T]):
+    """
+    A dependency, parameterized by the signature and the return type of the callable it
+    resolves: `Depends(get_user)` is a `_Depends[[Request], User]`.
+    """
+
+    dependency: Callable[P, T]
+
     def __init__(
         self,
         dependency: Callable[P, T],
@@ -19,7 +25,9 @@ class _Depends(model.Depends):
         use_cache: bool = True,
         cast: bool = True,
     ) -> None:
-        super().__init__(dependency, use_cache=use_cache, cast=cast)
+        super().__init__(
+            dependency, **dependency_options(use_cache=use_cache, cast=cast)
+        )
 
     @property
     def __signature__(self) -> Signature:
@@ -28,22 +36,30 @@ class _Depends(model.Depends):
         and all nested dependencies, handling duplicates and proper parameter ordering.
         """
         dependency_signature = Signature.from_callable(self.dependency)
-        parameters: list[Parameter] = []
+        parameters: List[Parameter] = []
 
         # Extract all parameters from main dependency and nested dependencies
         for param in dependency_signature.parameters.values():
             if param.is_depends:
-                parameters.extend(signature(param.dependency).parameters.values())
+                parameters.extend(
+                    Signature.from_callable(
+                        param.dependency.dependency, flatten_dependencies=True
+                    ).parameters.values()
+                )
             parameters.append(param)
 
         # Validate and resolve duplicate parameters
-        resolved_parameters = self._resolve_duplicate_parameters(parameters)
+        resolved_parameters = _resolve_duplicate_parameters(parameters)
 
         parameters_without_default = [
-            param for param in resolved_parameters if param.default is _empty
+            param
+            for param in resolved_parameters
+            if param.default is InspectParameter.empty
         ]
         parameters_with_default = [
-            param for param in resolved_parameters if param.default is not _empty
+            param
+            for param in resolved_parameters
+            if param.default is not InspectParameter.empty
         ]
 
         # Sort each group by parameter kind for consistent ordering
@@ -72,7 +88,7 @@ def Depends(
     *,
     use_cache: bool = True,
     cast: bool = True,
-) -> _Depends:
+) -> _Depends[P, T]:
     return _Depends(
         dependency=dependency,
         use_cache=use_cache,

@@ -1,6 +1,7 @@
 from typing import Optional
 
 from penta import Penta, Schema
+from penta.dependencies.request import RequestDependency
 from penta.testing import TestClient
 
 api = Penta()
@@ -13,23 +14,23 @@ class SomeResponse(Schema):
 
 
 @api.get("/test-no-params", response=SomeResponse)
-def op_no_params(request):
+def op_no_params(request: RequestDependency):
     return {}  # should set defaults from schema
 
 
 @api.get("/test-unset", response=SomeResponse, exclude_unset=True)
-def op_exclude_unset(request):
+def op_exclude_unset(request: RequestDependency):
     return {"field3": 10}
 
 
 @api.get("/test-defaults", response=SomeResponse, exclude_defaults=True)
-def op_exclude_defaults(request):
+def op_exclude_defaults(request: RequestDependency):
     # changing only field1
     return {"field1": 3, "field2": "default value"}
 
 
 @api.get("/test-none", response=SomeResponse, exclude_none=True)
-def op_exclude_none(request):
+def op_exclude_none(request: RequestDependency):
     # setting field1 to None to exclude
     return {"field1": None, "field2": "default value"}
 

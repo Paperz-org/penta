@@ -1,4 +1,5 @@
 import inspect
+from contextvars import Token
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -18,9 +19,9 @@ import pydantic
 from asgiref.sync import async_to_sync
 from django.http import HttpRequest, HttpResponse, HttpResponseNotAllowed
 from django.http.response import HttpResponseBase
-from fast_depends import inject
 
 from penta import context
+from penta.compatibility.fast_depends import inject
 from penta.constants import NOT_SET, NOT_SET_TYPE
 from penta.errors import (
     AuthenticationError,
@@ -32,6 +33,7 @@ from penta.params.models import TModels
 from penta.request import Request
 from penta.schema import Schema, pydantic_version
 from penta.signature import ViewSignature, is_async
+from penta.signature.utils import wrap_with_signature
 from penta.throttling import BaseThrottle
 from penta.types import DictStrAny
 from penta.utils import check_csrf, is_async_callable
@@ -70,6 +72,11 @@ class Operation:
             need_to_fix_request_files,
         )
 
+        penta_contribute_to_operation = getattr(
+            view_func, "_penta_contribute_to_operation", None
+        )
+        penta_contribute_args = getattr(view_func, "_penta_contribute_args", None)
+
         self.is_async = False
         self.path: str = path
         self.methods: List[str] = methods
@@ -88,9 +95,9 @@ class Operation:
         self.throttle_objects: List[BaseThrottle] = []
         if throttle is not NOT_SET:
             for th in throttle:  # type: ignore
-                assert isinstance(
-                    th, BaseThrottle
-                ), "Throttle should be an instance of BaseThrottle"
+                assert isinstance(th, BaseThrottle), (
+                    "Throttle should be an instance of BaseThrottle"
+                )
                 self.throttle_objects.append(th)
 
         self.signature = ViewSignature(self.path, self.view_func)
@@ -130,29 +137,66 @@ class Operation:
             for callback in callbacks:
                 callback(self)
 
+        # `inject` returns a new function: the attributes 3rd party code contributed to
+        # the view have to be carried over to it.
+        injected_view_func: Any = inject(self._injectable(view_func))
+        if penta_contribute_to_operation:
+            injected_view_func._penta_contribute_to_operation = (
+                penta_contribute_to_operation
+            )
+        if penta_contribute_args:
+            injected_view_func._penta_contribute_args = penta_contribute_args
+        self.view_func = injected_view_func
+
+    def _injectable(self, view_func: Callable) -> Callable:
+        """
+        Wrap the view in a function carrying the signature fast-depends needs.
+
+        fast-depends builds its dependency graph out of the signature of what it
+        decorates, and the signature of the view is not usable as is: penta params carry
+        `Param` defaults (aliases, constraints, ...) that pydantic would apply a second
+        time, and the request is not an argument the caller provides but a dependency.
+        """
+        return wrap_with_signature(
+            view_func,
+            self.signature.injection_signature,
+            consumed=self.signature.dependency_only_params,
+        )
+
     def run(self, request: HttpRequest, **kw: Any) -> HttpResponseBase:
+        token = self._enter_request_context(request)
+        try:
+            error = self._run_checks(request)
+            if error:
+                return error
+            try:
+                temporal_response = self.api.create_temporal_response(request)
+                values = self._get_values(request, kw, temporal_response)
+                result = self.view_func(**values)
+                return self._result_to_response(request, result, temporal_response)
+            except Exception as e:
+                if isinstance(e, TypeError) and "required positional argument" in str(
+                    e
+                ):
+                    msg = "Did you fail to use functools.wraps() in a decorator?"
+                    msg = f"{e.args[0]}: {msg}" if e.args else msg
+                    e.args = (msg,) + e.args[1:]
+                return self.api.on_exception(request, e)
+        finally:
+            context.request.reset(token)
+
+    @staticmethod
+    def _enter_request_context(request: HttpRequest) -> Token:
+        """
+        Make the request available to the dependency injection for the time of the call.
+        """
         # This is a trick to override the class of the request ... After the instanciation
         # `request` is an ASGIRequest instance from Django.
         # `Request` is our custom class, that inherit from ASGIRequest.
         # With this trick, we are changing the type of the instance
         # It like ... inheritence in the future ¯\_(ツ)_/¯
         request.__class__ = Request
-        context.request.set(request)
-
-        error = self._run_checks(request)
-        if error:
-            return error
-        try:
-            temporal_response = self.api.create_temporal_response(request)
-            values = self._get_values(request, kw, temporal_response)
-            result = self.view_func(**values)
-            return self._result_to_response(request, result, temporal_response)
-        except Exception as e:
-            if isinstance(e, TypeError) and "required positional argument" in str(e):
-                msg = "Did you fail to use functools.wraps() in a decorator?"
-                msg = f"{e.args[0]}: {msg}" if e.args else msg
-                e.args = (msg,) + e.args[1:]
-            return self.api.on_exception(request, e)
+        return context.request.set(cast(Request, request))
 
     def set_api_instance(self, api: "Penta", router: "Router") -> None:
         self.api = api
@@ -178,9 +222,9 @@ class Operation:
             if router.throttle != NOT_SET:
                 _t = router.throttle
                 self.throttle_objects = isinstance(_t, BaseThrottle) and [_t] or _t  # type: ignore
-            assert all(
-                isinstance(th, BaseThrottle) for th in self.throttle_objects
-            ), "Throttle should be an instance of BaseThrottle"
+            assert all(isinstance(th, BaseThrottle) for th in self.throttle_objects), (
+                "Throttle should be an instance of BaseThrottle"
+            )
 
         if self.tags is None:
             if router.tags is not None:
@@ -359,23 +403,20 @@ class AsyncOperation(Operation):
         self.is_async = True
 
     async def run(self, request: HttpRequest, **kw: Any) -> HttpResponseBase:  # type: ignore
-        # This is a trick to override the class of the request ... After the instanciation
-        # `request` is an ASGIRequest instance from Django.
-        # `Request` is our custom class, that inherit from ASGIRequest.
-        # With this trick, we are changing the type of the instance
-        # It like ... inheritence in the future ¯\_(ツ)_/¯
-        request.__class__ = Request
-        context.request.set(request)
-        error = await self._run_checks(request)
-        if error:
-            return error
+        token = self._enter_request_context(request)
         try:
-            temporal_response = self.api.create_temporal_response(request)
-            values = self._get_values(request, kw, temporal_response)
-            result = await self.view_func(**values)
-            return self._result_to_response(request, result, temporal_response)
-        except Exception as e:
-            return self.api.on_exception(request, e)
+            error = await self._run_checks(request)
+            if error:
+                return error
+            try:
+                temporal_response = self.api.create_temporal_response(request)
+                values = self._get_values(request, kw, temporal_response)
+                result = await self.view_func(**values)
+                return self._result_to_response(request, result, temporal_response)
+            except Exception as e:
+                return self.api.on_exception(request, e)
+        finally:
+            context.request.reset(token)
 
     async def _run_checks(self, request: HttpRequest) -> Optional[HttpResponse]:  # type: ignore
         "Runs security checks for each operation"
@@ -456,8 +497,6 @@ class PathView:
         if is_async(view_func):
             self.is_async = True
             OperationClass = AsyncOperation
-
-        view_func = inject(view_func)
 
         operation = OperationClass(
             path,

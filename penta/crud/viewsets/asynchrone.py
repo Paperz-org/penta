@@ -1,7 +1,7 @@
 """Asynchrone implementation of the ViewSet."""
 
 from collections.abc import Coroutine
-from typing import Any, Callable, cast
+from typing import Callable, cast
 
 from django.db import DatabaseError
 from django.db.models import QuerySet
@@ -11,6 +11,7 @@ from penta import Query
 from penta.pagination import paginate
 
 from ..decorators import async_rename_parameter as rename
+from ..decorators import bind_annotations
 from ..exceptions import BadRequest, EntryNotFound
 from ..types import (
     CreateSchemaType,
@@ -22,17 +23,14 @@ from ..types import (
 )
 from .base import BaseViewSet
 
-ListItemsReturnType = Callable[[Query], QuerySet[ModelType]]
-GetItemReturnType = Callable[[PKType], Coroutine[Any, Any, ModelType]]
+GetItemReturnType = Callable[[PKType], Coroutine[object, object, ModelType]]
 CreateItemReturnType = Callable[
-    [CreateSchemaType], Coroutine[Any, Any, Any]
+    [CreateSchemaType], Coroutine[object, object, ModelType]
 ]
 UpdateItemReturnType = Callable[
-    [PKType, UpdateSchemaType], Coroutine[Any, Any, Any]
+    [PKType, UpdateSchemaType], Coroutine[object, object, ModelType]
 ]
-DeleteItemReturnType = Callable[
-    [PKType], Coroutine[Any, Any, tuple[int, None]]
-]
+DeleteItemReturnType = Callable[[PKType], Coroutine[object, object, tuple[int, None]]]
 
 
 class AsyncViewSet(
@@ -49,7 +47,7 @@ class AsyncViewSet(
 
     async def _get_object(self, id: PKType) -> ModelType:  # noqa: A002
         """Get object by ID asynchronously."""
-        return cast(ModelType, await self.queryset.aget(pk=id))
+        return await self.queryset.aget(pk=id)
 
     async def _save_object(self, obj: ModelType) -> None:
         """Save object asynchronously."""
@@ -66,33 +64,33 @@ class AsyncViewSet(
             setattr(obj, attr, value)
 
     @property
-    def list_items(self) -> ListItemsReturnType:
+    def list_items(self) -> Callable[..., QuerySet[ModelType]]:
         """List items."""
 
-        @paginate
-        def _list_items(filters: self.filter_schema = Query(...)) -> QuerySet[ModelType]:  # noqa: B008
-            return cast(QuerySet[ModelType], filters.filter(self.queryset))
+        def _list_items(filters: FilterSchemaType = Query(...)) -> QuerySet[ModelType]:  # noqa: B008
+            return filters.filter(self.queryset)
 
-        return _list_items
+        return paginate(bind_annotations(_list_items, filters=self.filter_schema))
 
     @property
-    def get_item(self) -> GetItemReturnType:
+    def get_item(self) -> GetItemReturnType[PKType, ModelType]:
         """Get item."""
 
-        @rename(pk_name=self.pk_name)
-        async def _get_item(pk_name: self.pk_type) -> ModelType:
+        async def _get_item(pk_name: PKType) -> ModelType:
             try:
                 return await self._get_object(pk_name)
             except self.model.DoesNotExist as e:
                 raise EntryNotFound(self.model, pk_name) from e
 
-        return _get_item
+        return rename(pk_name=self.pk_name)(
+            bind_annotations(_get_item, pk_name=self.pk_type)
+        )
 
     @property
-    def create_item(self) -> CreateItemReturnType:
+    def create_item(self) -> CreateItemReturnType[CreateSchemaType, ModelType]:
         """Create item."""
 
-        async def _create_item(payload: self.create_schema) -> self.read_schema:  # type: ignore[E0611]
+        async def _create_item(payload: CreateSchemaType) -> ModelType:
             try:
                 data = payload.dict()
 
@@ -107,15 +105,13 @@ class AsyncViewSet(
             else:
                 return obj
 
-        return _create_item
+        return bind_annotations(_create_item, payload=self.create_schema)
 
     @property
-    def update_item(self) -> UpdateItemReturnType:
+    def update_item(self) -> UpdateItemReturnType[PKType, UpdateSchemaType, ModelType]:
         """Update item."""
 
-        @rename(pk_name=self.pk_name)
-        async def _update_item(pk_name: self.pk_type, payload: self.update_schema
-        ) -> self.read_schema:  # type: ignore[E0611]
+        async def _update_item(pk_name: PKType, payload: UpdateSchemaType) -> ModelType:
             try:
                 obj = await self._get_object(pk_name)
 
@@ -139,15 +135,17 @@ class AsyncViewSet(
             else:
                 return obj
 
-        return _update_item
+        return rename(pk_name=self.pk_name)(
+            bind_annotations(
+                _update_item, pk_name=self.pk_type, payload=self.update_schema
+            )
+        )
 
     @property
-    def delete_item(self) -> DeleteItemReturnType:
+    def delete_item(self) -> DeleteItemReturnType[PKType]:
         """Delete item."""
 
-        @rename(pk_name=self.pk_name)
-        async def _delete_item(pk_name: self.pk_type
-        ) -> tuple[int, None]:
+        async def _delete_item(pk_name: PKType) -> tuple[int, None]:
             try:
                 obj = await self._get_object(pk_name)
                 await self._delete_object(obj)
@@ -161,7 +159,9 @@ class AsyncViewSet(
             else:
                 return 204, None
 
-        return _delete_item
+        return rename(pk_name=self.pk_name)(
+            bind_annotations(_delete_item, pk_name=self.pk_type)
+        )
 
     async def _handle_foreign_keys(self, data: dict) -> dict:
         """Handle foreign key relations by converting IDs to model instances (async version)."""

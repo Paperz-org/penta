@@ -10,7 +10,7 @@
 
 
 # @router.get("/test")
-# def view(request, value: Union[date, str]):
+# def view(request: RequestDependency value: Union[date, str]):
 #     return [value, type(value).__name__]
 
 

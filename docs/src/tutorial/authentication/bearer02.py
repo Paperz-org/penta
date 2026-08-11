@@ -1,7 +1,7 @@
-from penta import NinjaAPI
+from penta import Penta
 from penta.security import HttpBearer
 
-api = NinjaAPI()
+api = Penta()
 
 
 class InvalidToken(Exception):

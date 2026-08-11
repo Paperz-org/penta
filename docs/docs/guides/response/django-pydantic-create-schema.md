@@ -5,7 +5,7 @@ This is a more advanced (and less safe) method - please use it carefully.
 
 ## `create_schema`
 
-**Django Ninja** comes with a helper function `create_schema`:
+**Penta** comes with a helper function `create_schema`:
 
 ```python
 def create_schema(
@@ -19,7 +19,6 @@ def create_schema(
 )
 ```
 
-
 Take this example:
 
 ```python hl_lines="2 4"
@@ -29,7 +28,7 @@ from penta.orm import create_schema
 UserSchema = create_schema(User)
 
 # Will create schema like this:
-# 
+#
 # class UserSchema(Schema):
 #     id: int
 #     username: str
@@ -40,37 +39,43 @@ UserSchema = create_schema(User)
 #     is_superuser: bool
 #     email: str
 #     ... and the rest
-
 ```
 
 !!! Warning
-    By default `create_schema` builds a schema with ALL model fields.
-    This can lead to accidental unwanted data exposure (like hashed password, in the above example).
-    <br>
-    **Always** use `fields` or `exclude` arguments to explicitly define list of attributes.
+By default `create_schema` builds a schema with ALL model fields.
+This can lead to accidental unwanted data exposure (like hashed password, in the above example).
+<br>
+**Always** use `fields` or `exclude` arguments to explicitly define list of attributes.
 
 ### Using `fields`
 
 ```python hl_lines="1"
-UserSchema = create_schema(User, fields=['id', 'username'])
+UserSchema = create_schema(User, fields=["id", "username"])
 
 # Will create schema like this:
-# 
+#
 # class UserSchema(Schema):
 #     id: int
 #     username: str
-
 ```
 
 ### Using `exclude`
 
 ```python hl_lines="1 2"
-UserSchema = create_schema(User, exclude=[
-    'password', 'last_login', 'is_superuser', 'is_staff', 'groups', 'user_permissions']
+UserSchema = create_schema(
+    User,
+    exclude=[
+        "password",
+        "last_login",
+        "is_superuser",
+        "is_staff",
+        "groups",
+        "user_permissions",
+    ],
 )
 
 # Will create schema without excluded fields:
-# 
+#
 # class UserSchema(Schema):
 #    id: int
 #    username: str
@@ -86,7 +91,7 @@ UserSchema = create_schema(User, exclude=[
 The `depth` argument allows you to introspect the Django model into the Related fields(ForeignKey, OneToOne, ManyToMany).
 
 ```python hl_lines="1 7"
-UserSchema = create_schema(User, depth=1, fields=['username', 'groups'])
+UserSchema = create_schema(User, depth=1, fields=["username", "groups"])
 
 # Will create the following schema:
 #

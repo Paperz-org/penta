@@ -2,6 +2,7 @@ import pytest
 from django.conf import settings
 
 from penta import Penta
+from penta.dependencies.request import RequestDependency
 from penta.testing import TestAsyncClient as BaseTestAsyncClient
 
 
@@ -21,7 +22,7 @@ async def test_csrf_off():
     csrf_OFF = Penta(urls_namespace="csrf_OFF")
 
     @csrf_OFF.post("/post")
-    async def post_off(request):
+    async def post_off(request: RequestDependency):
         return {"success": True}
 
     client = TestAsyncClient(csrf_OFF)
@@ -34,7 +35,7 @@ async def test_csrf_on():
     csrf_ON = Penta(urls_namespace="csrf_ON", csrf=True)
 
     @csrf_ON.post("/post")
-    async def post_on(request):
+    async def post_on(request: RequestDependency):
         return {"success": True}
 
     client = TestAsyncClient(csrf_ON)

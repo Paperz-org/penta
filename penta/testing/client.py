@@ -5,9 +5,10 @@ from unittest.mock import Mock
 from urllib.parse import urljoin
 
 from django.http import QueryDict, StreamingHttpResponse
-from django.http.request import HttpHeaders, HttpRequest
+from django.http.request import HttpHeaders
 
 from penta import Penta, Router
+from penta.request import Request
 from penta.responses import PentaJSONEncoder
 from penta.responses import Response as HttpResponse
 
@@ -128,7 +129,7 @@ class PentaClientBase:
     def _build_request(
         self, method: str, path: str, data: Dict, request_params: Any
     ) -> Mock:
-        request = Mock(spec=HttpRequest)
+        request = Mock(spec=Request)
         request.method = method
         request.path = path
         request.body = ""
@@ -136,6 +137,7 @@ class PentaClientBase:
         request._dont_enforce_csrf_checks = True
         request.is_secure.return_value = False
         request.build_absolute_uri = build_absolute_uri
+        request.query_params.side_effect = lambda: request.GET
 
         request.auth = None
         request.user = Mock()
@@ -147,12 +149,10 @@ class PentaClientBase:
         request.META = request_params.pop("META", {"REMOTE_ADDR": "127.0.0.1"})
         request.FILES = request_params.pop("FILES", {})
 
-        request.META.update(
-            {
-                f"HTTP_{k.replace('-', '_')}": v
-                for k, v in request_params.pop("headers", {}).items()
-            }
-        )
+        request.META.update({
+            f"HTTP_{k.replace('-', '_')}": v
+            for k, v in request_params.pop("headers", {}).items()
+        })
 
         request.headers = HttpHeaders(request.META)
 
@@ -208,7 +208,7 @@ class PentaResponse:
         if self.streaming:
             self.content = b"".join(http_response.streaming_content)  # type: ignore
         else:
-            self.content = http_response.content  # type: ignore[union-attr]
+            self.content = http_response.content
         self._data = None
 
     def json(self) -> Any:

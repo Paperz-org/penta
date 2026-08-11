@@ -1,7 +1,7 @@
-from penta import NinjaAPI
+from penta import Penta
 from penta.security import django_auth
 
-api = NinjaAPI(csrf=True)
+api = Penta(csrf=True)
 
 
 @api.get("/pets", auth=django_auth)

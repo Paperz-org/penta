@@ -4,6 +4,7 @@ from pydantic import Field
 from typing_extensions import Annotated, Literal
 
 from penta import Penta, Schema
+from penta.dependencies.request import RequestDependency
 from penta.testing import TestClient
 
 
@@ -28,12 +29,12 @@ api = Penta()
 
 
 @api.post("/descr-union")
-def create_example(request, payload: UnionDiscriminator):
+def create_example(request: RequestDependency, payload: UnionDiscriminator):
     return {"data": payload.model_dump(), "type": payload.__class__.__name__}
 
 
 @api.post("/regular-union")
-def create_example_regular(request, payload: RegularUnion):
+def create_example_regular(request: RequestDependency, payload: RegularUnion):
     return {"data": payload.model_dump(), "type": payload.__class__.__name__}
 
 

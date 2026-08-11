@@ -20,33 +20,31 @@ classifiers = [
     "Intended Audience :: Developers",
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.7",
-    "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: 3 :: Only",
     "Framework :: Django",
-    "Framework :: Django :: 3.1",
     "Framework :: Django :: 3.2",
     "Framework :: Django :: 4.1",
     "Framework :: Django :: 4.2",
     "Framework :: Django :: 5.0",
     "Framework :: Django :: 5.1",
     "Framework :: Django :: 5.2",
+    "Framework :: Django :: 6.0",
     "Framework :: AsyncIO",
     "Topic :: Internet :: WWW/HTTP :: HTTP Servers",
     "Topic :: Internet :: WWW/HTTP",
 ]
 dependencies = [
-    "Django >=3.1, <6.0",
-    "fast-depends>=2.4.12",
-    "pydantic >=2.0,<3.0.0",
-    "ruff>=0.5.7",
+    # 3.1 does not support python 3.10, and 6.0 is the last version tested
+    "Django >=3.2, <7.0",
+    # 3.0 renamed the class describing a dependency, see penta.compatibility
+    "fast-depends >=2.4.12, <4.0",
+    "pydantic >=2.0, <3.0.0",
 ]
-urls = { Documentation = "https://django-ninja.dev", Repository = "https://github.com/vitalik/django-ninja" }
+urls = { Documentation = "https://paperz-org.github.io/penta", Repository = "https://github.com/paperz-org/penta" }
 
 [project.optional-dependencies]
 test = [
@@ -55,8 +53,8 @@ test = [
     "pytest-django",
     "pytest-asyncio",
     "psycopg2-binary",
-    "mypy==1.7.1",
-    "ruff==0.5.7",
+    "mypy==2.3.0",
+    "ruff==0.16.1",
     "django-stubs",
 ]
 doc = ["mkdocs", "mkdocs-material", "markdown-include", "mkdocstrings"]
@@ -86,19 +84,24 @@ select = [
     "W",    # pycodestyle warnings
 ]
 ignore = [
-    "E501", # line too long, handled by black
-    "B008", # do not perform function calls in argument defaults
-    "C901", # too complex
+    "E501",    # line too long, handled by the formatter
+    "B008",    # do not perform function calls in argument defaults
+    "C901",    # too complex
+    "B903",    # class could be a dataclass or a namedtuple
+    "FURB189", # subclassing dict/str: penta does it on purpose, to stay one
 ]
 
 [tool.ruff.lint.per-file-ignores]
-"ninja/compatibility/datastructures.py" = ["C416"]
-"ninja/utils.py" = ["B004"]
+"penta/compatibility/datastructures.py" = ["C416"]
+"penta/utils.py" = ["B004"]
 "tests/*" = ["C408"]
+# the tutorial snippets are fragments: the `api` they hang the views on is built by
+# the surrounding page (and injected by the tests exercising them)
+"docs/src/*" = ["F821"]
 
 
 [tool.coverage.run]
-omit = ["ninja/compatibility/*"]
+omit = ["penta/compatibility/*"]
 branch = true
 
 [tool.coverage.report]

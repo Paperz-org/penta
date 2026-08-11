@@ -23,7 +23,7 @@ def decorate_view(*decorators: Callable[..., Any]) -> Callable[[TCallable], TCal
     def outer_wrapper(op_func: TCallable) -> TCallable:
         if hasattr(op_func, "_penta_operation"):
             # Means user used decorate_view on top of @api.method
-            _apply_decorators(decorators, op_func._penta_operation)  # type: ignore
+            _apply_decorators(decorators, op_func._penta_operation)
         else:
             # Means user used decorate_view after(bottom) of @api.method
             contribute_operation_callback(
@@ -36,7 +36,7 @@ def decorate_view(*decorators: Callable[..., Any]) -> Callable[[TCallable], TCal
 
 
 def _apply_decorators(
-    decorators: Tuple[Callable[..., Any]], operation: Operation
+    decorators: Tuple[Callable[..., Any], ...], operation: Operation
 ) -> None:
     for deco in decorators:
         operation.run = deco(operation.run)  # type: ignore

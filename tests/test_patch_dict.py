@@ -3,6 +3,7 @@ from typing import Optional
 import pytest
 
 from penta import Penta, Schema
+from penta.dependencies.request import RequestDependency
 from penta.patch_dict import PatchDict
 from penta.testing import TestClient
 
@@ -18,7 +19,7 @@ class SomeSchema(Schema):
 
 
 @api.patch("/patch")
-def patch(request, payload: PatchDict[SomeSchema]):
+def patch(request: RequestDependency, payload: PatchDict[SomeSchema]):
     return {"payload": payload, "type": str(type(payload))}
 
 

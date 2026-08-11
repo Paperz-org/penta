@@ -3,6 +3,7 @@ import asyncio
 import pytest
 
 from penta import Penta
+from penta.dependencies.request import RequestDependency
 from penta.security import APIKeyQuery
 from penta.testing import TestAsyncClient
 
@@ -12,17 +13,17 @@ async def test_asyncio_operations():
     api = Penta()
 
     class KeyQuery(APIKeyQuery):
-        def authenticate(self, request, key):
+        def authenticate(self, request: RequestDependency, key):
             if key == "secret":
                 return key
 
     @api.get("/async", auth=KeyQuery())
-    async def async_view(request, payload: int):
+    async def async_view(payload: int):
         await asyncio.sleep(0)
         return {"async": True}
 
     @api.post("/async")
-    def sync_post_to_async_view(request):
+    def sync_post_to_async_view():
         return {"sync": True}
 
     client = TestAsyncClient(api)

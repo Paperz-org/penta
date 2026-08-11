@@ -1,18 +1,19 @@
 from django.http import HttpResponse
 
 from penta import Penta
+from penta.dependencies.request import RequestDependency
 from penta.testing import TestClient
 
 api = Penta()
 
 
 @api.get("/test-no-cookies")
-def op_no_cookies(request):
+def op_no_cookies(request: RequestDependency):
     return {}
 
 
 @api.get("/test-set-cookie")
-def op_set_cookie(request):
+def op_set_cookie(request: RequestDependency):
     response = HttpResponse()
     response.set_cookie(key="sessionid", value="sessionvalue")
     return response

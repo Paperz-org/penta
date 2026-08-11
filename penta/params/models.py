@@ -173,8 +173,17 @@ class FileModel(ParamModel):
         return api.parser.parse_querydict(request.FILES, list_fields, request)
 
 
-class _HttpRequest(HttpRequest):
-    body: bytes = b""
+class _BodyRequest(HttpRequest):
+    """
+    A request carrying the given body, to parse one part of a multipart request as one.
+
+    `HttpRequest.body` reads the stream of the request once and keeps it in `_body`,
+    which is exactly what is provided here.
+    """
+
+    def __init__(self, body: bytes) -> None:
+        super().__init__()
+        self._body = body
 
 
 class _MultiPartBodyModel(BodyModel):
@@ -184,7 +193,6 @@ class _MultiPartBodyModel(BodyModel):
     def get_request_data(
         cls, request: HttpRequest, api: "Penta", path_params: DictStrAny
     ) -> Optional[DictStrAny]:
-        req = _HttpRequest()
         get_request_data = super().get_request_data
         results: DictStrAny = {}
         for name, annotation in cls.__penta_body_params__.items():
@@ -192,12 +200,18 @@ class _MultiPartBodyModel(BodyModel):
                 data = request.POST[name]
                 if annotation is str and data[0] != '"' and data[-1] != '"':
                     data = f'"{data}"'
-                req.body = data.encode()
-                results[name] = get_request_data(req, api, path_params)
+                results[name] = get_request_data(
+                    _BodyRequest(data.encode()), api, path_params
+                )
         return results
 
 
-class Param(FieldInfo):
+# `FieldInfo` is marked as final since pydantic 2.12, to discourage new subclasses.
+# A param has to *be* one: it is what a view declares as the default of an argument
+# (`q: int = Query(...)`), and what penta gives pydantic to build its models from.
+# Pydantic keeps that path working for the frameworks doing it (see "HACK 2" in
+# `pydantic.fields.FieldInfo.from_annotated_attribute`), the restriction is about typing.
+class Param(FieldInfo):  # type: ignore[misc]
     def __init__(
         self,
         default: Any,
@@ -260,35 +274,35 @@ class Param(FieldInfo):
         return cls.__name__.lower()
 
 
-class Path(Param):
+class Path(Param):  # type: ignore[misc]
     _model = PathModel
 
 
-class Query(Param):
+class Query(Param):  # type: ignore[misc]
     _model = QueryModel
 
 
-class Header(Param):
+class Header(Param):  # type: ignore[misc]
     _model = HeaderModel
 
 
-class Cookie(Param):
+class Cookie(Param):  # type: ignore[misc]
     _model = CookieModel
 
 
-class Body(Param):
+class Body(Param):  # type: ignore[misc]
     _model = BodyModel
 
 
-class Form(Param):
+class Form(Param):  # type: ignore[misc]
     _model = FormModel
 
 
-class File(Param):
+class File(Param):  # type: ignore[misc]
     _model = FileModel
 
 
-class _MultiPartBody(Param):
+class _MultiPartBody(Param):  # type: ignore[misc]
     _model = _MultiPartBodyModel
 
     @classmethod

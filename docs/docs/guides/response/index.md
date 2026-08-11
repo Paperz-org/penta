@@ -1,13 +1,14 @@
 # Response Schema
 
-**Django Ninja** allows you to define the schema of your responses both for validation and documentation purposes.
+**Penta** allows you to define the schema of your responses both for validation and documentation purposes.
 
 Imagine you need to create an API operation that creates a user. The **input** parameter would be **username+password**, but **output** of this operation should be **id+username** (**without** the password).
 
 Let's create the input schema:
 
 ```python hl_lines="3 5"
-from ninja import Schema
+from penta import Schema
+
 
 class UserIn(Schema):
     username: str
@@ -16,7 +17,7 @@ class UserIn(Schema):
 
 @api.post("/users/")
 def create_user(request, data: UserIn):
-    user = User(username=data.username) # User is django auth.User
+    user = User(username=data.username)  # User is django auth.User
     user.set_password(data.password)
     user.save()
     # ... return ?
@@ -25,7 +26,8 @@ def create_user(request, data: UserIn):
 Now let's define the output schema, and pass it as a `response` argument to the `@api.post` decorator:
 
 ```python hl_lines="8 9 10 13 18"
-from ninja import Schema
+from penta import Schema
+
 
 class UserIn(Schema):
     username: str
@@ -45,7 +47,7 @@ def create_user(request, data: UserIn):
     return user
 ```
 
-**Django Ninja** will use this `response` schema to:
+**Penta** will use this `response` schema to:
 
 - convert the output data to declared schema
 - validate the data
@@ -62,6 +64,7 @@ Imagine we have a `Task` Django model with a `User` ForeignKey:
 ```python hl_lines="6"
 from django.db import models
 
+
 class Task(models.Model):
     title = models.CharField(max_length=200)
     is_completed = models.BooleanField(default=False)
@@ -72,12 +75,14 @@ Now let's output all tasks, and for each task, output some fields about the user
 
 ```python hl_lines="13 16"
 from typing import List
-from ninja import Schema
+from penta import Schema
+
 
 class UserSchema(Schema):
     id: int
     first_name: str
     last_name: str
+
 
 class TaskSchema(Schema):
     id: int
@@ -118,14 +123,14 @@ If you execute this operation, you should get a response like this:
 ## Aliases
 
 Instead of a nested response, you may want to just flatten the response output.
-The Ninja `Schema` object extends Pydantic's `Field(..., alias="")` format to
+The Penta `Schema` object extends Pydantic's `Field(..., alias="")` format to
 work with dotted responses.
 
 Using the models from above, let's make a schema that just includes the task
 owner's first name inline, and also uses `completed` rather than `is_completed`:
 
 ```python hl_lines="1 7-9"
-from ninja import Field, Schema
+from penta import Field, Schema
 
 
 class TaskSchema(Schema):
@@ -146,7 +151,9 @@ class TaskSchema(Schema):
 ```python hl_lines="3"
 class TaskSchema(Schema):
     type: str = Field(None)
-    type_display: str = Field(None, alias="get_type_display") # callable will be executed
+    type_display: str = Field(
+        None, alias="get_type_display"
+    )  # callable will be executed
 ```
 
 ## Resolvers
@@ -198,7 +205,7 @@ if you use this schema for incoming requests - the `request` object will be auto
 You can as well pass your own context:
 
 ```python
-data = Data.model_validate({'some': 1}, context={'request': MyRequest()})
+data = Data.model_validate({"some": 1}, context={"request": MyRequest()})
 ```
 
 ## Returning querysets
@@ -227,14 +234,14 @@ def tasks(request):
 
 ## FileField and ImageField
 
-**Django Ninja** by default converts files and images (declared with `FileField` or `ImageField`) to `string` URL's.
+**Penta** by default converts files and images (declared with `FileField` or `ImageField`) to `string` URL's.
 
 An example:
 
 ```python hl_lines="3"
 class Picture(models.Model):
     title = models.CharField(max_length=100)
-    image = models.ImageField(upload_to='images')
+    image = models.ImageField(upload_to="images")
 ```
 
 If you need to output to response image field, declare a schema for it as follows:
@@ -272,7 +279,7 @@ You can pass to a `response` argument a dictionary where:
 - key is a response code
 - value is a schema for that code
 
-Also, when you return the result - you have to also pass a status code to tell **Django Ninja** which schema should be used for validation and serialization.
+Also, when you return the result - you have to also pass a status code to tell **Penta** which schema should be used for validation and serialization.
 
 An example:
 
@@ -318,7 +325,7 @@ def login(request, payload: Auth):
     return 200, {'token': xxx, ...}
 ```
 
-**Django Ninja** comes with the following HTTP codes:
+**Penta** comes with the following HTTP codes:
 
 ```python
 from penta.responses import codes_1xx
@@ -333,9 +340,9 @@ You can also create your own range using a `frozenset`:
 ```python
 my_codes = frozenset({416, 418, 425, 429, 451})
 
-@api.post('/login', response={200: Token, my_codes: Message})
-def login(request, payload: Auth):
-    ...
+
+@api.post("/login", response={200: Token, my_codes: Message})
+def login(request, payload: Auth): ...
 ```
 
 ## Empty responses
@@ -365,15 +372,14 @@ To do that you need:
 ```python hl_lines="3 6"
 class Organization(Schema):
     title: str
-    part_of: 'Organization' = None     #!! note the type in quotes here !!
+    part_of: "Organization" = None  #!! note the type in quotes here !!
 
 
 Organization.model_rebuild()  # !!! this is important
 
 
-@api.get('/organizations', response=List[Organization])
-def list_organizations(request):
-    ...
+@api.get("/organizations", response=List[Organization])
+def list_organizations(request): ...
 ```
 
 ## Self-referencing schemes from `create_schema()`
@@ -448,7 +454,7 @@ from django.shortcuts import redirect
 
 @api.get("/http")
 def result_django(request):
-    return HttpResponse('some data')   # !!!!
+    return HttpResponse("some data")  # !!!!
 
 
 @api.get("/something")

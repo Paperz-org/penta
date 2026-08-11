@@ -199,6 +199,11 @@ def test_all_fields():
     pydantic_version = tuple(map(int, pydantic.VERSION.split(".")[:2]))
     if pydantic_version >= (2, 11):
         expected_schema["properties"]["hstorefield"]["additionalProperties"] = True
+    if pydantic_version >= (2, 12):
+        # pydantic describes how it parses a Decimal out of a string
+        expected_schema["properties"]["decimalfield"]["anyOf"][1]["pattern"] = (
+            r"^(?!^[-+.]*$)[+-]?0*\d*\.?\d*$"
+        )
     assert SchemaCls.json_schema() == expected_schema
 
 
@@ -300,13 +305,11 @@ def test_relational():
         "type": "object",
         "properties": {
             "id": {"anyOf": [{"type": "integer"}, {"type": "null"}], "title": "ID"},
-            "onetoonefield": pydantic_ref_fix(
-                {
-                    "title": "Onetoonefield",
-                    "description": "",
-                    "$ref": "#/$defs/Related",
-                }
-            ),
+            "onetoonefield": pydantic_ref_fix({
+                "title": "Onetoonefield",
+                "description": "",
+                "$ref": "#/$defs/Related",
+            }),
             "foreignkey": {
                 "title": "Foreignkey",
                 "allOf": [{"$ref": "#/$defs/Related"}],

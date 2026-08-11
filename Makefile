@@ -10,22 +10,22 @@ install: ## Install dependencies
 
 .PHONY: lint
 lint: ## Run code linters
-	ruff format --preview --check ninja tests
-	ruff check --preview ninja tests
-	mypy ninja
+	uv run ruff format --preview --check .
+	uv run ruff check --preview .
+	uv run mypy
 
 .PHONY: fmt format
 fmt format: ## Run code formatters
-	ruff format --preview ninja tests
-	ruff check --preview --fix ninja tests 
+	uv run ruff format --preview .
+	uv run ruff check --preview --fix .
 
 .PHONY: test
 test: ## Run tests
-	pytest .
+	uv run pytest .
 
 .PHONY: test-cov
 test-cov: ## Run tests with coverage
-	pytest --cov=ninja --cov-report term-missing tests
+	uv run pytest --cov=penta --cov-report term-missing tests
 
 .PHONY: docs
 docs: ## Serve documentation locally

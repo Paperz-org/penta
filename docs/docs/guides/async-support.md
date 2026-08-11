@@ -3,7 +3,7 @@
 Since **version 3.1**, Django comes with **async views support**. This allows you run efficient concurrent views that are network and/or IO bound.
 
 ```
-pip install Django>=3.1 django-ninja
+pip install Django>=3.1 penta
 ```
 
 Async views work more efficiently when it comes to:
@@ -12,16 +12,17 @@ Async views work more efficiently when it comes to:
 - executing/waiting for database queries
 - reading/writing from/to disk drives
 
-**Django Ninja** takes full advantage of async views and makes it very easy to work with them.
+**Penta** takes full advantage of async views and makes it very easy to work with them.
 
 ## Quick example
 
 ### Code
 
-Let's take an example.  We have an API operation that does some work (currently just sleeps for provided number of seconds) and returns a word:
+Let's take an example. We have an API operation that does some work (currently just sleeps for provided number of seconds) and returns a word:
 
 ```python hl_lines="5"
 import time
+
 
 @api.get("/say-after")
 def say_after(request, delay: int, word: str):
@@ -33,6 +34,7 @@ To make this code asynchronous, all you have to do is add the **`async`** keywor
 
 ```python hl_lines="1 4 5"
 import asyncio
+
 
 @api.get("/say-after")
 async def say_after(request, delay: int, word: str):
@@ -62,7 +64,7 @@ uvicorn your_project.asgi:application --reload
 > </small>
 
 !!! note
-    You can run async views with `manage.py runserver`, but it does not work well with some libraries, so at this time (July 2020) it is recommended to use ASGI servers like Uvicorn or Daphne.
+You can run async views with `manage.py runserver`, but it does not work well with some libraries, so at this time (July 2020) it is recommended to use ASGI servers like Uvicorn or Daphne.
 
 ### Test
 
@@ -103,14 +105,14 @@ To achieve the same concurrency with WSGI and sync operations you would need to 
 
 ## Mixing sync and async operations
 
-Keep in mind that you can use **both sync and async operations** in your project, and **Django Ninja** will route it automatically:
+Keep in mind that you can use **both sync and async operations** in your project, and **Penta** will route it automatically:
 
 ```python hl_lines="2 7"
-
 @api.get("/say-sync")
 def say_after_sync(request, delay: int, word: str):
     time.sleep(delay)
     return {"saying": word}
+
 
 @api.get("/say-async")
 async def say_after_async(request, delay: int, word: str):
@@ -129,11 +131,11 @@ pip install elasticsearch>=7.8.0
 And now instead of the `Elasticsearch` class, use the `AsyncElasticsearch` class and `await` the results:
 
 ```python hl_lines="2 7 11 12"
-from ninja import NinjaAPI
+from penta import Penta
 from elasticsearch import AsyncElasticsearch
 
 
-api = NinjaAPI()
+api = Penta()
 
 es = AsyncElasticsearch()
 
@@ -141,7 +143,7 @@ es = AsyncElasticsearch()
 @api.get("/search")
 async def search(request, q: str):
     resp = await es.search(
-        index="documents", 
+        index="documents",
         body={"query": {"query_string": {"query": q}}},
         size=20,
     )
@@ -168,9 +170,11 @@ it throws an error. Until the async ORM is implemented, you can use the `sync_to
 ```python hl_lines="1 3 9"
 from asgiref.sync import sync_to_async
 
+
 @sync_to_async
 def get_blog(post_id):
     return Blog.objects.get(pk=post_id)
+
 
 @api.get("/blog/{post_id}")
 async def search(request, post_id: int):
@@ -204,7 +208,7 @@ all_blogs = await sync_to_async(list)(Blog.objects.all())
 
 Since Django **version 4.1**, Django comes with asynchronous versions of ORM operations.
 These eliminate the need to use `sync_to_async` in most cases.
-The async operations have the same names as their sync counterparts but are prepended with *a*. So using
+The async operations have the same names as their sync counterparts but are prepended with _a_. So using
 the example above, you can rewrite it as:
 
 ```python hl_lines="3"

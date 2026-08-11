@@ -10,12 +10,12 @@ router = Router()
 
 
 @api.get("/global")
-def global_op(request):
+def global_op():
     pass
 
 
 @router.get("/router")
-def router_op(request):
+def router_op():
     pass
 
 

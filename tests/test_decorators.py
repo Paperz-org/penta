@@ -3,13 +3,14 @@ from typing import List
 
 from penta import Penta
 from penta.decorators import decorate_view
+from penta.dependencies.request import RequestDependency
 from penta.pagination import paginate
 from penta.testing import TestClient
 
 
 def some_decorator(view_func):
     @wraps(view_func)
-    def wrapper(request, *args, **kwargs):
+    def wrapper(request: RequestDependency, *args, **kwargs):
         response = view_func(request, *args)
         response["X-Decorator"] = "some_decorator"
         return response
@@ -22,7 +23,7 @@ def test_decorator_before():
 
     @decorate_view(some_decorator)
     @api.get("/before")
-    def dec_before(request):
+    def dec_before(request: RequestDependency):
         return 1
 
     client = TestClient(api)
@@ -36,7 +37,7 @@ def test_decorator_after():
 
     @api.get("/after")
     @decorate_view(some_decorator)
-    def dec_after(request):
+    def dec_after(request: RequestDependency):
         return 1
 
     client = TestClient(api)
@@ -51,7 +52,7 @@ def test_decorator_multiple():
     @api.get("/multi", response=List[int])
     @decorate_view(some_decorator)
     @paginate
-    def dec_multi(request):
+    def dec_multi(request: RequestDependency):
         return [1, 2, 3, 4]
 
     client = TestClient(api)

@@ -17,7 +17,7 @@ def test_examples():
 
         # Defaults
         assert client.get("/weapons").json() == [
-            "Penta",
+            "Pentato",
             "Shuriken",
             "Katana",
             "Kama",
@@ -27,7 +27,7 @@ def test_examples():
         ]
 
         assert client.get("/weapons?offset=0&limit=3").json() == [
-            "Penta",
+            "Pentato",
             "Shuriken",
             "Katana",
         ]

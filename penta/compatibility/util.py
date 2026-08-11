@@ -1,13 +1,7 @@
+from types import UnionType
 from typing import Union
 
 __all__ = ["UNION_TYPES"]
 
-
-# python3.10+ syntax of creating a union or optional type (with str | int)
-# UNION_TYPES allows to check both universes if types are a union
-try:
-    from types import UnionType
-
-    UNION_TYPES = (Union, UnionType)
-except ImportError:
-    UNION_TYPES = (Union,)
+# both ways of building a union: `Union[str, int]` and, since python 3.10, `str | int`
+UNION_TYPES = (Union, UnionType)

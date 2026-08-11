@@ -6,6 +6,7 @@ from pydantic import BaseModel
 
 from penta import Penta
 from penta.constants import NOT_SET
+from penta.dependencies.request import RequestDependency
 from penta.signature.details import is_pydantic_model
 from penta.signature.utils import UUIDStrConverter
 from penta.testing import TestClient
@@ -31,7 +32,7 @@ def test_kwargs():
     api = Penta()
 
     @api.get("/")
-    def operation(request, a: str, *args, **kwargs):
+    def operation(request: RequestDependency, a: str, *args, **kwargs):
         pass
 
     schema = api.get_openapi_schema()

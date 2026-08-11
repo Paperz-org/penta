@@ -98,7 +98,7 @@ class FilterSchema(Schema):
 
     def _connect_fields(self) -> Q:
         q = Q()
-        for field_name, field in self.model_fields.items():
+        for field_name, field in type(self).model_fields.items():
             filter_value = getattr(self, field_name)
             field_extra = field.json_schema_extra or {}
             ignore_none = field_extra.get(  # type: ignore

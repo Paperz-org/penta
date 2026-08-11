@@ -1,7 +1,8 @@
 from typing import Any, Callable, Dict
 
 from django.core.files.uploadedfile import UploadedFile as DjangoUploadedFile
-from pydantic_core import core_schema
+
+from penta.compatibility.pydantic import with_info_plain_validator_function
 
 __all__ = ["UploadedFile"]
 
@@ -26,4 +27,4 @@ class UploadedFile(DjangoUploadedFile):
     def __get_pydantic_core_schema__(
         cls, source: Any, handler: Callable[..., Any]
     ) -> Any:
-        return core_schema.with_info_plain_validator_function(cls._validate)
+        return with_info_plain_validator_function(cls._validate)

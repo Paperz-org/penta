@@ -7,6 +7,7 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.test import Client, override_settings
 
 from penta import Body, Field, File, Form, Penta, Query, Schema, UploadedFile
+from penta.dependencies.request import RequestDependency
 from penta.openapi.urls import get_openapi_urls
 from penta.pagination import PaginationBase, paginate
 from penta.renderers import JSONRenderer
@@ -42,58 +43,57 @@ class Response(Schema):
 
 
 @api.post("/test", response=Response)
-def method(request, data: Payload):
+def method(data: Payload):
     return data.dict()
 
 
 @api.post("/test-alias", response=Response, by_alias=True)
-def method_alias(request, data: Payload):
+def method_alias(data: Payload):
     return data.dict()
 
 
 @api.post("/test_list", response=List[Response])
-def method_list_response(request, data: List[Payload]):
+def method_list_response(data: List[Payload]):
     return []
 
 
 @api.post("/test-body", response=Response)
-def method_body(request, i: int = Body(...), f: float = Body(...)):
+def method_body(i: int = Body(...), f: float = Body(...)):
     return dict(i=i, f=f)
 
 
 @api.post("/test-body-schema", response=Response)
-def method_body_schema(request, data: Payload):
+def method_body_schema(data: Payload):
     return dict(i=data.i, f=data.f)
 
 
 @api.get("/test-path/{int:i}/{f}", response=Response)
-def method_path(request, i: int, f: float):
+def method_path(i: int, f: float):
     return dict(i=i, f=f)
 
 
 @api.post("/test-form", response=Response)
-def method_form(request, data: Payload = Form(...)):
+def method_form(data: Payload = Form(...)):
     return dict(i=data.i, f=data.f)
 
 
 @api.post("/test-form-single", response=Response)
-def method_form_single(request, data: float = Form(...)):
+def method_form_single(data: float = Form(...)):
     return dict(i=int(data), f=data)
 
 
 @api.post("/test-form-body", response=Response)
-def method_form_body(request, i: int = Form(10), s: str = Body("10")):
+def method_form_body(i: int = Form(10), s: str = Body("10")):
     return dict(i=i, s=s)
 
 
 @api.post("/test-form-file", response=Response)
-def method_form_file(request, files: List[UploadedFile], data: Payload = Form(...)):
+def method_form_file(files: List[UploadedFile], data: Payload = Form(...)):
     return dict(i=data.i, f=data.f)
 
 
 @api.post("/test-body-file", response=Response)
 def method_body_file(
-    request,
     files: List[UploadedFile],
     body: Payload = Body(...),
 ):
@@ -101,12 +101,12 @@ def method_body_file(
 
 
 @api.post("/test-union-type", response=Response)
-def method_union_payload(request, data: Union[TypeA, TypeB]):
+def method_union_payload(data: Union[TypeA, TypeB]):
     return dict(i=data.i, f=data.f)
 
 
 @api.post("/test-union-type-with-simple", response=Response)
-def method_union_payload_and_simple(request, data: Union[int, TypeB]):
+def method_union_payload_and_simple(data: Union[int, TypeB]):
     return data.dict()
 
 
@@ -114,7 +114,7 @@ if sys.version_info >= (3, 10):
     # This requires Python 3.10 or higher (PEP 604), so we're using eval to
     # conditionally make it available
     @api.post("/test-new-union-type", response=Response)
-    def method_new_union_payload(request, data: "TypeA | TypeB"):
+    def method_new_union_payload(data: "TypeA | TypeB"):
         return dict(i=data.i, f=data.f)
 
 
@@ -125,7 +125,6 @@ if sys.version_info >= (3, 10):
     response=Response,
 )
 def method_test_title_description(
-    request,
     param1: int = Query(..., title="param 1 title"),
     param2: str = Query("A Default", description="param 2 desc"),
     file: UploadedFile = File(..., description="file param desc"),
@@ -135,7 +134,6 @@ def method_test_title_description(
 
 @api.post("/test-deprecated-example-examples/")
 def method_test_deprecated_example_examples(
-    request,
     param1: int = Query(None, deprecated=True),
     param2: str = Query(..., example="Example Value"),
     param3: str = Query(
@@ -608,7 +606,7 @@ def test_schema_title_description(schema):
                 "schema": {
                     "properties": {
                         "file": {
-                            "description": "file " "param " "desc",
+                            "description": "file param desc",
                             "format": "binary",
                             "title": "File",
                             "type": "string",
@@ -797,11 +795,15 @@ def test_unique_operation_ids(capsys):
     api = Penta()
 
     @api.get("/1")
-    def same_name(request):
+    def same_name(
+        request: RequestDependency,
+    ):
         pass
 
-    @api.get("/2")  # noqa: F811
-    def same_name(request):  # noqa: F811
+    @api.get("/2")
+    def same_name(  # noqa: F811
+        request: RequestDependency,
+    ):
         pass
 
     api.get_openapi_schema()
@@ -866,11 +868,11 @@ def test_all_paths_rendered():
         pass
 
     @api.get("/1/{param}")
-    def some_name_get_one(request, param: int):
+    def some_name_get_one(request: RequestDependency, param: int):
         pass
 
     @api.delete("/1/{param}")
-    def some_name_delete(request, param: int):
+    def some_name_delete(request: RequestDependency, param: int):
         pass
 
     schema = api.get_openapi_schema()
@@ -896,11 +898,11 @@ def test_all_paths_typed_params_rendered():
         pass
 
     @api.get("/1/{int:param}")
-    def some_name_get_one(request, param: int):
+    def some_name_get_one(request: RequestDependency, param: int):
         pass
 
     @api.delete("/1/{str:param}")
-    def some_name_delete(request, param: str):
+    def some_name_delete(request: RequestDependency, param: str):
         pass
 
     schema = api.get_openapi_schema()
@@ -935,7 +937,9 @@ def test_no_default_for_custom_items_attribute():
         response=List[EmployeeOut],
     )
     @paginate(CustomPagination)
-    def get_employees(request):
+    def get_employees(
+        request: RequestDependency,
+    ):
         pass
 
     schema = api.get_openapi_schema()

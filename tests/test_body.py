@@ -2,8 +2,10 @@ from typing import Any, Dict, List
 
 import pytest
 from pydantic import field_validator
+from util import PYDANTIC_VERSION
 
 from penta import Body, Form, Penta, Schema
+from penta.dependencies.request import RequestDependency
 from penta.errors import ConfigError, ValidationError, ValidationErrorContext
 from penta.testing import TestClient
 
@@ -13,12 +15,14 @@ api = Penta()
 
 
 @api.post("/task")
-def create_task(request, start: int = Body(...), end: int = Body(...)):
+def create_task(
+    request: RequestDependency, start: int = Body(...), end: int = Body(...)
+):
     return [start, end]
 
 
 @api.post("/task2")
-def create_task2(request, start: int = Body(2), end: int = Form(1)):
+def create_task2(request: RequestDependency, start: int = Body(2), end: int = Form(1)):
     return [start, end]
 
 
@@ -35,7 +39,7 @@ class UserIn(Schema):
 
 
 @api.post("/users")
-def create_user(request, payload: UserIn):
+def create_user(request: RequestDependency, payload: UserIn):
     return payload.dict()
 
 
@@ -81,9 +85,13 @@ def test_incorrect_annotation():
     with pytest.raises(ConfigError):
 
         @api.post("/some")
-        def some(request, payload=Some):
+        def some(request: RequestDependency, payload=Some):
             #  ................. ^------ invalid usage assigning class instead of annotation
             return 42
+
+
+# pydantic 2.4 added `include_input`
+INCLUDE_INPUT = {"include_input": False} if PYDANTIC_VERSION >= (2, 4) else {}
 
 
 class CustomErrorAPI(Penta):
@@ -95,14 +103,12 @@ class CustomErrorAPI(Penta):
         for context in error_contexts:
             model = context.model
             for e in context.pydantic_validation_error.errors(
-                include_url=False, include_context=False, include_input=False
+                include_url=False, include_context=False, **INCLUDE_INPUT
             ):
-                errors.append(
-                    {
-                        "source": model.__penta_param_source__,
-                        "message": e["msg"],
-                    }
-                )
+                errors.append({
+                    "source": model.__penta_param_source__,
+                    "message": e["msg"],
+                })
         return ValidationError(errors)
 
 
@@ -110,7 +116,7 @@ custom_error_api = CustomErrorAPI()
 
 
 @custom_error_api.post("/users")
-def create_user2(request, payload: UserIn):
+def create_user2(request: RequestDependency, payload: UserIn):
     return payload.dict()
 
 

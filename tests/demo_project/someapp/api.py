@@ -20,22 +20,22 @@ class EventSchema(BaseModel):
 
 
 @router.post("/create", url_name="event-create-url-name")
-def create_event(request, event: EventSchema):
+def create_event(event: EventSchema):
     Event.objects.create(**event.model_dump())
     return event
 
 
 @router.get("", response=List[EventSchema])
-def list_events(request):
+def list_events():
     return list(Event.objects.all())
 
 
 @router.delete("")
-def delete_events(request):
+def delete_events():
     Event.objects.all().delete()
 
 
 @router.get("/{id}", response=EventSchema)
-def get_event(request, id: int):
+def get_event(id: int):
     event = get_object_or_404(Event, id=id)
     return event

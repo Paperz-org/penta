@@ -5,6 +5,7 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
 
 from penta import Penta
+from penta.dependencies.request import RequestDependency
 from penta.security import APIKeyCookie, APIKeyHeader, django_auth
 from penta.testing import TestClient as BaseTestClient
 
@@ -22,18 +23,18 @@ csrf_ON_with_django_auth = Penta(urls_namespace="csrf_ON", csrf=True, auth=djang
 
 
 @csrf_OFF.post("/post")
-def post_off(request):
+def post_off():
     return {"success": True}
 
 
 @csrf_ON.post("/post")
-def post_on(request):
+def post_on():
     return {"success": True}
 
 
 @csrf_ON.post("/post/csrf_exempt")
 @csrf_exempt
-def post_on_with_exempt(request):
+def post_on_with_exempt(request: RequestDependency):
     return {"success": True}
 
 
@@ -74,7 +75,7 @@ def test_csrf_cookie_auth():
     api = Penta(auth=cookie_auth)
 
     @api.post("/test")
-    def test_view(request):
+    def test_view():
         return {"success": True}
 
     client = TestClient(api)
@@ -103,24 +104,24 @@ def test_csrf_cookie_auth():
 def test_csrf_cookies_can_be_obtained():
     @csrf_ON.get("/obtain_csrf_token_get")
     @ensure_csrf_cookie
-    def obtain_csrf_token_get(request):
+    def obtain_csrf_token_get(request: RequestDependency):
         return JsonResponse(data={"success": True})
 
     @csrf_ON.post("/obtain_csrf_token_post")
     @ensure_csrf_cookie
     @csrf_exempt
-    def obtain_csrf_token_post(request):
+    def obtain_csrf_token_post(request: RequestDependency):
         return JsonResponse(data={"success": True})
 
     @csrf_ON_with_django_auth.get("/obtain_csrf_token_get", auth=None)
     @ensure_csrf_cookie
-    def obtain_csrf_token_get_no_auth_route(request):
+    def obtain_csrf_token_get_no_auth_route(request: RequestDependency):
         return JsonResponse(data={"success": True})
 
     @csrf_ON_with_django_auth.post("/obtain_csrf_token_post", auth=None)
     @ensure_csrf_cookie
     @csrf_exempt
-    def obtain_csrf_token_post_no_auth_route(request):
+    def obtain_csrf_token_post_no_auth_route(request: RequestDependency):
         return JsonResponse(data={"success": True})
 
     client = TestClient(csrf_ON)

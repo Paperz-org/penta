@@ -1,17 +1,15 @@
 # CRUD example
 
+**CRUD** - **C**reate, **R**etrieve, **U**pdate, **D**elete are the four basic functions of persistent storage.
 
-**CRUD**  - **C**reate, **R**etrieve, **U**pdate, **D**elete are the four basic functions of persistent storage.
-
-This example will show you how to implement these functions with **Django Ninja**.
+This example will show you how to implement these functions with **Penta**.
 
 Let's say you have the following Django models that you need to perform these operations on:
 
-
 ```python
-
 class Department(models.Model):
     title = models.CharField(max_length=100)
+
 
 class Employee(models.Model):
     first_name = models.CharField(max_length=100)
@@ -29,14 +27,14 @@ To create an employee lets define an INPUT schema:
 
 ```python
 from datetime import date
-from ninja import Schema
+from penta import Schema
+
 
 class EmployeeIn(Schema):
     first_name: str
     last_name: str
     department_id: int = None
     birthdate: date = None
-
 ```
 
 This schema will be our input payload:
@@ -49,20 +47,21 @@ def create_employee(request, payload: EmployeeIn):
 ```
 
 !!! tip
-    `Schema` objects have `.dict()` method with all the schema attributes represented as a dict.
+`Schema` objects have `.dict()` method with all the schema attributes represented as a dict.
 
     You can pass it as `**kwargs` to the Django model's `create` method (or model `__init__`).
 
 See the recipe below for handling the file upload (when using Django models):
 
 ```python hl_lines="2"
-from ninja import UploadedFile, File
+from penta import UploadedFile, File
+
 
 @api.post("/employees")
 def create_employee(request, payload: EmployeeIn, cv: File[UploadedFile]):
     payload_dict = payload.dict()
     employee = Employee(**payload_dict)
-    employee.cv.save(cv.name, cv) # will save model instance as well
+    employee.cv.save(cv.name, cv)  # will save model instance as well
     return {"id": employee.id}
 ```
 
@@ -70,9 +69,10 @@ If you just need to handle a file upload:
 
 ```python hl_lines="2"
 from django.core.files.storage import FileSystemStorage
-from ninja import UploadedFile, File
+from penta import UploadedFile, File
 
 STORAGE = FileSystemStorage()
+
 
 @api.post("/upload")
 def create_upload(request, cv: File[UploadedFile]):
@@ -86,7 +86,6 @@ def create_upload(request, cv: File[UploadedFile]):
 
 Now to get employee we will define a schema that will describe what our responses will look like. Here we will basically use the same schema as `EmployeeIn`, but will add an extra attribute `id`:
 
-
 ```python hl_lines="2"
 class EmployeeOut(Schema):
     id: int
@@ -97,10 +96,9 @@ class EmployeeOut(Schema):
 ```
 
 !!! note
-    Defining response schemas are not really required, but when you do define it you will get results validation, documentation and automatic ORM objects to JSON conversions.
+Defining response schemas are not really required, but when you do define it you will get results validation, documentation and automatic ORM objects to JSON conversions.
 
 We will use this schema as the `response` type for our `GET` employee view:
-
 
 ```python hl_lines="1"
 @api.get("/employees/{employee_id}", response=EmployeeOut)
@@ -110,6 +108,7 @@ def get_employee(request, employee_id: int):
 ```
 
 Notice that we simply returned an employee ORM object, without a need to convert it to a dict. The `response` schema does automatic result validation and conversion to JSON:
+
 ```python hl_lines="4"
 @api.get("/employees/{employee_id}", response=EmployeeOut)
 def get_employee(request, employee_id: int):
@@ -119,9 +118,11 @@ def get_employee(request, employee_id: int):
 
 ### List of objects
 
-To output a list of employees, we can reuse the same `EmployeeOut` schema. We will just set the `response` schema to a *List* of `EmployeeOut`.
+To output a list of employees, we can reuse the same `EmployeeOut` schema. We will just set the `response` schema to a _List_ of `EmployeeOut`.
+
 ```python hl_lines="3"
 from typing import List
+
 
 @api.get("/employees", response=List[EmployeeOut])
 def list_employees(request):
@@ -137,9 +138,8 @@ def list_employees(request):
     qs = Employee.objects.all()
     return qs
 ```
+
 It automatically gets evaluated, validated and converted to a JSON list!
-
-
 
 ## Update
 
@@ -190,7 +190,6 @@ class EmployeeIn(Schema):
 
 Delete is also pretty simple. We just get employee by `id` and delete it from the DB:
 
-
 ```python hl_lines="1 2 4"
 @api.delete("/employees/{employee_id}")
 def delete_employee(request, employee_id: int):
@@ -203,16 +202,15 @@ def delete_employee(request, employee_id: int):
 
 Here's a full CRUD example:
 
-
 ```python
 from datetime import date
 from typing import List
-from ninja import NinjaAPI, Schema
+from penta import Penta, Schema
 from django.shortcuts import get_object_or_404
 from employees.models import Employee
 
 
-api = NinjaAPI()
+api = Penta()
 
 
 class EmployeeIn(Schema):

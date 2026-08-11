@@ -10,28 +10,27 @@ An `operation` can be one of the following [HTTP methods](https://developer.mozi
 - DELETE
 - PATCH
 
-**Django Ninja** comes with a decorator for each operation:
+**Penta** comes with a decorator for each operation:
 
 ```python hl_lines="1 5 9 13 17"
 @api.get("/path")
-def get_operation(request):
-    ...
+def get_operation(request): ...
+
 
 @api.post("/path")
-def post_operation(request):
-    ...
+def post_operation(request): ...
+
 
 @api.put("/path")
-def put_operation(request):
-    ...
+def put_operation(request): ...
+
 
 @api.delete("/path")
-def delete_operation(request):
-    ...
+def delete_operation(request): ...
+
 
 @api.patch("/path")
-def patch_operation(request):
-    ...
+def patch_operation(request): ...
 ```
 
 See the [operations parameters](../../reference/operations-parameters.md)
@@ -44,15 +43,13 @@ you can use the `api_operation` decorator:
 
 ```python hl_lines="1"
 @api.api_operation(["POST", "PATCH"], "/path")
-def mixed_operation(request):
-    ...
+def mixed_operation(request): ...
 ```
 
 This feature can also be used to implement other HTTP methods that don't have
-corresponding **Django Ninja** methods, such as `HEAD` or `OPTIONS`.
+corresponding **Penta** methods, such as `HEAD` or `OPTIONS`.
 
 ```python hl_lines="1"
 @api.api_operation(["HEAD", "OPTIONS"], "/path")
-def mixed_operation(request):
-    ...
+def mixed_operation(request): ...
 ```

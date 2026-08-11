@@ -16,12 +16,12 @@ router = Router()
 
 
 @router.get("/check_int", response=int)
-def check_int(request):
+def check_int():
     return "1"
 
 
 @router.get("/check_int2", response=int)
-def check_int2(request):
+def check_int2():
     return "str"
 
 
@@ -55,22 +55,22 @@ class UserModel(BaseModel):
 
 
 @router.get("/check_model", response=UserModel)
-def check_model(request):
+def check_model():
     return User(1, "John", "Password")
 
 
 @router.get("/check_list_model", response=List[UserModel])
-def check_list_model(request):
+def check_list_model():
     return [User(1, "John", "Password")]
 
 
 @router.get("/check_model_alias", response=UserModel, by_alias=True)
-def check_model_alias(request):
+def check_model_alias():
     return User(1, "John", "Password")
 
 
 @router.get("/check_union", response=Union[int, UserModel])
-def check_union(request, q: int):
+def check_union(q: int):
     if q == 0:
         return 1
     if q == 1:
@@ -79,20 +79,20 @@ def check_union(request, q: int):
 
 
 @router.get("/check_set_header")
-def check_set_header(request, response: HttpResponse):
+def check_set_header(response: HttpResponse):
     response["Cache-Control"] = "no-cache"
     return 1
 
 
 @router.get("/check_set_cookie")
-def check_set_cookie(request, set: bool, response: HttpResponse):
+def check_set_cookie(set: bool, response: HttpResponse):
     if set:
         response.set_cookie("test", "me")
     return 1
 
 
 @router.get("/check_del_cookie")
-def check_del_cookie(request, response: HttpResponse):
+def check_del_cookie(response: HttpResponse):
     response.delete_cookie("test")
     return 1
 

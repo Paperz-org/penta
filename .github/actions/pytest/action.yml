@@ -1,0 +1,28 @@
+name: 'Run the test suite'
+description: 'Sets up the environment and runs pytest.'
+inputs:
+  python-version:
+    description: 'Python version to run the tests with'
+    required: false
+    default: '3.11'
+  packages:
+    description: 'Package specifiers to install over the locked ones, e.g. `django~=4.2.0`'
+    required: false
+    default: ''
+runs:
+  using: "composite"
+  steps:
+    - name: Setup Test Environment
+      uses: ./.github/actions/setup-dev
+      with:
+        python-version: ${{ inputs.python-version }}
+
+    - name: Install ${{ inputs.packages }}
+      if: inputs.packages != ''
+      shell: bash
+      run: uv pip install ${{ inputs.packages }}
+
+    - name: Test with pytest
+      shell: bash
+      # --no-sync: keep the packages installed above, whatever the lock file says
+      run: uv run --no-sync pytest tests
