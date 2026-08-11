@@ -453,6 +453,55 @@ def test_dependency_param_named_after_a_fast_depends_keyword():
     assert response.json() == {"result": "one_two_one"}
 
 
+def test_depends_on_the_request_is_resolved_once():
+    "`use_cache` holds for a dependency reading the request, like for any other"
+    calls = []
+
+    def get_method(request: Request) -> str:
+        calls.append(request.method)
+        return request.method
+
+    cached_router = Router()
+
+    @cached_router.get("/cached")
+    def cached(
+        first: Annotated[str, Depends(get_method)],
+        second: Annotated[str, Depends(get_method)],
+    ):
+        return {"first": first, "second": second}
+
+    response = TestClient(cached_router).get("/cached")
+
+    assert response.status_code == 200, response.content
+    assert response.json() == {"first": "GET", "second": "GET"}
+    assert calls == ["GET"], "the dependency is resolved once per request"
+
+
+def test_penta_dependency_shared_by_several_views():
+    "the same annotation serves several views, each with a parameter of its own"
+    shared = HeaderDependency("X-Num")
+    shared_router = Router()
+
+    @shared_router.get("/as-int")
+    def as_int(num: Annotated[int, shared]):
+        return {"value": num, "type": type(num).__name__}
+
+    @shared_router.get("/as-str")
+    def as_str(num: Annotated[str, shared]):
+        return {"value": num, "type": type(num).__name__}
+
+    client_ = TestClient(shared_router)
+
+    assert client_.get("/as-int", headers={"X-Num": "42"}).json() == {
+        "value": 42,
+        "type": "int",
+    }
+    assert client_.get("/as-str", headers={"X-Num": "42"}).json() == {
+        "value": "42",
+        "type": "str",
+    }
+
+
 def test_depends_param_clashing_with_a_dependency():
     "the same name cannot be both a dependency result and something a dependency reads"
 
